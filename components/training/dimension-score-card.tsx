@@ -1,7 +1,4 @@
-'use client';
-
 import { Lightbulb, BarChart3, FileSearch, BookOpen } from 'lucide-react';
-import { useState } from 'react';
 
 interface DimensionScoreCardProps {
   /** 维度名称 */
@@ -46,17 +43,13 @@ export function DimensionScoreCard({
   suggestions,
   referenceFramework,
 }: DimensionScoreCardProps) {
-  const [expanded, setExpanded] = useState(false);
   const colors = scoreToColor(score);
   const label = scoreLabel(score);
 
   return (
     <div className="rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
       {/* 卡片头部 */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
-      >
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
             <BarChart3 className="h-4 w-4 text-primary" />
@@ -77,21 +70,11 @@ export function DimensionScoreCard({
             {label}
           </span>
           <span className="text-xs text-muted-foreground">{weight}</span>
-          <svg
-            className={`h-4 w-4 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
-      </button>
+      </div>
 
-      {/* 展开内容 */}
-      {expanded && (
-        <div className="px-5 pb-5 space-y-4 border-t pt-4">
+      {/* 详情内容 */}
+      <div className="px-5 pb-5 space-y-4 border-t pt-4">
 
           {/* ===== 关键依据 ===== */}
           {evidence && evidence.length > 0 && (
@@ -161,7 +144,6 @@ export function DimensionScoreCard({
             </section>
           )}
         </div>
-      )}
     </div>
   );
 }
