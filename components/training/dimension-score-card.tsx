@@ -56,7 +56,7 @@ export function DimensionScoreCard({
           </div>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-foreground">{name}</h3>
-            <p className="text-xs text-muted-foreground line-clamp-1">{description}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -110,11 +110,14 @@ export function DimensionScoreCard({
             </div>
             <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/10 p-3.5">
               {referenceFramework && referenceFramework.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
+                <ul className="space-y-2.5">
                   {referenceFramework.map((item, i) => (
-                    <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-medium border border-blue-200 dark:border-blue-800">{item}</span>
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[11px] font-bold mt-0.5">{i + 1}</span>
+                      <span className="text-sm leading-relaxed text-foreground">{item}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               ) : (
                 <p className="text-sm text-muted-foreground italic">暂无参考答案</p>
               )}
