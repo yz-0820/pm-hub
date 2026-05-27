@@ -65,17 +65,23 @@ export async function GET(request: NextRequest) {
     const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
 
     // 查询符合条件的题目
-    let query = db.select().from(programmingQuestions).where(whereClause);
+    let questions;
 
-    // 如果需要随机抽取
     if (count) {
-      // SQLite中使用RANDOM()函数
-      query = query.orderBy(sql`RANDOM()`).limit(count);
+      // SQLite中使用RANDOM()函数随机抽取
+      questions = await db
+        .select()
+        .from(programmingQuestions)
+        .where(whereClause)
+        .orderBy(sql`RANDOM()`)
+        .limit(count);
     } else {
-      query = query.orderBy(programmingQuestions.id);
+      questions = await db
+        .select()
+        .from(programmingQuestions)
+        .where(whereClause)
+        .orderBy(programmingQuestions.id);
     }
-
-    const questions = await query;
 
     // 格式化返回数据，隐藏正确答案
     const formattedQuestions = questions.map((q) => ({
