@@ -84,7 +84,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const answers: AnswerRecord[] = JSON.parse(session.answers || '[]');
 
     // 获取所有题目
-    let questions = [];
+    interface QuestionItem {
+      id: number;
+      questionKey: string;
+      domain: string;
+      category: string;
+      stem: string;
+      optionA: string;
+      optionB: string;
+      optionC: string;
+      optionD: string;
+      correctOption: string;
+      explanation: string;
+      links: string[];
+      difficulty: string;
+    }
+
+    let questions: QuestionItem[] = [];
     if (questionIds.length > 0) {
       const dbQuestions = await db
         .select({
