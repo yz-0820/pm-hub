@@ -84,7 +84,6 @@ export function DimensionScoreCard({
                   <FileSearch className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                 </div>
                 <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">关键依据</h4>
-                <span className="text-[10px] text-muted-foreground ml-auto">基于你的答案内容</span>
               </div>
               <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-950/10 p-3.5">
                 <ul className="space-y-2.5">
@@ -106,8 +105,7 @@ export function DimensionScoreCard({
                 <BookOpen className="h-3 w-3 text-blue-600 dark:text-blue-400" />
               </div>
               <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">参考答案</h4>
-              <span className="text-[10px] text-muted-foreground ml-auto">建议参考的分析维度与工具</span>
-            </div>
+              </div>
             <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/10 p-3.5">
               {referenceFramework && referenceFramework.length > 0 ? (
                 <ul className="space-y-2.5">
@@ -132,7 +130,6 @@ export function DimensionScoreCard({
                   <Lightbulb className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">改进建议</h4>
-                <span className="text-[10px] text-muted-foreground ml-auto">可执行的具体方向</span>
               </div>
               <div className="rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-950/10 p-3.5">
                 <ul className="space-y-2.5">
