@@ -106,6 +106,15 @@ const FINANCE_KEYWORDS = [
    // 营销/广告
    '联名', '代言',
  ];
+ 
++// 强信号非金融关键词 - 匹配 1 个就排除（这些词几乎不可能出现在纯金融文章中）
+const STRONG_NON_FINANCE_KEYWORDS = [
+  '新品', '评测', '开箱', '开售', '首发',
+  '测试车', '游戏本',
+  '裁员', '招聘',
+  '联名', '代言',
+  '试驾', '续航', '充电',
+];
 
 const PRODUCT_NEWS_HINTS = [
   '预售',
@@ -213,6 +222,18 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
 
   // 优先检查非金融信号 - 如果文章包含明显的非金融关键词，直接排除
   const nonFinanceHits = matchKeywords(full, NON_FINANCE_KEYWORDS);
+  const strongNonFinanceHits = matchKeywords(full, STRONG_NON_FINANCE_KEYWORDS);
+
+  // 强信号：匹配 1 个就排除
+  if (strongNonFinanceHits.length >= 1) {
+    return {
+      passed: false,
+      score: 0,
+      meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: [...strongNonFinanceHits, ...nonFinanceHits], adHits: [], threshold: FINANCE_THRESHOLD },
+    };
+  }
+
+  // 普通非金融信号：需要 >=2 个
   if (nonFinanceHits.length >= 2) {
     return {
       passed: false,
