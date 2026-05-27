@@ -312,6 +312,7 @@ const CATEGORY_CORE_GROUPS: Record<string, CoreGroup[]> = {
   teamwork: [
     { label: '目标对齐', keywords: ['目标对齐', '对齐', 'OKR', '目标', '共识', '方向一致'] },
     { label: '角色分工', keywords: ['角色', '分工', '职责', '边界', 'RACI', '协作机制'] },
+    { label: '职场协作', keywords: ['职场', '工作', '公司', '同事', '团队', '协作', '跨部门', '部门', '项目'] },
   ],
 };
 
@@ -344,6 +345,7 @@ const CATEGORY_MIN_KEYWORD_HITS: Record<string, number> = {
 
 const CATEGORY_CAREER_ANCHORS: Partial<Record<string, string[]>> = {
   communication: ['职场', '老板', '上司', '同事', '下属', '汇报', '述职', '周报', '跨部门', '向上管理', '绩效', '面试', '招聘', '一对一', '1对1'],
+  teamwork: ['职场', '工作', '公司', '老板', '同事', '上司', '下属', '汇报', '绩效', '面试', '招聘', '跨部门', '部门', '述职', '周报', 'OKR', 'KPI', '开会', '会议', '项目'],
 };
 
 export function verifyCategoryMatch(content: NormalizedContent): CategoryMatchResult {
@@ -389,7 +391,18 @@ export function evaluateBestCategoryMatch(content: NormalizedContent): CategoryM
 
   for (const cat of candidates) {
     const result = verifyCategoryMatch({ ...content, category: cat });
-    if (!best || result.matchScore > best.matchScore || (result.matchScore === best.matchScore && result.keywordScore > best.keywordScore)) {
+    const isBetterScore = !best || result.matchScore > best.matchScore || (result.matchScore === best.matchScore && result.keywordScore > best.keywordScore);
+    
+    if (!best) {
+      best = result;
+    } else if (result.coreMatched && !best.coreMatched) {
+      // 核心组匹配优先：即使分数较低，也优先选择核心组匹配的分类
+      best = result;
+    } else if (!result.coreMatched && best.coreMatched) {
+      // 当前分类核心组不匹配，保持最优不变
+      continue;
+    } else if (isBetterScore) {
+      // 核心组匹配状态相同，按分数比较
       best = result;
     }
   }

@@ -173,11 +173,11 @@ export const categoryKeywords: Record<string, Array<[string, number]>> = {
     // --- 会议/沟通 ---
     ['头脑风暴', 2], ['站会', 2], ['晨会', 1], ['周会', 1],
     ['会议效率', 3], ['高效会议', 3],
-    ['team', 3], ['teams', 3], ['teamwork', 3], ['collaboration', 3], ['collaborative', 2],
+    ['teamwork', 3], ['collaboration', 3], ['collaborative', 2],
     ['alignment', 3], ['goal alignment', 3], ['coordination', 2], ['handoff', 2],
     ['role', 2], ['roles', 2], ['responsibility', 2], ['raci', 2],
     ['trust', 3], ['psychological safety', 3], ['cross-functional', 2], ['remote', 2], ['remote work', 2],
-    ['agile', 3], ['scrum', 3], ['kanban', 3], ['slack', 2], ['microsoft teams', 2], ['teams', 2],
+    ['agile', 3], ['scrum', 3], ['kanban', 3],
     ['async', 2], ['asynchronous', 2], ['meeting', 2], ['meetings', 2],
   ],
 
