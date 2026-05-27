@@ -172,8 +172,8 @@ export default function ResultsPage() {
     }));
   };
 
-  const getDomainLabel = (domain: DomainType) => {
-    const labels: Record<DomainType, string> = {
+  const getDomainLabel = (domain: DomainType | 'mixed') => {
+    const labels: Record<DomainType | 'mixed', string> = {
       frontend: '前端开发',
       backend: '后端开发',
       database: '数据库',
