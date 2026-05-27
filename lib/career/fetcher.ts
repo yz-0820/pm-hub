@@ -10,7 +10,7 @@ import { careerContents, contentSources as contentSourcesTable, contentFetchLogs
 import { eq, notInArray } from 'drizzle-orm';
 import crypto from 'crypto';
 import { normalizeAll } from './platforms/normalizer';
-import { assessQuality, evaluateBestCategoryMatch } from './quality';
+import { assessQuality, evaluateBestCategoryMatch, hasCareerRelevance } from './quality';
 import { PlatformRawContent, NormalizedContent } from './platforms/types';
 import { fetchXiaohongshuFeed, fetchDouyinFeed, fetchBilibiliFeed } from './platforms/rsshub';
 import { validateExternalUrl } from './url-validator';
@@ -371,6 +371,13 @@ async function saveContent(
   const matchPassed = bestMatch.matched;
   const quality = assessQuality(content);
 
+  // 全局职场相关性检查：完全不相关的文章不应归到任何职场分类
+  const careerRelevance = hasCareerRelevance(content);
+  const isNonRelevant = !careerRelevance.relevant;
+
+  // 如果内容与职场完全无关，强制设置 noMatch
+  const finalMatchPassed = isNonRelevant ? false : matchPassed;
+
   const isHardReject =
     quality.reasons.includes('非中文内容（仅保留中文文章与视频）') ||
     quality.reasons.includes('检测到大量疑似广告/垃圾信息') ||
@@ -387,7 +394,7 @@ async function saveContent(
     content.originalId = generateContentId(content.originalUrl);
   }
 
-  content.category = matchPassed ? bestMatch.category : 'all';
+  content.category = finalMatchPassed ? bestMatch.category : 'all';
 
   if (content.coverImage) {
     content.coverImage = upscaleCoverUrl(content.coverImage);
@@ -430,7 +437,7 @@ async function saveContent(
   }
 
   const contentStatus =
-    (!urlValidation.ok || isHardReject) ? 'rejected' : (quality.passed && matchPassed ? 'active' : 'pending');
+    (!urlValidation.ok || isHardReject) ? 'rejected' : (quality.passed && finalMatchPassed ? 'active' : isNonRelevant ? 'rejected' : 'pending');
 
   const desiredCover = content.coverImage || getDefaultCover(content.category);
 

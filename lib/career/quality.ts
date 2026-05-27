@@ -96,6 +96,65 @@ export const CAREER_EXCLUDED_VIDEO_PATTERNS: RegExp[] = [
   /(axure|figma|墨刀|sketch|prd|原型|交互稿|交互设计)/i,
 ];
 
+
+// 强职场锚点 - 命中任意一个就说明内容与职场相关
+const STRONG_WORKPLACE_ANCHORS = [
+  '职场', '面试', '招聘', '升职', '加薪', '跳槽', '离职', '辞职',
+  '述职', '周报', '日报', '月报', '年终总结',
+  'OKR', 'KPI', '绩效考核', '绩效面谈',
+  '老板', '上司', '下属', '同事', '跨部门', '部门沟通', '向上管理',
+  '内推', '校招', '社招', '简历', 'offer', 'Offer',
+  '产品经理', '项目经理', '运营', '程序员', '设计师', '工程师',
+  '公务员', '国企', '职场人', '打工', '打工人',
+  '裁员', '涨薪', '年终奖',
+];
+
+// 弱职场锚点 - 需要至少命中 2 个才算与职场相关
+const WEAK_WORKPLACE_ANCHORS = [
+  '工作', '公司', '团队', '管理', '沟通', '项目', '领导', '汇报',
+  '员工', '绩效', '协作', '合作', '会议', '效率', '时间管理',
+  '客户', '需求', '方案', '计划', '任务', '目标', '执行',
+  '经验', '分享', '复盘', '总结', '成长', '技能', '能力',
+  '干货', '心得', '教训', '避坑',
+];
+
+/**
+ * 检查内容是否与职场/职业发展相关
+ * 完全不相关的内容不会被归到任何职场分类
+ */
+export function hasCareerRelevance(content: Pick<NormalizedContent, 'title' | 'description' | 'content'>): {
+  relevant: boolean;
+  reason: string;
+} {
+  const text = `${content.title || ''} ${content.description || ''} ${(content.content || '').slice(0, 600)}`.toLowerCase();
+
+  // 强锚点检查：命中 1 个就通过
+  const strongHits = STRONG_WORKPLACE_ANCHORS.filter(k => text.includes(k.toLowerCase()));
+  if (strongHits.length >= 1) {
+    return { relevant: true, reason: `强锚点: ${strongHits.join(', ')}` };
+  }
+
+  // 弱锚点检查：需要命中至少 2 个
+  const weakHits = WEAK_WORKPLACE_ANCHORS.filter(k => text.includes(k.toLowerCase()));
+  if (weakHits.length >= 2) {
+    return { relevant: true, reason: `弱锚点 x${weakHits.length}: ${weakHits.join(', ')}` };
+  }
+
+  // 特殊场景：如果标题包含明显的非职场信号，直接标记为不相关
+  const nonWorkplaceSignals = [
+    '新型材料', '贝叶斯', '算法', '化合物', '纳米', '科研', '研究团队',
+    'token', 'token经济', 'AGI', '大模型', '人工智能', 'AI',
+    '芯片', '光刻机', 'EUV', 'ASML', '台积电', '三星',
+    '新能源汽车', '电池', '固态电池', '电动汽车',
+  ];
+  const nonWorkplaceHits = nonWorkplaceSignals.filter(k => text.includes(k.toLowerCase()));
+  
+  return { 
+    relevant: false, 
+    reason: `无职场关联信号 (强锚点: ${strongHits.length}, 弱锚点: ${weakHits.length}${nonWorkplaceHits.length > 0 ? `, 非职场信号: ${nonWorkplaceHits.join(', ')}` : ''})` 
+  };
+}
+
 export function assessQuality(content: NormalizedContent): QualityScore {
   const reasons: string[] = [];
   let titleQuality = 25;
