@@ -18,7 +18,6 @@ export const FINANCE_THRESHOLD = 45;
 const FINANCE_KEYWORDS = [
   '金融',
   '财经',
-  '市场',
   '股市',
   '股票',
   'a股',
@@ -28,13 +27,9 @@ const FINANCE_KEYWORDS = [
   '深证',
   '创业板',
   '科创板',
-  '指数',
-  '大盘',
   'etf',
   '基金',
   '理财',
-  '投资',
-  '交易',
   '期货',
   '期权',
   '外汇',
@@ -51,35 +46,66 @@ const FINANCE_KEYWORDS = [
   'cpi',
   'ppi',
   '财报',
-  '营收',
-  '收入',
   '净利润',
   '毛利',
-  '利润',
   '亏损',
-  '同比',
-  '环比',
-  '业绩',
-  '融资',
-  '募资',
-  '增资',
-  '入股',
-  '股权',
-  '并购',
-  '收购',
-  '上市',
   'ipo',
   '招股书',
   '回购',
   '分红',
-  '估值',
   '市盈率',
   'pe',
   'pb',
   '债务',
   '违约',
   '重组',
+  'ipo',
+  '大盘',
+  '降准',
+  '放水',
+  '印花税',
+  '北向资金',
+  '南向资金',
+  '涨停',
+  '跌停',
+  '牛市',
+  '熊市',
+  '退市',
+  '做空',
+  '做多',
+  '基金定投',
+  '理财',
+  '信托',
+  '金价',
+  '黄金',
+  '原油',
+  '大宗商品',
+  '期货市场',
+  '期货价格',
+  '股票市场',
+  '资本市场',
 ];
+
+// 明显的非金融信号 - 匹配这些关键词的文章不应归类为金融
+ const NON_FINANCE_KEYWORDS = [
+   // 产品发布与科技
+   '新品', '开售', '首发',
+   '评测', '体验', '开箱',
+   '游戏本', '芯片', '处理器',
+   '骁龙', '天玑',
+   // AI
+   '人工智能', '大模型', '算法',
+   '机器人', '自动驾驶', 'deepseek',
+   // 汽车
+   '新车', '充电', '续航',
+   '试驾', '测试车', '车型',
+   // 招聘/裁员
+   '招聘', '裁员',
+   // 监管
+   '市场监管', '罚款', '违法',
+   // 营销/广告
+   '联名', '代言',
+ ];
 
 const PRODUCT_NEWS_HINTS = [
   '预售',
@@ -104,6 +130,13 @@ const PRODUCT_NEWS_HINTS = [
   'nvidia',
   'gpu',
   'cpu',
+  '测试车',
+  '充电',
+  '续航',
+  'kg',
+  '毫米',
+  '英寸',
+  '刷新率',
 ];
 
 const AD_HINT_PATTERNS: Array<{ label: string; re: RegExp }> = [
@@ -178,6 +211,16 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
     return { passed: false, score: 0, meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: [], adHits, threshold: FINANCE_THRESHOLD } };
   }
 
+  // 优先检查非金融信号 - 如果文章包含明显的非金融关键词，直接排除
+  const nonFinanceHits = matchKeywords(full, NON_FINANCE_KEYWORDS);
+  if (nonFinanceHits.length >= 2) {
+    return {
+      passed: false,
+      score: 0,
+      meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: nonFinanceHits, adHits: [], threshold: FINANCE_THRESHOLD },
+    };
+  }
+
   const titleHits = matchKeywords(title, FINANCE_KEYWORDS);
   const bodyHits = matchKeywords(full, FINANCE_KEYWORDS);
   const uniq = Array.from(new Set([...titleHits, ...bodyHits]));
@@ -185,19 +228,36 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   const productHints = matchKeywords(full, PRODUCT_NEWS_HINTS);
   const hasFinanceSignal = uniq.length >= 2 && (titleHits.length >= 1 || bodyHits.length >= 3);
   const hasProductNews = productHints.length >= 2;
-  if (hasProductNews && !hasFinanceSignal) {
-    return {
-      passed: false,
-      score: 0,
-      meta: {
+
+  // 产品/科技类新闻，即使匹配了部分金融关键词，也不应归为金融
+  if (hasProductNews) {
+    // 除非标题中有非常明确的金融信号
+    if (titleHits.length < 2) {
+      return {
+        passed: false,
         score: 0,
-        positiveHits: uniq,
-        titleHits,
-        negativeHits: productHints,
-        adHits: [],
-        threshold: FINANCE_THRESHOLD,
-      },
-    };
+        meta: {
+          score: 0,
+          positiveHits: uniq,
+          titleHits,
+          negativeHits: productHints,
+          adHits: [],
+          threshold: FINANCE_THRESHOLD,
+        },
+      };
+    }
+  }
+
+  // 如果不是标题明确指向金融的文章，但正文匹配了宽泛关键词，也需要更严格
+  if (!titleHits.length && bodyHits.length > 0) {
+    // 仅在正文中出现关键词而标题没有 - 需要更高的正文匹配数
+    if (bodyHits.length < 5) {
+      return {
+        passed: false,
+        score: 0,
+        meta: { score: 0, positiveHits: uniq, titleHits, negativeHits: [], adHits: [], threshold: FINANCE_THRESHOLD },
+      };
+    }
   }
 
   const score = Math.max(0, Math.min(100, Math.round(titleHits.length * 26 + uniq.length * 12)));
