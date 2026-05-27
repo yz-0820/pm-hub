@@ -1,0 +1,228 @@
+/**
+ * 职业发展实时内容页面
+ * 聚合多平台内容，支持自动刷新
+ */
+
+import { db } from '@/lib/db/client';
+import { careerContents, contentSources as contentSourcesTable } from '@/lib/db/schema';
+import { ContentList } from '@/components/career/content-list';
+import { Pagination } from '@/components/ui/pagination';
+import { resourceCategories } from '@/config/resource-categories';
+import { 
+  TrendingUp,
+  Clock,
+  Rss
+} from 'lucide-react';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { and, desc, eq, inArray, notLike, sql, SQLWrapper } from 'drizzle-orm';
+
+export const revalidate = 0;
+
+const CONTENTS_PER_PAGE = 10;
+
+function normalizeTimestamp(value: unknown): Date | null {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n)) return null;
+  const ms = n < 10_000_000_000 ? n * 1000 : n;
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return null;
+  return d;
+}
+
+interface CareerPageProps {
+  searchParams: Promise<{
+    category?: string;
+    page?: string;
+  }>;
+}
+
+async function getCareerData(
+  category: string,
+  page: number
+) {
+  const offset = (page - 1) * CONTENTS_PER_PAGE;
+  const yearStart = Math.floor(Date.parse('2026-01-01T00:00:00.000Z') / 1000);
+  const yearEnd = Math.floor(Date.parse('2027-01-01T00:00:00.000Z') / 1000);
+
+  const conditions: SQLWrapper[] = [
+    eq(careerContents.status, 'active'),
+    notLike(careerContents.originalUrl, '%example.com/%'),
+    notLike(careerContents.originalUrl, '%rsshub.app/%'),
+    notLike(careerContents.originalUrl, '%localhost%'),
+    notLike(careerContents.originalUrl, '%127.0.0.1%'),
+    sql`((${careerContents.contentType} IN ('video', 'short_video')) OR (${careerContents.publishedAt} >= ${yearStart} AND ${careerContents.publishedAt} < ${yearEnd}))`,
+  ];
+  if (category !== 'all') conditions.push(eq(careerContents.category, category));
+
+  const whereClause = and(...conditions);
+
+  // 先按标题去重：去除空格后分组，取最小id，按发布时间排序
+  const dedupResults = await db
+    .select({
+      id: sql<number>`MIN(${careerContents.id})`.as('id'),
+    })
+    .from(careerContents)
+    .where(whereClause)
+    .groupBy(sql`REPLACE(${careerContents.title}, ' ', '')`)
+    .orderBy(desc(sql`MAX(${careerContents.publishedAt})`));
+
+  const totalCount = dedupResults.length;
+  const totalPages = Math.ceil(totalCount / CONTENTS_PER_PAGE);
+
+  // 分页取 ID
+  const paginatedIds = dedupResults.slice(offset, offset + CONTENTS_PER_PAGE).map((r) => r.id);
+
+  // 根据 ID 获取完整数据
+  const contents =
+    paginatedIds.length > 0
+      ? await db
+          .select()
+          .from(careerContents)
+          .where(inArray(careerContents.id, paginatedIds))
+          .orderBy(desc(careerContents.publishedAt))
+      : [];
+
+  const latestPublishedResult = await db
+    .select({ latest: sql<number | null>`max(${careerContents.publishedAt})` })
+    .from(careerContents)
+    .where(whereClause);
+
+  const latestFetchResult = await db
+    .select({ latest: sql<number | null>`max(${contentSourcesTable.lastFetchAt})` })
+    .from(contentSourcesTable);
+
+  const stats = {
+    totalContents: totalCount,
+    latestPublishedAt: normalizeTimestamp(latestPublishedResult[0]?.latest ?? null),
+    latestFetchedAt: normalizeTimestamp(latestFetchResult[0]?.latest ?? null),
+  };
+
+  return {
+    contents,
+    totalCount,
+    totalPages,
+    currentPage: page,
+    stats,
+  };
+}
+
+export default async function CareerPage({ searchParams }: CareerPageProps) {
+  const params = await searchParams;
+  const category = params.category || 'all';
+  const page = Math.max(1, parseInt(params.page || '1', 10));
+
+  const { 
+    contents, 
+    totalCount, 
+    totalPages, 
+    currentPage,
+    stats 
+  } = await getCareerData(category, page);
+
+  const paginationBaseUrl =
+    category === 'all'
+      ? '/career'
+      : `/career?${new URLSearchParams({ category }).toString()}`;
+
+  return (
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background py-16">
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className="absolute inset-0 bg-no-repeat opacity-[0.55] saturate-[0.85] contrast-[1.08] brightness-[1.02]"
+            style={{
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1507679799987-c73779587ccf?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0)",
+              backgroundPosition: 'center',
+              backgroundSize: 'clamp(1000px, 120vw, 2200px) auto',
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/55 to-background/85" />
+          <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_35%,hsl(var(--background))_0%,transparent_62%)] opacity-80" />
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute -right-20 top-40 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+        </div>
+        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              职业发展
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-gray-600">
+              聚合多平台职场内容，获取最新的职业发展知识与技能分享
+            </p>
+            
+            {/* 统计信息 */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
+              <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
+                <Clock className="h-4 w-4 text-primary" />
+                {stats.latestPublishedAt
+                  ? `最新发布: ${new Date(stats.latestPublishedAt).toLocaleString('zh-CN')}`
+                  : '暂无发布'}
+              </span>
+              <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
+                <Rss className="h-4 w-4 text-primary" />
+                {stats.latestFetchedAt 
+                  ? `最近抓取: ${new Date(stats.latestFetchedAt).toLocaleString('zh-CN')}`
+                  : '暂无更新'
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 主内容区 */}
+      <section className="py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* 头部信息 */}
+          <div className="mb-8">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Link
+                href="/career"
+                className={`rounded-full border px-4 py-1.5 text-base transition-colors ${
+                  category === 'all'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                全部
+              </Link>
+              {resourceCategories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/career?${new URLSearchParams({ category: cat.id }).toString()}`}
+                  className={`rounded-full border px-4 py-1.5 text-base transition-colors ${
+                    category === cat.id
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+            <p className="text-muted-foreground">共 {totalCount} 条内容</p>
+          </div>
+
+          {/* 内容列表 */}
+          <Suspense fallback={<ContentList contents={[]} isLoading />}>
+            <ContentList contents={contents} columns={1} />
+          </Suspense>
+
+          {/* 分页 */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                baseUrl={paginationBaseUrl}
+              />
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}

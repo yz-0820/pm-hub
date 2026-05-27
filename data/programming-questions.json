@@ -1,0 +1,2112 @@
+[
+  {
+    "questionKey": "pk_fe_001",
+    "domain": "frontend",
+    "stem": "在 HTML 中，使用 <button> 元素而不是 <div> 来实现可点击按钮的主要原因是什么？",
+    "optionA": "button 默认会比 div 更好看",
+    "optionB": "button 具有语义并默认支持键盘与可访问性行为",
+    "optionC": "button 可以自动阻止事件冒泡",
+    "optionD": "button 在所有浏览器中都会自动防抖",
+    "correctOption": "B",
+    "explanation": "语义化标签能表达内容意图。<button> 默认可聚焦、支持键盘触发（Enter/Space）、在辅助技术中被识别为按钮；<div> 需要额外 ARIA 与键盘事件处理才能达到同等可访问性。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
+      "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_002",
+    "domain": "frontend",
+    "stem": "下列哪种写法最符合“标签语义化”的原则？",
+    "optionA": "用 <div> 包裹所有内容，靠 class 区分含义",
+    "optionB": "用 <span> 作为标题元素，配合 CSS 放大字号",
+    "optionC": "用 <header> 表示页面头部区域",
+    "optionD": "用 <b> 表示页面导航区域",
+    "correctOption": "C",
+    "explanation": "<header> 用于表示页面或区块的头部区域，能让搜索引擎与辅助技术更准确理解结构；<div>/<span> 无语义，<b> 只是视觉强调并不表示导航。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_003",
+    "domain": "frontend",
+    "stem": "在 CSS 选择器优先级中，下列哪一项的优先级最高？",
+    "optionA": "元素选择器（如 div）",
+    "optionB": "类选择器（如 .box）",
+    "optionC": "ID 选择器（如 #app）",
+    "optionD": "通配符选择器（如 *）",
+    "correctOption": "C",
+    "explanation": "CSS specificity 通常按：内联样式 > ID > class/属性/伪类 > 元素/伪元素。ID 选择器会覆盖 class 与元素选择器（在同一层叠来源与重要性规则下）。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_004",
+    "domain": "frontend",
+    "stem": "标准盒模型（content-box）下，元素的 width 指的是哪一部分的宽度？",
+    "optionA": "content",
+    "optionB": "content + padding",
+    "optionC": "content + padding + border",
+    "optionD": "content + padding + border + margin",
+    "correctOption": "A",
+    "explanation": "在 box-sizing: content-box（默认）时，width 仅表示内容区宽度，padding/border 会额外增加实际占用空间；margin 不计入元素自身尺寸。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_005",
+    "domain": "frontend",
+    "stem": "将 box-sizing 设为 border-box 的直接效果是什么？",
+    "optionA": "width 只包含 content，不包含 padding/border",
+    "optionB": "width 包含 content + padding + border",
+    "optionC": "margin 会计入元素宽度",
+    "optionD": "元素自动变为 flex 容器",
+    "correctOption": "B",
+    "explanation": "box-sizing: border-box 会让 width/height 包含 padding 与 border，便于做响应式布局与等分列计算，减少“加 padding 后变宽”的意外。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_006",
+    "domain": "frontend",
+    "stem": "Flexbox 中，justify-content 主要控制哪一个方向的对齐？",
+    "optionA": "交叉轴（cross axis）",
+    "optionB": "主轴（main axis）",
+    "optionC": "文本基线（baseline）",
+    "optionD": "元素的 z 轴",
+    "correctOption": "B",
+    "explanation": "justify-content 用于主轴方向的分布与对齐；交叉轴方向通常用 align-items/align-content 控制。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_007",
+    "domain": "frontend",
+    "stem": "Flexbox 中，align-items: center 的作用是什么？",
+    "optionA": "让子项沿主轴居中",
+    "optionB": "让子项沿交叉轴居中",
+    "optionC": "让容器自身在页面居中",
+    "optionD": "让所有子项等宽",
+    "correctOption": "B",
+    "explanation": "align-items 影响所有 flex item 在交叉轴的对齐方式。主轴居中应使用 justify-content: center。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/align-items"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_008",
+    "domain": "frontend",
+    "stem": "CSS Grid 中，fr 单位表示什么？",
+    "optionA": "固定像素单位",
+    "optionB": "可用空间的分数份额",
+    "optionC": "字体大小的相对单位",
+    "optionD": "视口宽度百分比",
+    "correctOption": "B",
+    "explanation": "fr 表示网格容器可用空间的比例份额，用于按比例分配列/行轨道大小。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/fr"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_009",
+    "domain": "frontend",
+    "stem": "在 JavaScript 中，let 与 var 的一个关键区别是什么？",
+    "optionA": "let 允许重复声明同名变量，var 不允许",
+    "optionB": "let 具有块级作用域，var 具有函数作用域",
+    "optionC": "let 会自动提升到文件顶部，var 不会",
+    "optionD": "let 只能声明对象，var 只能声明基础类型",
+    "correctOption": "B",
+    "explanation": "var 是函数作用域且存在提升（hoisting），let 是块级作用域并存在暂时性死区（TDZ），可减少意外覆盖与提前访问。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let",
+      "https://developer.mozilla.org/en-US/docs/Glossary/Hoisting"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_010",
+    "domain": "frontend",
+    "stem": "下面哪种情况最能体现“闭包（closure）”的特性？",
+    "optionA": "函数调用后立即释放所有局部变量",
+    "optionB": "内部函数可以访问外部函数作用域中的变量",
+    "optionC": "函数必须声明为 async 才能访问外部变量",
+    "optionD": "闭包只能用于类（class）方法",
+    "correctOption": "B",
+    "explanation": "闭包指函数与其词法作用域的组合。即使外部函数执行结束，只要内部函数仍被引用，就能继续访问外部作用域变量。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_011",
+    "domain": "frontend",
+    "stem": "原型链（prototype chain）用于解决什么问题？",
+    "optionA": "控制浏览器渲染顺序",
+    "optionB": "实现对象属性查找与继承机制",
+    "optionC": "实现 Promise 的微任务队列",
+    "optionD": "实现事件冒泡",
+    "correctOption": "B",
+    "explanation": "当访问对象属性时，JS 会先查找对象自身属性，找不到再沿着 [[Prototype]] 向上查找，形成原型链，这是 JS 继承与共享方法的基础。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_012",
+    "domain": "frontend",
+    "stem": "Promise 中 then 的回调属于哪一种任务队列？",
+    "optionA": "宏任务（macrotask）",
+    "optionB": "微任务（microtask）",
+    "optionC": "渲染任务（render task）",
+    "optionD": "同步栈（call stack）",
+    "correctOption": "B",
+    "explanation": "Promise 的 then/catch/finally 回调会进入微任务队列，通常在当前宏任务结束后、下一次渲染之前执行。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_013",
+    "domain": "frontend",
+    "stem": "在浏览器事件循环中，requestAnimationFrame 回调大多发生在什么时候？",
+    "optionA": "每个微任务执行前",
+    "optionB": "每次页面渲染前的下一帧",
+    "optionC": "仅在页面加载完成后执行一次",
+    "optionD": "与 setTimeout 完全等价",
+    "correctOption": "B",
+    "explanation": "requestAnimationFrame 用于在下一次重绘之前执行回调，适合动画与与渲染同步的布局更新。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_014",
+    "domain": "frontend",
+    "stem": "localStorage 与 sessionStorage 的主要区别是什么？",
+    "optionA": "localStorage 只能存字符串，sessionStorage 可以存对象",
+    "optionB": "localStorage 跨标签页共享且持久，sessionStorage 仅当前标签页会话有效",
+    "optionC": "localStorage 只在 HTTPS 可用，sessionStorage 在 HTTP 可用",
+    "optionD": "localStorage 容量比 sessionStorage 小一个数量级",
+    "correctOption": "B",
+    "explanation": "两者都以字符串存储。localStorage 通常跨窗口共享并持久保存；sessionStorage 作用域更小，关闭标签页会话结束即失效。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_015",
+    "domain": "frontend",
+    "stem": "React 中，useState 更新状态时不应直接修改对象引用的主要原因是什么？",
+    "optionA": "React 会禁止对象类型的 state",
+    "optionB": "直接修改可能导致 React 无法检测到变化而不触发重新渲染",
+    "optionC": "直接修改会自动产生深拷贝导致性能下降",
+    "optionD": "直接修改会使浏览器崩溃",
+    "correctOption": "B",
+    "explanation": "React 通常使用引用对比来判断 state 是否变化。直接在原对象上修改可能让引用保持不变，从而导致更新被跳过；应创建新对象/数组。",
+    "links": [
+      "https://react.dev/learn/updating-objects-in-state"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_016",
+    "domain": "frontend",
+    "stem": "React 中 key 的主要作用是什么？",
+    "optionA": "用于加密组件数据",
+    "optionB": "帮助 React 在列表渲染中稳定识别元素以优化 diff",
+    "optionC": "用来让组件可被垃圾回收",
+    "optionD": "用于在组件间共享状态",
+    "correctOption": "B",
+    "explanation": "key 用于标识列表项的身份，帮助 React 在更新时做最小化的 DOM 变更；不稳定 key（如 index）可能导致状态错位。",
+    "links": [
+      "https://react.dev/learn/rendering-lists"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_017",
+    "domain": "frontend",
+    "stem": "Vue 中，响应式系统的核心目的是？",
+    "optionA": "把所有数据都存入 localStorage",
+    "optionB": "在数据变化时自动触发视图更新",
+    "optionC": "保证所有函数都是纯函数",
+    "optionD": "把模板编译成 WebAssembly",
+    "correctOption": "B",
+    "explanation": "Vue 的响应式让数据与视图建立依赖追踪，当依赖数据变化时自动触发更新，减少手动 DOM 操作。",
+    "links": [
+      "https://vuejs.org/guide/extras/reactivity-in-depth.html"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_018",
+    "domain": "frontend",
+    "stem": "Angular 中，依赖注入（DI）的主要作用是什么？",
+    "optionA": "在浏览器中注入 cookie",
+    "optionB": "管理对象创建与依赖关系，便于测试与解耦",
+    "optionC": "替代 HTTP 请求",
+    "optionD": "把 CSS 注入到 Shadow DOM",
+    "correctOption": "B",
+    "explanation": "DI 让组件/服务不直接负责依赖对象的创建，通过容器提供依赖，从而提高可测试性、复用与解耦。",
+    "links": [
+      "https://angular.io/guide/dependency-injection"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_019",
+    "domain": "frontend",
+    "stem": "浏览器渲染流水线中，通常会先发生哪一步？",
+    "optionA": "绘制（paint）",
+    "optionB": "布局（layout）",
+    "optionC": "样式计算（style）",
+    "optionD": "合成（composite）",
+    "correctOption": "C",
+    "explanation": "典型流程为：样式计算 → 布局 → 绘制 → 合成。不同优化路径可能跳过某些步骤，但样式计算通常先于布局。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_020",
+    "domain": "frontend",
+    "stem": "事件冒泡（bubbling）的含义是什么？",
+    "optionA": "事件从父元素向子元素传播",
+    "optionB": "事件从目标元素向上层父元素传播",
+    "optionC": "事件只会触发一次不会传播",
+    "optionD": "事件只在捕获阶段触发",
+    "correctOption": "B",
+    "explanation": "冒泡阶段中，事件从目标元素向上逐层传播到祖先节点。捕获阶段相反，是从外到内。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_021",
+    "domain": "frontend",
+    "stem": "关于 <script> 标签的 defer 属性，下列说法正确的是？",
+    "optionA": "defer 会阻塞 HTML 解析直到脚本执行完",
+    "optionB": "defer 脚本会在 HTML 解析完成后、DOMContentLoaded 前执行",
+    "optionC": "defer 只对内联脚本生效",
+    "optionD": "defer 会让脚本以微任务方式运行",
+    "correctOption": "B",
+    "explanation": "defer 适用于外部脚本：下载不阻塞解析，执行延后到解析完成后且按顺序执行，通常在 DOMContentLoaded 之前。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_022",
+    "domain": "frontend",
+    "stem": "关于 <script> 标签的 async 属性，下列说法正确的是？",
+    "optionA": "async 脚本会按在文档中出现的顺序执行",
+    "optionB": "async 脚本下载完成后尽快执行，可能打断 HTML 解析",
+    "optionC": "async 仅在 module 脚本中有效",
+    "optionD": "async 会让脚本在页面完全加载后才执行",
+    "correctOption": "B",
+    "explanation": "async 脚本下载与解析并行，下载完成后会尽快执行，因此可能在 HTML 解析过程中执行且顺序不保证。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_023",
+    "domain": "frontend",
+    "stem": "在 CSS 中，position: absolute 的定位参考通常是？",
+    "optionA": "浏览器视口",
+    "optionB": "最近的非 static 定位祖先元素",
+    "optionC": "最近的兄弟元素",
+    "optionD": "body 元素固定作为参考",
+    "correctOption": "B",
+    "explanation": "absolute 元素会相对于最近的已定位祖先（position 不为 static）定位；如果没有，则相对于初始包含块（通常与视口相关）。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_024",
+    "domain": "frontend",
+    "stem": "在 CSS 中，z-index 生效的前提通常是？",
+    "optionA": "元素必须是 block",
+    "optionB": "元素必须形成定位上下文（如 position 非 static）或成为弹性子项等",
+    "optionC": "元素必须设置 width/height",
+    "optionD": "z-index 仅对 SVG 生效",
+    "correctOption": "B",
+    "explanation": "z-index 影响堆叠上下文。通常需要定位元素（position 非 static）或特定场景（flex/grid 子项等）才能控制层叠顺序。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/z-index"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_025",
+    "domain": "frontend",
+    "stem": "关于 CORS，下列说法正确的是？",
+    "optionA": "CORS 由服务器通过响应头决定是否允许跨域请求",
+    "optionB": "CORS 是浏览器的一个缓存策略，与跨域无关",
+    "optionC": "只要使用 fetch，就不会受 CORS 限制",
+    "optionD": "CORS 只对图片加载生效",
+    "correctOption": "A",
+    "explanation": "CORS 是浏览器强制的跨域访问控制机制，服务器通过 Access-Control-* 响应头声明允许的来源、方法与头部。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_026",
+    "domain": "frontend",
+    "stem": "在 JavaScript 中，== 与 === 的主要区别是什么？",
+    "optionA": "== 比 === 更严格",
+    "optionB": "=== 会进行类型转换，== 不会",
+    "optionC": "== 会进行类型转换，=== 不会",
+    "optionD": "两者完全等价",
+    "correctOption": "C",
+    "explanation": "== 是抽象相等，会尝试进行类型转换；=== 是严格相等，要求类型与值都相等，通常更推荐使用。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_027",
+    "domain": "frontend",
+    "stem": "在 JavaScript 中，this 的指向主要由什么决定？",
+    "optionA": "函数定义的位置",
+    "optionB": "函数调用方式（调用点）",
+    "optionC": "变量名是否以 this 开头",
+    "optionD": "是否开启严格模式会完全固定 this",
+    "correctOption": "B",
+    "explanation": "普通函数的 this 通常由调用点决定（如 obj.fn() 中 this 为 obj）。箭头函数的 this 来自词法作用域。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_028",
+    "domain": "frontend",
+    "stem": "箭头函数与普通函数相比，最重要的区别之一是什么？",
+    "optionA": "箭头函数可以作为构造函数 new",
+    "optionB": "箭头函数没有自己的 this，this 从外层词法环境继承",
+    "optionC": "箭头函数必须写 return 才能返回值",
+    "optionD": "箭头函数无法访问参数 arguments",
+    "correctOption": "B",
+    "explanation": "箭头函数不会绑定自己的 this（也没有 prototype 作为构造函数使用），this 在定义时从外层作用域捕获。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_029",
+    "domain": "frontend",
+    "stem": "关于事件委托（event delegation），下列说法正确的是？",
+    "optionA": "必须在每个子元素上绑定监听器",
+    "optionB": "利用事件冒泡，把监听器绑定在父元素上处理子元素事件",
+    "optionC": "事件委托只能用于鼠标事件，不能用于键盘事件",
+    "optionD": "事件委托会阻止事件传播",
+    "correctOption": "B",
+    "explanation": "事件委托通过冒泡机制把多个子元素的事件统一交给父元素处理，减少监听器数量并支持动态列表。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_030",
+    "domain": "frontend",
+    "stem": "在 React 中，受控组件（controlled component）的含义是？",
+    "optionA": "组件只能被一个父组件使用",
+    "optionB": "表单输入值由 React state 驱动并通过 onChange 更新",
+    "optionC": "组件必须使用 useReducer",
+    "optionD": "组件必须通过 forwardRef 暴露实例",
+    "correctOption": "B",
+    "explanation": "受控组件把输入值存储在 state 中，输入变化通过 onChange 更新 state，单一数据源便于校验、联动与提交。",
+    "links": [
+      "https://react.dev/learn/sharing-state-between-components"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_031",
+    "domain": "frontend",
+    "stem": "在 React 中，useEffect 默认会在什么时候执行？",
+    "optionA": "渲染前同步执行",
+    "optionB": "渲染提交到 DOM 后异步执行",
+    "optionC": "仅在组件卸载时执行",
+    "optionD": "每次 setState 之前执行",
+    "correctOption": "B",
+    "explanation": "useEffect 的 effect 在渲染提交后执行，用于处理副作用（订阅、请求、DOM 操作）。依赖数组决定执行频率。",
+    "links": [
+      "https://react.dev/reference/react/useEffect"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_032",
+    "domain": "frontend",
+    "stem": "在 Vue 中，v-if 与 v-show 的主要区别是什么？",
+    "optionA": "v-if 通过 CSS 控制显示，v-show 通过 DOM 插入删除",
+    "optionB": "v-if 会条件性渲染/销毁节点，v-show 主要切换 display",
+    "optionC": "v-if 只能用于组件，v-show 只能用于元素",
+    "optionD": "两者完全等价",
+    "correctOption": "B",
+    "explanation": "v-if 会创建/销毁 DOM 与组件实例，适合低频切换；v-show 仅切换 display，适合高频切换。",
+    "links": [
+      "https://vuejs.org/guide/essentials/conditional.html"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_033",
+    "domain": "frontend",
+    "stem": "浏览器缓存中，Cache-Control: no-cache 的含义更接近哪一种？",
+    "optionA": "完全不缓存任何内容",
+    "optionB": "可以缓存，但使用前必须向服务器重新验证",
+    "optionC": "永久缓存直到手动清除",
+    "optionD": "只缓存 HTML 不缓存静态资源",
+    "correctOption": "B",
+    "explanation": "no-cache 允许缓存，但要求每次使用缓存前与服务器验证（如 ETag/If-None-Match），避免使用过期内容。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_034",
+    "domain": "frontend",
+    "stem": "关于 ETag 的作用，下列说法正确的是？",
+    "optionA": "用于加密 HTTP 响应体",
+    "optionB": "用于资源版本标识，支持条件请求以减少传输",
+    "optionC": "用于跨域校验",
+    "optionD": "用于指定 DNS 解析规则",
+    "correctOption": "B",
+    "explanation": "ETag 是资源的标识符。客户端可用 If-None-Match 发起条件请求，若资源未变服务器返回 304，从而节省带宽。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_035",
+    "domain": "frontend",
+    "stem": "在浏览器中，DOMContentLoaded 事件触发时通常表示？",
+    "optionA": "所有图片与样式都加载完成",
+    "optionB": "HTML 已解析完成，DOM 树已构建完成",
+    "optionC": "JavaScript 已停止执行",
+    "optionD": "所有网络请求都已完成",
+    "correctOption": "B",
+    "explanation": "DOMContentLoaded 表示 DOM 已就绪，外部资源（如图片）可能仍在加载；window load 则更接近“全部资源加载完”。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_036",
+    "domain": "frontend",
+    "stem": "关于 reflow（layout）与 repaint（paint），下列说法正确的是？",
+    "optionA": "repaint 一定比 reflow 更耗性能",
+    "optionB": "reflow 可能导致元素重新计算布局，通常比 repaint 更昂贵",
+    "optionC": "reflow 只发生在首次渲染，不会在交互时发生",
+    "optionD": "repaint 会改变 DOM 树结构",
+    "correctOption": "B",
+    "explanation": "reflow 涉及布局计算，可能影响整个布局树；repaint 只涉及像素绘制。优化通常避免频繁触发布局。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_037",
+    "domain": "frontend",
+    "stem": "在 CSS 中，以下哪个属性更可能触发布局（layout）而不是仅合成（composite）？",
+    "optionA": "transform",
+    "optionB": "opacity",
+    "optionC": "width",
+    "optionD": "filter",
+    "correctOption": "C",
+    "explanation": "width 改变会影响布局，通常触发布局与重绘；transform/opacity 往往可以在合成阶段完成，性能更好。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_038",
+    "domain": "frontend",
+    "stem": "在 JavaScript 中，Object.create(proto) 的作用是？",
+    "optionA": "创建一个没有原型的对象",
+    "optionB": "创建一个以 proto 为原型的新对象",
+    "optionC": "深拷贝 proto 所有属性到新对象",
+    "optionD": "把 proto 变成函数",
+    "correctOption": "B",
+    "explanation": "Object.create 会创建一个新对象并把其 [[Prototype]] 指向指定对象 proto，不会复制属性本身。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_039",
+    "domain": "frontend",
+    "stem": "关于模块化（ESM），下列说法正确的是？",
+    "optionA": "ESM 的 import 必须放在函数内部",
+    "optionB": "ESM 的 import/export 是静态结构，利于构建工具做 tree-shaking",
+    "optionC": "ESM 只能在 Node.js 中使用，浏览器不支持",
+    "optionD": "ESM 不支持默认导出",
+    "correctOption": "B",
+    "explanation": "ESM 语法是静态可分析的，构建工具能据此做依赖分析与 tree-shaking；浏览器也支持 type=module。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_040",
+    "domain": "frontend",
+    "stem": "关于 setTimeout(fn, 0)，下列说法更准确的是？",
+    "optionA": "fn 会在同一调用栈立刻执行",
+    "optionB": "fn 会被放入宏任务队列，至少在当前调用栈清空后执行",
+    "optionC": "fn 会进入微任务队列并优先执行",
+    "optionD": "fn 一定会在下一次渲染之前执行",
+    "correctOption": "B",
+    "explanation": "setTimeout 的回调属于宏任务，实际延迟可能大于 0，且执行顺序受事件循环、最小延时与系统调度影响。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_041",
+    "domain": "frontend",
+    "stem": "关于 async/await，下列说法正确的是？",
+    "optionA": "await 会阻塞整个线程，导致页面冻结",
+    "optionB": "await 会暂停当前 async 函数，后续代码在 Promise resolve 后以微任务继续执行",
+    "optionC": "await 只能等待 setTimeout 返回值",
+    "optionD": "async 函数的返回值永远是 undefined",
+    "correctOption": "B",
+    "explanation": "await 语义上暂停当前 async 函数执行，但不会阻塞主线程；后续逻辑在 Promise 完成后继续，通常以微任务调度。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_042",
+    "domain": "frontend",
+    "stem": "在浏览器中，cookie 与 localStorage 相比，cookie 的一个关键特点是？",
+    "optionA": "cookie 永远不会被发送到服务器",
+    "optionB": "cookie 会随同同源请求自动发送（受 SameSite 等控制）",
+    "optionC": "cookie 只能在 HTTPS 下写入",
+    "optionD": "cookie 的容量通常比 localStorage 更大",
+    "correctOption": "B",
+    "explanation": "cookie 会在符合条件的同源请求中自动携带，常用于会话标识；localStorage 不会自动随请求发送。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_043",
+    "domain": "frontend",
+    "stem": "关于 SameSite Cookie 的作用，下列说法正确的是？",
+    "optionA": "控制 cookie 是否能被 JavaScript 读取",
+    "optionB": "限制跨站请求中 cookie 的发送，降低 CSRF 风险",
+    "optionC": "用于压缩 cookie 大小",
+    "optionD": "用于让 cookie 永久有效",
+    "correctOption": "B",
+    "explanation": "SameSite 控制 cookie 在跨站请求中的发送策略（Strict/Lax/None），可显著降低 CSRF 攻击面。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_044",
+    "domain": "frontend",
+    "stem": "在 React 中，什么情况下更适合使用 useMemo？",
+    "optionA": "为了让任意代码变得异步",
+    "optionB": "缓存昂贵计算结果，避免在依赖不变时重复计算",
+    "optionC": "替代 useState 保存表单值",
+    "optionD": "用于发送网络请求",
+    "correctOption": "B",
+    "explanation": "useMemo 用于在依赖不变时复用计算结果，适合昂贵计算或稳定引用以减少子组件不必要渲染。",
+    "links": [
+      "https://react.dev/reference/react/useMemo"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_045",
+    "domain": "frontend",
+    "stem": "在 Vue 中，computed 与 methods 的主要区别是什么？",
+    "optionA": "computed 不能访问 data",
+    "optionB": "computed 有缓存机制，依赖不变时不会重新计算",
+    "optionC": "methods 必须返回 Promise",
+    "optionD": "computed 只能用于模板不能用于脚本",
+    "correctOption": "B",
+    "explanation": "computed 会基于依赖追踪进行缓存，依赖不变时不会重复计算；methods 每次调用都会执行。",
+    "links": [
+      "https://vuejs.org/guide/essentials/computed.html"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_046",
+    "domain": "frontend",
+    "stem": "在浏览器中，点击一个链接跳转时，HTTP Referer（或 Referrer）头通常表示？",
+    "optionA": "目标页面的 URL",
+    "optionB": "发起请求的来源页面 URL",
+    "optionC": "用户的 IP 地址",
+    "optionD": "浏览器版本号",
+    "correctOption": "B",
+    "explanation": "Referer/Referrer 头用于表示请求从哪个页面发起，常用于统计与安全控制；可通过 Referrer-Policy 限制。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_047",
+    "domain": "frontend",
+    "stem": "关于 Web 安全中的 XSS，下列说法正确的是？",
+    "optionA": "XSS 是服务端数据库注入",
+    "optionB": "XSS 通过注入脚本在受害者浏览器执行恶意代码",
+    "optionC": "XSS 只能发生在 HTTPS 网站",
+    "optionD": "XSS 与用户输入无关",
+    "correctOption": "B",
+    "explanation": "XSS（跨站脚本）通常源于不可信输入未正确转义/过滤，导致恶意脚本在浏览器上下文执行。防护包括输出编码、CSP 等。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_048",
+    "domain": "frontend",
+    "stem": "关于 Content Security Policy（CSP），它主要用于？",
+    "optionA": "提升图片压缩率",
+    "optionB": "限制可执行脚本/资源来源，降低 XSS 风险",
+    "optionC": "让 HTTP 请求自动重试",
+    "optionD": "让 CSS 优先级更高",
+    "correctOption": "B",
+    "explanation": "CSP 通过响应头声明允许加载/执行的资源来源（script-src 等），可显著降低注入脚本的可执行性。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_049",
+    "domain": "frontend",
+    "stem": "在浏览器中，Service Worker 的主要能力是什么？",
+    "optionA": "直接访问本机文件系统任意路径",
+    "optionB": "拦截网络请求并实现离线缓存等能力",
+    "optionC": "替代 JavaScript 引擎执行代码",
+    "optionD": "自动提升页面 SEO 排名",
+    "correctOption": "B",
+    "explanation": "Service Worker 运行在独立线程，可拦截 fetch 请求实现离线缓存、推送通知等，是 PWA 的关键技术。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API"
+    ]
+  },
+  {
+    "questionKey": "pk_fe_050",
+    "domain": "frontend",
+    "stem": "当页面出现白屏但没有报错时，排查前端性能与渲染问题更有效的工具是？",
+    "optionA": "浏览器 DevTools 的 Performance 面板与 Lighthouse",
+    "optionB": "只看 HTML 源码不需要工具",
+    "optionC": "把所有 CSS 删除再看效果",
+    "optionD": "只使用 ping 测试网络",
+    "correctOption": "A",
+    "explanation": "Performance 面板可分析长任务、渲染与脚本执行；Lighthouse 可给出性能/最佳实践建议。配合 Network、Console、Coverage 等更高效定位问题。",
+    "links": [
+      "https://developer.chrome.com/docs/devtools/performance/",
+      "https://developer.chrome.com/docs/lighthouse/overview/"
+    ]
+  },
+
+  {
+    "questionKey": "pk_be_001",
+    "domain": "backend",
+    "stem": "“反向代理服务器”（如 Nginx）在常见部署架构中的典型作用是？",
+    "optionA": "把数据库查询改写为 NoSQL",
+    "optionB": "接收外部请求并转发到后端应用，提供负载均衡与静态资源服务等能力",
+    "optionC": "替代操作系统进行进程调度",
+    "optionD": "把所有请求缓存到浏览器",
+    "correctOption": "B",
+    "explanation": "反向代理位于客户端与应用服务器之间，可做 SSL 终止、负载均衡、静态资源托管、限流与缓存等，提升可用性与性能。",
+    "links": [
+      "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+    ]
+  },
+  {
+    "questionKey": "pk_be_002",
+    "domain": "backend",
+    "stem": "水平扩展（Horizontal Scaling）的含义是？",
+    "optionA": "提升单台机器 CPU/内存配置",
+    "optionB": "增加更多机器实例分担流量",
+    "optionC": "把 HTTP 改成 HTTPS",
+    "optionD": "把同步请求改为异步请求",
+    "correctOption": "B",
+    "explanation": "水平扩展通过增加实例数量来提高吞吐与可用性，通常需要负载均衡与无状态/状态外置设计；垂直扩展是升级单机配置。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Scalability#Horizontal_and_vertical_scaling"
+    ]
+  },
+  {
+    "questionKey": "pk_be_003",
+    "domain": "backend",
+    "stem": "在 RESTful API 设计中，HTTP GET 方法的语义更接近？",
+    "optionA": "创建资源",
+    "optionB": "读取资源",
+    "optionC": "删除资源",
+    "optionD": "部分更新资源",
+    "correctOption": "B",
+    "explanation": "GET 用于读取资源，应该是安全（不改变服务器状态）且幂等的，适合缓存。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET"
+    ]
+  },
+  {
+    "questionKey": "pk_be_004",
+    "domain": "backend",
+    "stem": "HTTP 状态码 201 Created 通常用于表示？",
+    "optionA": "请求成功且创建了新资源",
+    "optionB": "请求成功但无内容返回",
+    "optionC": "请求被重定向到新 URL",
+    "optionD": "服务器内部错误",
+    "correctOption": "A",
+    "explanation": "201 表示成功创建资源，常配合 Location 响应头返回新资源的 URI。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201"
+    ]
+  },
+  {
+    "questionKey": "pk_be_005",
+    "domain": "backend",
+    "stem": "HTTP 状态码 204 No Content 的含义是？",
+    "optionA": "请求失败但无需提示原因",
+    "optionB": "请求成功但响应体为空",
+    "optionC": "资源永久移除",
+    "optionD": "客户端无权限访问",
+    "correctOption": "B",
+    "explanation": "204 表示服务器成功处理请求但不返回内容，常用于删除成功或更新成功但无需返回 body。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204"
+    ]
+  },
+  {
+    "questionKey": "pk_be_006",
+    "domain": "backend",
+    "stem": "在 API 设计中，“幂等（idempotent）”指的是？",
+    "optionA": "同一个请求只能发送一次",
+    "optionB": "同一个请求多次执行的结果与执行一次相同（在资源状态层面）",
+    "optionC": "请求必须返回相同的响应时间",
+    "optionD": "请求必须使用 HTTPS",
+    "correctOption": "B",
+    "explanation": "幂等强调多次执行不会产生额外副作用。例如 PUT/DELETE 通常设计为幂等；POST 一般不是。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+    ]
+  },
+  {
+    "questionKey": "pk_be_007",
+    "domain": "backend",
+    "stem": "在 Express 中，middleware 的主要作用是？",
+    "optionA": "替代数据库执行 SQL",
+    "optionB": "在请求-响应周期中执行可复用逻辑（如鉴权、日志、解析）",
+    "optionC": "让浏览器跳过 CORS 检查",
+    "optionD": "把 API 自动转换为 GraphQL",
+    "correctOption": "B",
+    "explanation": "Express 的中间件按顺序执行，能在到达路由处理器前/后做通用处理，如 body 解析、认证、错误处理。",
+    "links": [
+      "https://expressjs.com/en/guide/using-middleware.html"
+    ]
+  },
+  {
+    "questionKey": "pk_be_008",
+    "domain": "backend",
+    "stem": "在 Django 中，“MVT”中的 V 通常对应什么？",
+    "optionA": "View（视图）",
+    "optionB": "Validator（校验器）",
+    "optionC": "Variable（变量）",
+    "optionD": "Version（版本）",
+    "correctOption": "A",
+    "explanation": "Django 常被描述为 MVT：Model-View-Template。这里的 View 负责业务逻辑与返回响应，Template 负责渲染。",
+    "links": [
+      "https://docs.djangoproject.com/en/stable/intro/overview/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_009",
+    "domain": "backend",
+    "stem": "在 Spring（Spring Boot）中，Controller 层的典型职责是？",
+    "optionA": "直接操作数据库表结构",
+    "optionB": "处理 HTTP 请求并协调 Service 返回响应",
+    "optionC": "只负责写日志，不处理业务",
+    "optionD": "替代网关做负载均衡",
+    "correctOption": "B",
+    "explanation": "Controller 接收请求、参数校验、调用 Service 完成业务，再返回响应（通常是 JSON）。数据库访问一般在 Repository/DAO 层。",
+    "links": [
+      "https://spring.io/guides/gs/rest-service/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_010",
+    "domain": "backend",
+    "stem": "HTTP 请求报文中，Host 头的作用是？",
+    "optionA": "指定客户端的操作系统",
+    "optionB": "指定目标主机与端口，支持同一 IP 的虚拟主机",
+    "optionC": "指定缓存过期时间",
+    "optionD": "指定返回内容类型",
+    "correctOption": "B",
+    "explanation": "Host 头让服务器知道请求要访问哪个域名/端口，使得一个 IP 可以托管多个站点（虚拟主机）。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host"
+    ]
+  },
+  {
+    "questionKey": "pk_be_011",
+    "domain": "backend",
+    "stem": "关于 HTTP Keep-Alive（连接复用），正确的是？",
+    "optionA": "每个请求都会强制新建 TCP 连接",
+    "optionB": "可复用 TCP 连接发送多个请求，减少握手开销",
+    "optionC": "只在 UDP 上生效",
+    "optionD": "只对图片资源有效",
+    "correctOption": "B",
+    "explanation": "Keep-Alive 允许复用连接减少 TCP/TLS 握手成本，提高性能。HTTP/2 进一步支持多路复用。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Connection_management_in_HTTP_1.x"
+    ]
+  },
+  {
+    "questionKey": "pk_be_012",
+    "domain": "backend",
+    "stem": "常见的“限流（rate limiting）”目的是什么？",
+    "optionA": "让数据库索引失效",
+    "optionB": "防止滥用与突发流量拖垮服务，保障整体可用性",
+    "optionC": "让所有请求都返回 301",
+    "optionD": "把请求加密成 JWT",
+    "correctOption": "B",
+    "explanation": "限流用于保护服务与下游资源（DB/缓存），通过令牌桶、漏桶等策略限制单位时间请求量。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Token_bucket"
+    ]
+  },
+  {
+    "questionKey": "pk_be_013",
+    "domain": "backend",
+    "stem": "身份验证中，Session 通常存储在哪里？",
+    "optionA": "仅存储在浏览器 localStorage",
+    "optionB": "通常存储在服务器端（或集中式存储），客户端保存 session id（cookie）",
+    "optionC": "必须存储在 DNS 服务器",
+    "optionD": "必须写入数据库表且不可缓存",
+    "correctOption": "B",
+    "explanation": "Session 模式一般由服务器维护会话数据；客户端通过 cookie 携带 session id。为了水平扩展，常把 session 存到 Redis 等集中式存储。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies"
+    ]
+  },
+  {
+    "questionKey": "pk_be_014",
+    "domain": "backend",
+    "stem": "JWT（JSON Web Token）的典型特点是？",
+    "optionA": "必须保存在服务器内存中",
+    "optionB": "自包含（stateless），可在 token 中携带声明并由签名校验",
+    "optionC": "只能用于浏览器，移动端不支持",
+    "optionD": "默认就是加密的不可读取",
+    "correctOption": "B",
+    "explanation": "JWT 通常是签名而非加密，payload 可被解码但不可被篡改（否则签名校验失败）。它常用于无状态认证。",
+    "links": [
+      "https://jwt.io/introduction"
+    ]
+  },
+  {
+    "questionKey": "pk_be_015",
+    "domain": "backend",
+    "stem": "OAuth 2.0 更接近解决什么问题？",
+    "optionA": "让客户端绕过 HTTPS",
+    "optionB": "授权第三方应用访问资源而不暴露用户密码",
+    "optionC": "提供数据库备份机制",
+    "optionD": "把 REST API 自动转换为 gRPC",
+    "correctOption": "B",
+    "explanation": "OAuth 2.0 是授权框架，允许第三方在用户授权下访问资源服务器，常见于“用某某登录/授权读取资料”。",
+    "links": [
+      "https://www.rfc-editor.org/rfc/rfc6749"
+    ]
+  },
+  {
+    "questionKey": "pk_be_016",
+    "domain": "backend",
+    "stem": "在 REST API 中，返回 401 Unauthorized 更符合哪种情况？",
+    "optionA": "资源不存在",
+    "optionB": "没有提供有效身份凭证或凭证无效",
+    "optionC": "已经登录但无权限访问资源",
+    "optionD": "请求参数格式错误",
+    "correctOption": "B",
+    "explanation": "401 表示认证失败或未认证，通常伴随 WWW-Authenticate 头；已认证但无权限更符合 403 Forbidden。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403"
+    ]
+  },
+  {
+    "questionKey": "pk_be_017",
+    "domain": "backend",
+    "stem": "在 REST API 中，返回 400 Bad Request 更符合哪种情况？",
+    "optionA": "服务端崩溃",
+    "optionB": "客户端请求参数缺失/格式错误导致无法处理",
+    "optionC": "资源已永久移动",
+    "optionD": "请求已成功但无返回内容",
+    "correctOption": "B",
+    "explanation": "400 表示请求语法或参数问题，属于客户端错误。服务端异常应返回 5xx。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    ]
+  },
+  {
+    "questionKey": "pk_be_018",
+    "domain": "backend",
+    "stem": "在后端性能优化中，“缓存穿透”更常见的描述是？",
+    "optionA": "缓存命中率过高导致数据库空闲",
+    "optionB": "请求大量不存在的数据，导致每次都落到数据库",
+    "optionC": "缓存键过长导致网络丢包",
+    "optionD": "缓存只在夜间生效",
+    "correctOption": "B",
+    "explanation": "缓存穿透指请求的数据在缓存与数据库都不存在，导致请求直达数据库，可用布隆过滤器、缓存空值等方式缓解。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Bloom_filter"
+    ]
+  },
+  {
+    "questionKey": "pk_be_019",
+    "domain": "backend",
+    "stem": "在后端中使用消息队列（MQ）的一个常见目的是什么？",
+    "optionA": "把 SQL 自动转成 NoSQL",
+    "optionB": "削峰填谷与异步解耦，提高系统可用性与吞吐",
+    "optionC": "让所有请求变成同步执行",
+    "optionD": "替代浏览器缓存",
+    "correctOption": "B",
+    "explanation": "MQ 常用于异步处理、解耦服务、缓冲突发流量（削峰），并支持重试与最终一致性等模式。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Message_queue"
+    ]
+  },
+  {
+    "questionKey": "pk_be_020",
+    "domain": "backend",
+    "stem": "在 HTTP 中，Content-Type 头用于表示？",
+    "optionA": "客户端 IP 地址",
+    "optionB": "请求或响应体的媒体类型（如 application/json）",
+    "optionC": "服务器运行时间",
+    "optionD": "响应是否可缓存",
+    "correctOption": "B",
+    "explanation": "Content-Type 用于告知接收方 body 的类型与编码方式（如 JSON、表单、二进制），便于正确解析。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type"
+    ]
+  },
+  {
+    "questionKey": "pk_be_021",
+    "domain": "backend",
+    "stem": "在 HTTP 中，幂等性更常与以下哪个方法关联？",
+    "optionA": "POST",
+    "optionB": "PUT",
+    "optionC": "PATCH",
+    "optionD": "CONNECT",
+    "correctOption": "B",
+    "explanation": "PUT 通常用于“用给定表示替换资源”，多次执行效果相同，因此常设计为幂等；POST 一般用于创建，通常非幂等。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT"
+    ]
+  },
+  {
+    "questionKey": "pk_be_022",
+    "domain": "backend",
+    "stem": "在部署架构中，蓝绿部署（Blue/Green Deployment）的主要目标是？",
+    "optionA": "降低数据库索引大小",
+    "optionB": "实现低风险发布与快速回滚",
+    "optionC": "提升 CSS 渲染速度",
+    "optionD": "让 API 自动生成文档",
+    "correctOption": "B",
+    "explanation": "蓝绿部署维护两套环境（蓝/绿），通过切换流量实现发布与回滚，减少停机与发布风险。",
+    "links": [
+      "https://martinfowler.com/bliki/BlueGreenDeployment.html"
+    ]
+  },
+  {
+    "questionKey": "pk_be_023",
+    "domain": "backend",
+    "stem": "在 API 设计中，使用分页参数 page/limit 的主要原因是？",
+    "optionA": "让数据库自动创建索引",
+    "optionB": "避免一次返回过多数据导致性能与带宽问题",
+    "optionC": "让响应一定可缓存",
+    "optionD": "使得请求变成幂等",
+    "correctOption": "B",
+    "explanation": "分页控制返回数据量，降低响应时间与内存占用，并改善客户端渲染性能；更高级可用 cursor pagination。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206"
+    ]
+  },
+  {
+    "questionKey": "pk_be_024",
+    "domain": "backend",
+    "stem": "在 HTTP 缓存语义中，ETag 与 If-None-Match 配合通常可获得的响应状态码是？",
+    "optionA": "200",
+    "optionB": "301",
+    "optionC": "304",
+    "optionD": "500",
+    "correctOption": "C",
+    "explanation": "若资源未变，服务器可返回 304 Not Modified，告知客户端继续使用缓存副本。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304"
+    ]
+  },
+  {
+    "questionKey": "pk_be_025",
+    "domain": "backend",
+    "stem": "在后端日志中，使用“结构化日志”（JSON 日志）的一个优势是？",
+    "optionA": "日志体积一定更小",
+    "optionB": "便于被日志系统解析检索与聚合分析",
+    "optionC": "可以替代权限系统",
+    "optionD": "可以让请求自动重试",
+    "correctOption": "B",
+    "explanation": "结构化日志更利于 ELK/Loki 等系统做字段检索、聚合与告警；也更易与 traceId/requestId 关联。",
+    "links": [
+      "https://12factor.net/logs"
+    ]
+  },
+  {
+    "questionKey": "pk_be_026",
+    "domain": "backend",
+    "stem": "在微服务体系中，引入“熔断（circuit breaker）”机制主要用于？",
+    "optionA": "提升前端动画帧率",
+    "optionB": "在下游故障时快速失败，防止级联故障",
+    "optionC": "加密数据库字段",
+    "optionD": "把 HTTP 变成 WebSocket",
+    "correctOption": "B",
+    "explanation": "熔断在检测到错误率/超时上升时短路请求，给系统恢复时间，避免线程/连接耗尽导致级联失败。",
+    "links": [
+      "https://martinfowler.com/bliki/CircuitBreaker.html"
+    ]
+  },
+  {
+    "questionKey": "pk_be_027",
+    "domain": "backend",
+    "stem": "在 API 安全中，防止暴力破解登录接口更常见的手段是？",
+    "optionA": "禁用 HTTPS",
+    "optionB": "限流与验证码/风险控制策略",
+    "optionC": "把密码写进前端代码",
+    "optionD": "把用户输入直接拼接 SQL",
+    "correctOption": "B",
+    "explanation": "限流、验证码、IP/设备指纹风控与多因素认证可显著提升攻击成本；同时要保证密码哈希与审计。",
+    "links": [
+      "https://owasp.org/www-project-top-ten/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_028",
+    "domain": "backend",
+    "stem": "在后端中，使用连接池（connection pool）的主要目的是什么？",
+    "optionA": "让每个请求都创建新连接以隔离问题",
+    "optionB": "复用连接，减少频繁建立连接的开销并控制并发连接数",
+    "optionC": "把 TCP 变成 UDP",
+    "optionD": "让所有请求变成长轮询",
+    "correctOption": "B",
+    "explanation": "连接池通过复用连接降低创建/握手成本，并避免连接数失控导致资源耗尽（DB/Redis 等）。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Connection_pool"
+    ]
+  },
+  {
+    "questionKey": "pk_be_029",
+    "domain": "backend",
+    "stem": "在 HTTP 中，Authorization 头通常用于？",
+    "optionA": "指定响应压缩算法",
+    "optionB": "携带认证凭证（如 Bearer token）",
+    "optionC": "指定缓存策略",
+    "optionD": "指定重定向地址",
+    "correctOption": "B",
+    "explanation": "Authorization 用于客户端向服务器提供身份凭证（Basic/Bearer 等）。敏感信息应通过 HTTPS 传输。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization"
+    ]
+  },
+  {
+    "questionKey": "pk_be_030",
+    "domain": "backend",
+    "stem": "在 REST API 中，PATCH 方法更常用于？",
+    "optionA": "替换整个资源",
+    "optionB": "部分更新资源",
+    "optionC": "读取资源列表",
+    "optionD": "建立隧道代理",
+    "correctOption": "B",
+    "explanation": "PATCH 用于对资源进行部分修改（partial update）。PUT 更倾向于用给定表示替换资源。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH"
+    ]
+  },
+
+  {
+    "questionKey": "pk_be_031",
+    "domain": "backend",
+    "stem": "HTTP 状态码 429 Too Many Requests 通常表示？",
+    "optionA": "资源不存在",
+    "optionB": "请求过多触发限流",
+    "optionC": "服务器内部错误",
+    "optionD": "请求需要升级协议",
+    "correctOption": "B",
+    "explanation": "429 表示客户端在给定时间内发送了过多请求，常用于限流策略，并可配合 Retry-After 提示重试时间。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+    ]
+  },
+  {
+    "questionKey": "pk_be_032",
+    "domain": "backend",
+    "stem": "在 REST API 的资源命名中，更推荐的做法是？",
+    "optionA": "用动词表示动作，如 /getUser",
+    "optionB": "用名词表示资源集合，如 /users",
+    "optionC": "用文件扩展名表示格式，如 /users.json 必须使用",
+    "optionD": "用数据库表名包含前缀，如 /tbl_user",
+    "correctOption": "B",
+    "explanation": "REST 更强调资源（名词）与 HTTP 方法语义的组合，例如 GET /users、POST /users、GET /users/{id}。",
+    "links": [
+      "https://restfulapi.net/resource-naming/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_033",
+    "domain": "backend",
+    "stem": "在 API 设计中，使用 404 Not Found 更合适的场景是？",
+    "optionA": "请求参数格式错误",
+    "optionB": "客户端未提供认证凭证",
+    "optionC": "请求的资源不存在",
+    "optionD": "服务器超时",
+    "correctOption": "C",
+    "explanation": "404 表示服务器无法找到对应资源；参数错误通常是 400，认证问题通常是 401/403。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    ]
+  },
+  {
+    "questionKey": "pk_be_034",
+    "domain": "backend",
+    "stem": "在 HTTP 中，Cache-Control: private 通常表示？",
+    "optionA": "响应可以被任意共享缓存缓存",
+    "optionB": "响应只能被单个用户的私有缓存缓存（如浏览器），不应被共享缓存缓存",
+    "optionC": "响应必须永久缓存",
+    "optionD": "响应一定不会缓存",
+    "correctOption": "B",
+    "explanation": "private 表示响应可缓存但仅限私有缓存，避免 CDN/代理等共享缓存缓存用户特定数据。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control"
+    ]
+  },
+  {
+    "questionKey": "pk_be_035",
+    "domain": "backend",
+    "stem": "在后端系统中，读写分离的主要目标是？",
+    "optionA": "让写请求变成幂等",
+    "optionB": "通过主库写、从库读提升读吞吐并减轻主库压力",
+    "optionC": "把 HTTP 转成 WebSocket",
+    "optionD": "用缓存替代数据库",
+    "correctOption": "B",
+    "explanation": "读写分离通常通过主从复制实现，读请求走只读副本提升吞吐，但要注意复制延迟导致的读一致性问题。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Replication_(computing)"
+    ]
+  },
+  {
+    "questionKey": "pk_be_036",
+    "domain": "backend",
+    "stem": "在 API 安全中，防止 SQL 注入更正确的做法是？",
+    "optionA": "把用户输入拼接到 SQL 字符串中",
+    "optionB": "使用参数化查询/预编译语句",
+    "optionC": "只在前端校验输入就足够",
+    "optionD": "把数据库端口暴露到公网方便调试",
+    "correctOption": "B",
+    "explanation": "参数化查询把数据与 SQL 结构分离，避免输入被解释为 SQL 语句的一部分；同时需要最小权限与输入校验。",
+    "links": [
+      "https://owasp.org/www-community/attacks/SQL_Injection"
+    ]
+  },
+  {
+    "questionKey": "pk_be_037",
+    "domain": "backend",
+    "stem": "在 HTTP 中，Accept 头通常用于？",
+    "optionA": "声明客户端期望的响应媒体类型",
+    "optionB": "声明客户端发送的请求体类型",
+    "optionC": "声明缓存策略",
+    "optionD": "声明认证方式",
+    "correctOption": "A",
+    "explanation": "Accept 表示客户端可接受的响应类型；请求体类型由 Content-Type 表示。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept"
+    ]
+  },
+  {
+    "questionKey": "pk_be_038",
+    "domain": "backend",
+    "stem": "在 API 设计中，“版本管理”更推荐的做法之一是？",
+    "optionA": "永远不做版本管理",
+    "optionB": "在 URL 中加入版本前缀（如 /api/v1）或通过 Accept 版本化",
+    "optionC": "把版本写到数据库表名里",
+    "optionD": "把版本写到 Cookie 中不告知客户端",
+    "correctOption": "B",
+    "explanation": "API 版本化常见方式包括 URL 前缀与媒体类型版本化。目标是在不破坏旧客户端的前提下演进接口。",
+    "links": [
+      "https://restfulapi.net/versioning/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_039",
+    "domain": "backend",
+    "stem": "在 Node.js 服务中，出现 CPU 100% 的常见原因之一是？",
+    "optionA": "大量同步阻塞计算导致事件循环无法处理其他请求",
+    "optionB": "使用了 HTTPS",
+    "optionC": "启用了 Keep-Alive",
+    "optionD": "返回了 JSON 响应",
+    "correctOption": "A",
+    "explanation": "Node.js 单线程事件循环若执行大量同步 CPU 密集任务，会阻塞请求处理。应考虑拆分、使用 worker threads 或把重计算下放到其他服务。",
+    "links": [
+      "https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick"
+    ]
+  },
+  {
+    "questionKey": "pk_be_040",
+    "domain": "backend",
+    "stem": "在 API 返回错误时，5xx 状态码更表示？",
+    "optionA": "客户端请求参数错误",
+    "optionB": "服务端处理异常或不可用",
+    "optionC": "资源已永久移动",
+    "optionD": "客户端未登录",
+    "correctOption": "B",
+    "explanation": "5xx 表示服务器端错误（如 500/502/503/504）。客户端错误通常是 4xx。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses"
+    ]
+  },
+  {
+    "questionKey": "pk_be_041",
+    "domain": "backend",
+    "stem": "在微服务中，分布式追踪（tracing）更常通过什么来关联一次请求的链路？",
+    "optionA": "把 trace 信息写进图片 URL",
+    "optionB": "使用 traceId/spanId 并在服务间传递（如通过 HTTP header）",
+    "optionC": "只靠日志时间戳排序",
+    "optionD": "把链路信息存进 cookie",
+    "correctOption": "B",
+    "explanation": "Tracing 通过 traceId/spanId 在调用链上关联请求，常通过 W3C Trace Context 或各平台协议在 header 中传递。",
+    "links": [
+      "https://www.w3.org/TR/trace-context/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_042",
+    "domain": "backend",
+    "stem": "当后端返回 JSON 时，Content-Type 通常应该设置为？",
+    "optionA": "text/plain",
+    "optionB": "application/json",
+    "optionC": "application/octet-stream",
+    "optionD": "image/png",
+    "correctOption": "B",
+    "explanation": "application/json 明确表示响应体是 JSON，便于客户端与中间件正确解析与处理。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types"
+    ]
+  },
+  {
+    "questionKey": "pk_be_043",
+    "domain": "backend",
+    "stem": "在 API 设计中，返回列表数据时常见的排序参数更合理的设计是？",
+    "optionA": "sort=dropTable",
+    "optionB": "sort=publishedAt:desc（并在服务端做白名单校验）",
+    "optionC": "sort 只能写死不可配置",
+    "optionD": "sort 必须包含 SQL 片段",
+    "correctOption": "B",
+    "explanation": "排序字段应做白名单校验，避免注入风险与不可控查询。常见形式为 field:direction。",
+    "links": [
+      "https://owasp.org/www-community/attacks/SQL_Injection"
+    ]
+  },
+  {
+    "questionKey": "pk_be_044",
+    "domain": "backend",
+    "stem": "在 API 网关（API Gateway）中，通常不包含哪类职责？",
+    "optionA": "统一鉴权与路由转发",
+    "optionB": "限流与熔断",
+    "optionC": "数据库表结构迁移",
+    "optionD": "日志与监控",
+    "correctOption": "C",
+    "explanation": "API 网关通常负责统一入口与治理能力，如鉴权、路由、限流、监控。数据库迁移属于数据层运维与发布流程。",
+    "links": [
+      "https://microservices.io/patterns/apigateway.html"
+    ]
+  },
+  {
+    "questionKey": "pk_be_045",
+    "domain": "backend",
+    "stem": "在后端缓存策略中，Cache-Aside（旁路缓存）的典型读流程是？",
+    "optionA": "先读数据库，再把结果写回浏览器 cookie",
+    "optionB": "先读缓存，未命中则读数据库并回填缓存",
+    "optionC": "只读缓存不读数据库",
+    "optionD": "只读数据库不使用缓存",
+    "correctOption": "B",
+    "explanation": "旁路缓存模式由应用控制：先查缓存，miss 再查 DB 并回填缓存，是最常用的缓存模式之一。",
+    "links": [
+      "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside"
+    ]
+  },
+  {
+    "questionKey": "pk_be_046",
+    "domain": "backend",
+    "stem": "当接口需要支持跨域访问并携带 Cookie 时，CORS 需要同时满足哪项？",
+    "optionA": "Access-Control-Allow-Origin: * 且允许 credentials",
+    "optionB": "Access-Control-Allow-Credentials: true 且 Allow-Origin 不能为 *",
+    "optionC": "只要设置 Allow-Origin: * 就一定能带 cookie",
+    "optionD": "只要前端使用 fetch 就能带 cookie",
+    "correctOption": "B",
+    "explanation": "携带凭证时需要 Allow-Credentials: true，且 Allow-Origin 不能是 *，必须是明确的源；前端还要设置 credentials: 'include'。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#requests_with_credentials"
+    ]
+  },
+  {
+    "questionKey": "pk_be_047",
+    "domain": "backend",
+    "stem": "在服务端做输入校验时，更推荐的策略是？",
+    "optionA": "只做前端校验，后端完全不校验",
+    "optionB": "后端基于 schema/白名单做校验，并返回明确的 4xx 错误",
+    "optionC": "把错误吞掉返回 200",
+    "optionD": "把用户输入写入日志但不处理",
+    "correctOption": "B",
+    "explanation": "服务端必须校验不可信输入。基于 schema/白名单可减少漏洞与数据污染，并使错误响应可预测。",
+    "links": [
+      "https://owasp.org/www-project-api-security/"
+    ]
+  },
+  {
+    "questionKey": "pk_be_048",
+    "domain": "backend",
+    "stem": "在后端中，“无状态服务”（stateless service）的一个关键特征是？",
+    "optionA": "每个请求都必须写入本地文件",
+    "optionB": "请求之间不依赖本机内存状态，状态外置到数据库/缓存",
+    "optionC": "必须使用 JWT",
+    "optionD": "只能部署在单台机器上",
+    "correctOption": "B",
+    "explanation": "无状态服务便于水平扩展与故障迁移。会话/缓存等状态通常外置到 Redis/DB 等共享存储。",
+    "links": [
+      "https://12factor.net/processes"
+    ]
+  },
+  {
+    "questionKey": "pk_be_049",
+    "domain": "backend",
+    "stem": "在 HTTP 中，设置响应压缩（gzip/br）的主要目的是什么？",
+    "optionA": "提升数据库写入速度",
+    "optionB": "减少传输数据量，提高网络传输效率",
+    "optionC": "绕过 CORS",
+    "optionD": "加密响应内容",
+    "correctOption": "B",
+    "explanation": "响应压缩可显著减少文本类资源（HTML/JSON/CSS/JS）体积，降低传输时间，但会增加 CPU 压缩/解压开销。",
+    "links": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression"
+    ]
+  },
+  {
+    "questionKey": "pk_be_050",
+    "domain": "backend",
+    "stem": "在部署与运维中，“健康检查（health check）”接口的核心目的是什么？",
+    "optionA": "返回完整业务数据给外部爬虫",
+    "optionB": "让负载均衡/编排系统判断实例是否可用并进行摘除/恢复",
+    "optionC": "替代权限系统",
+    "optionD": "用于前端埋点统计",
+    "correctOption": "B",
+    "explanation": "健康检查用于可用性探测（liveness/readiness），让编排系统在实例异常时自动摘除并恢复，提高整体可用性。",
+    "links": [
+      "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+    ]
+  },
+
+  {
+    "questionKey": "pk_db_001",
+    "domain": "database",
+    "stem": "SQL 中用于查询数据的语句是？",
+    "optionA": "SELECT",
+    "optionB": "INSERT",
+    "optionC": "UPDATE",
+    "optionD": "DELETE",
+    "correctOption": "A",
+    "explanation": "SELECT 是 DQL（Data Query Language）用于查询数据。INSERT/UPDATE/DELETE 属于 DML，用于修改数据。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-select.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_002",
+    "domain": "database",
+    "stem": "SQL 中用于创建表结构的语句更接近？",
+    "optionA": "DQL",
+    "optionB": "DDL",
+    "optionC": "DCL",
+    "optionD": "TCL",
+    "correctOption": "B",
+    "explanation": "DDL（Data Definition Language）包含 CREATE/ALTER/DROP 等语句，用于定义/修改数据库结构。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-createtable.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_003",
+    "domain": "database",
+    "stem": "在 SQL 聚合函数中，COUNT(*) 的含义是？",
+    "optionA": "统计某列非 NULL 的数量",
+    "optionB": "统计结果集的行数",
+    "optionC": "计算所有列的和",
+    "optionD": "返回最大值",
+    "correctOption": "B",
+    "explanation": "COUNT(*) 统计行数；COUNT(col) 统计 col 非 NULL 行数。聚合常与 GROUP BY 配合使用。",
+    "links": [
+      "https://www.postgresql.org/docs/current/functions-aggregate.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_004",
+    "domain": "database",
+    "stem": "INNER JOIN 的结果特点是？",
+    "optionA": "返回左表所有行，无匹配填 NULL",
+    "optionB": "返回两表匹配条件成立的行",
+    "optionC": "返回右表所有行，无匹配填 NULL",
+    "optionD": "返回两表所有行，无法匹配也保留",
+    "correctOption": "B",
+    "explanation": "INNER JOIN 只返回满足连接条件的记录。LEFT/RIGHT/FULL OUTER JOIN 会保留未匹配行并用 NULL 补齐。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN"
+    ]
+  },
+  {
+    "questionKey": "pk_db_005",
+    "domain": "database",
+    "stem": "关于索引（index），下列说法更准确的是？",
+    "optionA": "索引会让所有写入操作更快",
+    "optionB": "索引可以加速查询但会增加写入与存储成本",
+    "optionC": "索引只对 TEXT 类型生效",
+    "optionD": "索引会自动修复慢查询",
+    "correctOption": "B",
+    "explanation": "索引提升查询速度的同时，需要维护索引结构，插入/更新/删除会更慢且占用额外空间；应针对查询模式设计。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_006",
+    "domain": "database",
+    "stem": "在 SQL 中，WHERE 与 HAVING 的主要区别是什么？",
+    "optionA": "WHERE 用于聚合后过滤，HAVING 用于聚合前过滤",
+    "optionB": "WHERE 作用于行级过滤，HAVING 作用于分组/聚合结果过滤",
+    "optionC": "WHERE 只能用于 SELECT，HAVING 只能用于 UPDATE",
+    "optionD": "WHERE 与 HAVING 完全等价",
+    "correctOption": "B",
+    "explanation": "WHERE 在分组前过滤行；HAVING 在 GROUP BY 后过滤分组结果，常用于对聚合函数结果做条件。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_007",
+    "domain": "database",
+    "stem": "SQL 中，用于对结果集分组的子句是？",
+    "optionA": "GROUP BY",
+    "optionB": "ORDER BY",
+    "optionC": "LIMIT",
+    "optionD": "DISTINCT",
+    "correctOption": "A",
+    "explanation": "GROUP BY 将结果按字段分组，常与 COUNT/SUM/AVG 等聚合函数一起使用。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-GROUP"
+    ]
+  },
+  {
+    "questionKey": "pk_db_008",
+    "domain": "database",
+    "stem": "关于主键（PRIMARY KEY），下列说法正确的是？",
+    "optionA": "主键允许 NULL 值",
+    "optionB": "主键用于唯一标识一行记录，且不允许重复与 NULL",
+    "optionC": "主键只能是 TEXT 类型",
+    "optionD": "主键不会被索引",
+    "correctOption": "B",
+    "explanation": "主键用于唯一标识记录，天然满足唯一性与非空性，数据库通常会为主键自动创建唯一索引。",
+    "links": [
+      "https://www.postgresql.org/docs/current/ddl-constraints.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_009",
+    "domain": "database",
+    "stem": "关于外键（FOREIGN KEY），主要作用是？",
+    "optionA": "加速所有查询",
+    "optionB": "维护表与表之间引用完整性",
+    "optionC": "自动压缩表数据",
+    "optionD": "让事务自动提交",
+    "correctOption": "B",
+    "explanation": "外键约束用于保证引用关系一致性（被引用行必须存在），可选择级联更新/删除策略。",
+    "links": [
+      "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK"
+    ]
+  },
+  {
+    "questionKey": "pk_db_010",
+    "domain": "database",
+    "stem": "事务（transaction）的基本目标之一是？",
+    "optionA": "让所有查询都走索引",
+    "optionB": "保证一组操作要么全部成功要么全部失败（原子性）",
+    "optionC": "把 SQL 自动转换为 JSON",
+    "optionD": "把数据库变成缓存",
+    "correctOption": "B",
+    "explanation": "事务满足 ACID 特性：原子性、一致性、隔离性、持久性。原子性保证操作组整体成功或整体回滚。",
+    "links": [
+      "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_011",
+    "domain": "database",
+    "stem": "在 SQL 中，NULL 表示什么？",
+    "optionA": "空字符串",
+    "optionB": "数字 0",
+    "optionC": "未知/不存在的值",
+    "optionD": "布尔 false",
+    "correctOption": "C",
+    "explanation": "NULL 表示缺失或未知，不等于空字符串或 0。比较 NULL 需使用 IS NULL/IS NOT NULL，而不是 =。",
+    "links": [
+      "https://www.postgresql.org/docs/current/functions-comparison.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_012",
+    "domain": "database",
+    "stem": "在 SQL 中，要筛选某列为 NULL 的行应使用？",
+    "optionA": "col = NULL",
+    "optionB": "col != NULL",
+    "optionC": "col IS NULL",
+    "optionD": "col IN NULL",
+    "correctOption": "C",
+    "explanation": "NULL 参与比较会产生 UNKNOWN，不能用 = 判断；应使用 IS NULL/IS NOT NULL。",
+    "links": [
+      "https://www.postgresql.org/docs/current/functions-comparison.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_013",
+    "domain": "database",
+    "stem": "在 SQL 中，ORDER BY 的作用是？",
+    "optionA": "对结果集排序",
+    "optionB": "对表结构排序",
+    "optionC": "对索引进行重建",
+    "optionD": "对事务进行提交",
+    "correctOption": "A",
+    "explanation": "ORDER BY 用于对结果集排序（ASC/DESC），通常与 LIMIT/OFFSET 结合实现分页。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-order.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_014",
+    "domain": "database",
+    "stem": "在 SQL 中，LIMIT 的作用是？",
+    "optionA": "限制数据库连接数",
+    "optionB": "限制返回的行数",
+    "optionC": "限制每行的列数",
+    "optionD": "限制索引数量",
+    "correctOption": "B",
+    "explanation": "LIMIT 用于限制返回行数，常与 ORDER BY 搭配获得确定的前 N 条。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-limit.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_015",
+    "domain": "database",
+    "stem": "关于 DISTINCT 的作用，下列说法正确的是？",
+    "optionA": "把 NULL 变成空字符串",
+    "optionB": "对结果集去重",
+    "optionC": "强制使用索引",
+    "optionD": "把多表查询变成单表查询",
+    "correctOption": "B",
+    "explanation": "DISTINCT 用于对 SELECT 结果去重，但可能带来额外排序/哈希开销，应谨慎使用并结合索引设计。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-select.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_016",
+    "domain": "database",
+    "stem": "第一范式（1NF）的核心要求是？",
+    "optionA": "每个表必须有外键",
+    "optionB": "列值应是原子性的，不应存放可再分的重复组",
+    "optionC": "必须使用 JSON 字段",
+    "optionD": "每个表必须有至少 10 列",
+    "correctOption": "B",
+    "explanation": "1NF 要求字段值不可再分，避免在一列中存列表/重复组，从而便于查询与约束。",
+    "links": [
+      "https://en.wikipedia.org/wiki/First_normal_form"
+    ]
+  },
+  {
+    "questionKey": "pk_db_017",
+    "domain": "database",
+    "stem": "第三范式（3NF）更关注避免哪类问题？",
+    "optionA": "传递函数依赖导致的数据冗余",
+    "optionB": "HTTP 重定向",
+    "optionC": "跨域请求",
+    "optionD": "浏览器缓存",
+    "correctOption": "A",
+    "explanation": "3NF 旨在消除非主属性对主键的传递依赖，减少冗余与更新异常，提升一致性。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Third_normal_form"
+    ]
+  },
+  {
+    "questionKey": "pk_db_018",
+    "domain": "database",
+    "stem": "关于复合索引（composite index），更正确的描述是？",
+    "optionA": "复合索引只能用于两个字段",
+    "optionB": "复合索引对左侧前缀列更友好（leftmost prefix）",
+    "optionC": "复合索引不会影响写入性能",
+    "optionD": "复合索引只能加速 UPDATE",
+    "correctOption": "B",
+    "explanation": "复合索引遵循左前缀原则：查询条件使用索引定义的前缀列时更易命中。索引也会带来写入维护成本。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes-multicolumn.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_019",
+    "domain": "database",
+    "stem": "使用 EXPLAIN（或 EXPLAIN ANALYZE）的主要目的是什么？",
+    "optionA": "删除表数据",
+    "optionB": "查看查询计划以分析性能瓶颈与是否使用索引",
+    "optionC": "自动创建索引",
+    "optionD": "加密查询结果",
+    "correctOption": "B",
+    "explanation": "EXPLAIN 用于展示执行计划；EXPLAIN ANALYZE 会实际执行并输出真实耗时，帮助定位慢查询原因。",
+    "links": [
+      "https://www.postgresql.org/docs/current/using-explain.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_020",
+    "domain": "database",
+    "stem": "在 SQL 中，INNER JOIN 与 WHERE 过滤条件的典型区别是？",
+    "optionA": "JOIN 用于连接表，WHERE 用于过滤行",
+    "optionB": "JOIN 只能用于排序，WHERE 只能用于分组",
+    "optionC": "JOIN 只能用于单表，WHERE 只能用于多表",
+    "optionD": "JOIN 与 WHERE 完全等价且不可同时使用",
+    "correctOption": "A",
+    "explanation": "JOIN 子句用于定义表之间的行匹配关系；WHERE 用于进一步过滤满足条件的行，两者可组合使用。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN"
+    ]
+  },
+  {
+    "questionKey": "pk_db_021",
+    "domain": "database",
+    "stem": "LEFT JOIN 的结果特点是？",
+    "optionA": "只返回两表都匹配的行",
+    "optionB": "返回左表所有行，右表不匹配处为 NULL",
+    "optionC": "返回右表所有行，左表不匹配处为 NULL",
+    "optionD": "返回两表所有行且不填 NULL",
+    "correctOption": "B",
+    "explanation": "LEFT JOIN 会保留左表所有行，如果右表没有匹配行，则右表列返回 NULL。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN"
+    ]
+  },
+  {
+    "questionKey": "pk_db_022",
+    "domain": "database",
+    "stem": "FULL OUTER JOIN 的结果特点是？",
+    "optionA": "只返回匹配行",
+    "optionB": "只返回左表行",
+    "optionC": "保留两表所有行，不匹配部分以 NULL 补齐",
+    "optionD": "返回笛卡尔积",
+    "correctOption": "C",
+    "explanation": "FULL OUTER JOIN 会保留左右表所有行，对应缺失一侧用 NULL 补齐，适合对齐两侧数据并找差异。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN"
+    ]
+  },
+  {
+    "questionKey": "pk_db_023",
+    "domain": "database",
+    "stem": "UNION 与 UNION ALL 的主要区别是？",
+    "optionA": "UNION 会去重，UNION ALL 不去重",
+    "optionB": "UNION ALL 会去重，UNION 不去重",
+    "optionC": "两者都不去重",
+    "optionD": "两者只能用于同一张表",
+    "correctOption": "A",
+    "explanation": "UNION 会对结果去重（通常需要额外排序/哈希），UNION ALL 直接拼接结果，性能通常更好。",
+    "links": [
+      "https://www.postgresql.org/docs/current/queries-union.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_024",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 LIKE '%关键词%' 可能导致索引难以生效的常见原因是？",
+    "optionA": "LIKE 语法本身会禁用索引",
+    "optionB": "前导通配符会使 B-tree 索引难以利用前缀匹配",
+    "optionC": "只有数字列才能使用索引",
+    "optionD": "索引只对 JOIN 生效",
+    "correctOption": "B",
+    "explanation": "B-tree 索引更擅长前缀匹配（如 'key%'）。前导通配符 '%key%' 往往无法利用索引，需要全文索引或特定索引类型。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes-types.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_025",
+    "domain": "database",
+    "stem": "关于 UNIQUE 约束，下列说法正确的是？",
+    "optionA": "UNIQUE 允许完全重复值",
+    "optionB": "UNIQUE 用于保证列（或列组合）值不重复",
+    "optionC": "UNIQUE 会自动删除重复行",
+    "optionD": "UNIQUE 只能用于主键列",
+    "correctOption": "B",
+    "explanation": "UNIQUE 约束保证列或列组合的唯一性，数据库通常会为其建立唯一索引。",
+    "links": [
+      "https://www.postgresql.org/docs/current/ddl-constraints.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_026",
+    "domain": "database",
+    "stem": "事务的隔离级别主要用于解决什么问题？",
+    "optionA": "网络丢包",
+    "optionB": "并发事务之间的可见性与一致性（如脏读、不可重复读）",
+    "optionC": "磁盘碎片",
+    "optionD": "DNS 解析",
+    "correctOption": "B",
+    "explanation": "隔离级别定义并发事务读取/写入的可见性规则，以避免脏读、不可重复读、幻读等现象。",
+    "links": [
+      "https://www.postgresql.org/docs/current/transaction-iso.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_027",
+    "domain": "database",
+    "stem": "“死锁（deadlock）”更常指什么情况？",
+    "optionA": "两个事务互相等待对方释放锁，导致都无法继续",
+    "optionB": "单条查询执行太快",
+    "optionC": "索引命中率过高",
+    "optionD": "表中没有任何数据",
+    "correctOption": "A",
+    "explanation": "死锁通常源于锁获取顺序不一致导致环路等待。数据库通常会检测并回滚其中一个事务。",
+    "links": [
+      "https://www.postgresql.org/docs/current/explicit-locking.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_028",
+    "domain": "database",
+    "stem": "以下哪项更能体现“查询优化”的思路？",
+    "optionA": "无条件使用 SELECT *",
+    "optionB": "仅选择需要的列，减少 I/O 与网络传输",
+    "optionC": "把所有查询都改成子查询",
+    "optionD": "把所有表都拆成单列表",
+    "correctOption": "B",
+    "explanation": "选择必要列能减少读取与传输的数据量。优化通常从访问路径、过滤条件、索引与返回数据量综合考虑。",
+    "links": [
+      "https://www.postgresql.org/docs/current/performance-tips.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_029",
+    "domain": "database",
+    "stem": "关于 ER 图中的“一对多”关系，更常见的落库方式是？",
+    "optionA": "在“一”的表中保存“多”的主键数组",
+    "optionB": "在“多”的表中增加外键引用“一”的主键",
+    "optionC": "把两张表合并成一张",
+    "optionD": "用字符串拼接保存关系",
+    "correctOption": "B",
+    "explanation": "一对多关系通常在“多”端放外键指向“一”端主键，满足范式并便于查询与约束。",
+    "links": [
+      "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-FK"
+    ]
+  },
+  {
+    "questionKey": "pk_db_030",
+    "domain": "database",
+    "stem": "ANALYZE（或自动统计）在数据库中常用于？",
+    "optionA": "生成 SSL 证书",
+    "optionB": "更新统计信息，帮助优化器选择更好的执行计划",
+    "optionC": "删除重复数据",
+    "optionD": "把表转换为 JSON",
+    "correctOption": "B",
+    "explanation": "查询优化器依赖统计信息（行数、分布、相关性）来选择计划；过期统计可能导致错误估算与慢查询。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-analyze.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_031",
+    "domain": "database",
+    "stem": "在 PostgreSQL 中，VACUUM 的核心作用之一是？",
+    "optionA": "把 SQL 语句加密",
+    "optionB": "回收死元组（dead tuples）并维护存储/可见性信息",
+    "optionC": "强制所有查询走索引",
+    "optionD": "把表自动拆分成分区",
+    "correctOption": "B",
+    "explanation": "PostgreSQL MVCC 会产生死元组，VACUUM 用于回收空间并更新可见性映射，保持性能。",
+    "links": [
+      "https://www.postgresql.org/docs/current/routine-vacuuming.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_032",
+    "domain": "database",
+    "stem": "当 EXPLAIN 显示 Seq Scan（顺序扫描）时，更可能表示？",
+    "optionA": "查询计划选择了全表扫描",
+    "optionB": "查询一定是错误的",
+    "optionC": "数据库已自动修复所有慢查询",
+    "optionD": "索引一定被使用了",
+    "correctOption": "A",
+    "explanation": "Seq Scan 表示按表顺序读取。可能是缺少合适索引、选择性低、或者优化器认为全表扫描更划算。",
+    "links": [
+      "https://www.postgresql.org/docs/current/using-explain.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_033",
+    "domain": "database",
+    "stem": "B-tree 索引更擅长优化哪类查询？",
+    "optionA": "等值与范围查询（=、<、>、BETWEEN）",
+    "optionB": "仅用于 JSON 全文搜索",
+    "optionC": "仅用于哈希匹配",
+    "optionD": "仅用于地理空间查询",
+    "correctOption": "A",
+    "explanation": "B-tree 是最常用索引结构，适合排序、有序遍历、等值与范围查询；其他场景可能使用 GIN/GiST 等。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes-types.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_034",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 COUNT(col) 与 COUNT(*) 的差异主要在于？",
+    "optionA": "COUNT(col) 会统计 NULL，COUNT(*) 不会",
+    "optionB": "COUNT(col) 不统计 NULL，COUNT(*) 统计行数",
+    "optionC": "两者永远相同",
+    "optionD": "COUNT(*) 只能用于单表",
+    "correctOption": "B",
+    "explanation": "COUNT(*) 统计行数；COUNT(col) 统计 col 非 NULL 行数。理解 NULL 行为对统计结果非常关键。",
+    "links": [
+      "https://www.postgresql.org/docs/current/functions-aggregate.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_035",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 BETWEEN 1 AND 10 的范围边界通常是？",
+    "optionA": "左闭右开",
+    "optionB": "左开右闭",
+    "optionC": "两端都包含（闭区间）",
+    "optionD": "两端都不包含（开区间）",
+    "correctOption": "C",
+    "explanation": "BETWEEN 通常包含边界值（>=1 且 <=10）。如果需要开区间需显式使用 > 或 <。",
+    "links": [
+      "https://www.postgresql.org/docs/current/functions-comparison.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_036",
+    "domain": "database",
+    "stem": "在设计表关系时，使用“代理键（surrogate key）”通常指？",
+    "optionA": "用业务含义的自然字段作为主键",
+    "optionB": "用无业务含义的自增/UUID 作为主键",
+    "optionC": "把主键存到文件系统",
+    "optionD": "不设置主键",
+    "correctOption": "B",
+    "explanation": "代理键用无业务含义的标识作为主键，避免业务字段变化导致级联修改；自然键则使用业务唯一字段。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Surrogate_key"
+    ]
+  },
+  {
+    "questionKey": "pk_db_037",
+    "domain": "database",
+    "stem": "关于视图（VIEW），更准确的描述是？",
+    "optionA": "视图一定会复制数据并占用与表相同的空间",
+    "optionB": "视图是保存的查询定义，可像表一样查询",
+    "optionC": "视图只能用于 INSERT，不能 SELECT",
+    "optionD": "视图会自动创建索引",
+    "correctOption": "B",
+    "explanation": "普通视图保存查询逻辑，不必复制数据；物化视图会存储结果但需要刷新。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-createview.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_038",
+    "domain": "database",
+    "stem": "物化视图（Materialized View）与普通视图相比，更关键的区别是？",
+    "optionA": "物化视图会存储查询结果，需要刷新才能更新",
+    "optionB": "物化视图不能被查询",
+    "optionC": "物化视图只能存储单表数据",
+    "optionD": "物化视图不支持索引",
+    "correctOption": "A",
+    "explanation": "物化视图会把结果持久化，读取更快但数据可能过期，需要手动/定时刷新以同步最新数据。",
+    "links": [
+      "https://www.postgresql.org/docs/current/rules-materializedviews.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_039",
+    "domain": "database",
+    "stem": "在 SQL 中，使用事务回滚的命令是？",
+    "optionA": "COMMIT",
+    "optionB": "ROLLBACK",
+    "optionC": "CHECKPOINT",
+    "optionD": "ANALYZE",
+    "correctOption": "B",
+    "explanation": "ROLLBACK 用于撤销当前事务中的更改；COMMIT 用于提交事务使其持久化。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-rollback.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_040",
+    "domain": "database",
+    "stem": "在并发场景下，“不可重复读（non-repeatable read）”更接近哪种现象？",
+    "optionA": "同一事务两次读取同一行得到不同结果（被其他事务更新并提交）",
+    "optionB": "读取到未提交的数据",
+    "optionC": "读取到未来的数据",
+    "optionD": "读取不到任何数据",
+    "correctOption": "A",
+    "explanation": "不可重复读通常发生在较低隔离级别下：同一事务两次读取同一行，期间其他事务提交了更新，导致读到不同值。",
+    "links": [
+      "https://www.postgresql.org/docs/current/transaction-iso.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_041",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 CHECK 约束的主要目的是什么？",
+    "optionA": "加速查询",
+    "optionB": "对列值施加自定义条件限制（如 age > 0）",
+    "optionC": "自动创建外键",
+    "optionD": "自动压缩表",
+    "correctOption": "B",
+    "explanation": "CHECK 约束用于在数据库层保证数据满足规则，减少脏数据进入系统。",
+    "links": [
+      "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS"
+    ]
+  },
+  {
+    "questionKey": "pk_db_042",
+    "domain": "database",
+    "stem": "关于索引选择性（selectivity），更准确的描述是？",
+    "optionA": "选择性越高表示重复值越多",
+    "optionB": "选择性越高表示越能区分记录，索引通常越有价值",
+    "optionC": "选择性与索引无关",
+    "optionD": "选择性只对字符串生效",
+    "correctOption": "B",
+    "explanation": "选择性高表示列值更分散，过滤效果更好，索引更容易带来性能收益；选择性低时可能仍需全表扫描。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_043",
+    "domain": "database",
+    "stem": "在使用 OFFSET 分页时，一个常见性能问题是？",
+    "optionA": "OFFSET 会让数据库跳过前 N 行，N 越大通常越慢",
+    "optionB": "OFFSET 会自动创建索引",
+    "optionC": "OFFSET 会使事务失效",
+    "optionD": "OFFSET 会把结果缓存到内存永久不释放",
+    "correctOption": "A",
+    "explanation": "OFFSET 需要扫描/丢弃前面行，深分页会越来越慢。高性能分页常用游标（cursor）或基于 keyset 的分页。",
+    "links": [
+      "https://use-the-index-luke.com/sql/partial-results/fetch-next-page"
+    ]
+  },
+  {
+    "questionKey": "pk_db_044",
+    "domain": "database",
+    "stem": "游标/Keyset Pagination 相对 OFFSET 分页的优势更常是？",
+    "optionA": "能返回不确定顺序的结果",
+    "optionB": "深分页性能更稳定，避免大量 OFFSET 扫描",
+    "optionC": "无需 ORDER BY",
+    "optionD": "自动去重",
+    "correctOption": "B",
+    "explanation": "Keyset pagination 通过“上次最后一条记录的排序键”继续查询，减少跳过行的成本，深分页更稳定。",
+    "links": [
+      "https://use-the-index-luke.com/sql/partial-results/fetch-next-page"
+    ]
+  },
+  {
+    "questionKey": "pk_db_045",
+    "domain": "database",
+    "stem": "在数据库设计中，“更新异常（update anomaly）”通常意味着？",
+    "optionA": "更新一定失败",
+    "optionB": "同一事实在多处冗余存储，更新时容易出现不一致",
+    "optionC": "索引会自动更新",
+    "optionD": "事务会自动提交",
+    "correctOption": "B",
+    "explanation": "非规范化或设计不当导致数据冗余，同一事实分散存储，更新遗漏会造成不一致。范式化可减少该类异常。",
+    "links": [
+      "https://en.wikipedia.org/wiki/Database_normalization"
+    ]
+  },
+  {
+    "questionKey": "pk_db_046",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 INSERT 插入数据更接近属于哪类语句？",
+    "optionA": "DDL",
+    "optionB": "DML",
+    "optionC": "DQL",
+    "optionD": "DCL",
+    "correctOption": "B",
+    "explanation": "INSERT 属于 DML（Data Manipulation Language），用于新增/修改/删除数据；DDL 用于定义结构。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-insert.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_047",
+    "domain": "database",
+    "stem": "在 SQL 中，使用 ALTER TABLE 的主要作用是？",
+    "optionA": "查询数据",
+    "optionB": "修改表结构（如新增列、改约束）",
+    "optionC": "提交事务",
+    "optionD": "创建视图",
+    "correctOption": "B",
+    "explanation": "ALTER TABLE 属于 DDL，用于修改表结构与约束，是数据库演进与迁移常用语句。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-altertable.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_048",
+    "domain": "database",
+    "stem": "在多表查询时，选择连接字段建立索引的主要好处是？",
+    "optionA": "让 GROUP BY 自动生效",
+    "optionB": "加速 JOIN 的匹配过程，减少扫描成本",
+    "optionC": "让事务自动回滚",
+    "optionD": "让 NULL 自动变为 0",
+    "correctOption": "B",
+    "explanation": "JOIN 常在连接键上做匹配，合适索引能加速查找与连接策略选择（如 nested loop join）。",
+    "links": [
+      "https://www.postgresql.org/docs/current/indexes.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_049",
+    "domain": "database",
+    "stem": "在 SQL 中，创建索引的语句通常是？",
+    "optionA": "CREATE INDEX",
+    "optionB": "CREATE VIEW",
+    "optionC": "CREATE TRIGGER",
+    "optionD": "CREATE SCHEMA",
+    "correctOption": "A",
+    "explanation": "CREATE INDEX 用于为表/表达式创建索引以优化查询性能，但应结合写入成本与实际查询模式。",
+    "links": [
+      "https://www.postgresql.org/docs/current/sql-createindex.html"
+    ]
+  },
+  {
+    "questionKey": "pk_db_050",
+    "domain": "database",
+    "stem": "ACID 中的“持久性（Durability）”更接近指？",
+    "optionA": "事务提交后修改不会因系统崩溃而丢失",
+    "optionB": "事务之间完全隔离互不影响",
+    "optionC": "每条记录都必须有外键",
+    "optionD": "每个查询都必须使用索引",
+    "correctOption": "A",
+    "explanation": "持久性保证事务一旦提交，其结果会持久保存（通常通过 WAL/日志与刷盘机制实现），即使崩溃也能恢复。",
+    "links": [
+      "https://www.postgresql.org/docs/current/wal-intro.html"
+    ]
+  }
+]

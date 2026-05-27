@@ -1,0 +1,62 @@
+{
+  "name": "pm-website",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "next dev --webpack",
+    "dev:web": "next dev --webpack",
+    "dev:all": "tsx scripts/dev-all.ts",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "career:clean-non-chinese": "tsx scripts/clean-non-chinese-career.ts",
+    "career:reassess": "tsx scripts/reassess-career-contents.ts",
+    "career:audit": "tsx scripts/audit-career-contents.ts",
+    "training:seed": "tsx scripts/seed-training-questions.ts",
+    "db:studio": "drizzle-kit studio",
+    "rss:fetch": "tsx scripts/fetch-rss.ts",
+    "rss:schedule": "tsx scripts/scheduled-fetch-rss.ts",
+    "career:fetch": "tsx scripts/fetch-career.ts",
+    "career:schedule": "tsx scripts/scheduled-fetch-career.ts",
+    "career:purge-pm-videos": "tsx scripts/purge-career-pm-training-videos.ts",
+    "search:rebuild": "tsx scripts/build-search-index.ts",
+    "articles:delete-product-discovery": "tsx scripts/delete-product-discovery-articles.ts",
+    "articles:reassess-tech": "tsx scripts/reassess-tech-articles.ts",
+    "articles:reassess-finance": "tsx scripts/reassess-finance-articles.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
+    "fast-xml-parser": "^5.8.0",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.16.0",
+    "meilisearch": "^0.58.0",
+    "next": "^16.2.6",
+    "next-themes": "^0.4.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "rss-parser": "^3.13.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.22.3",
+    "typescript": "^5"
+  }
+}
