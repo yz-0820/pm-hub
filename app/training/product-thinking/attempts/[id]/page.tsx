@@ -68,7 +68,7 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
     weights: { userValue: number; businessLogic: number; featureDesign: number; competition: number };
     dimensions: Record<
       string,
-      { score: number; analysis: string; evidence?: string[]; suggestions: string[] }
+      { score: number; analysis: string; evidence?: string[]; suggestions: string[]; reference?: string[] }
     >;
     overall: {
       strengths: string[];
@@ -252,7 +252,7 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
                   analysis={detail?.analysis}
                   evidence={detail?.evidence}
                   suggestions={detail?.suggestions}
-                  referenceFramework={report?.overall?.reference_framework}
+                  referenceFramework={(detail as any)?.reference?.length ? (detail as any).reference : report?.overall?.reference_framework}
                 />
               );
             })}

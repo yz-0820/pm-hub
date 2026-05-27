@@ -48,6 +48,7 @@ function dimensionsFromArray(value: unknown): unknown {
       analysis: obj.analysis ?? obj.comment ?? obj.feedback ?? '',
       evidence: obj.evidence ?? obj.basis ?? obj.rationale ?? obj.justification ?? obj.quotes ?? obj.citations ?? [],
       suggestions: obj.suggestions ?? obj.suggestion ?? obj.advice ?? [],
+      reference: obj.reference ?? obj.reference_framework ?? obj.referenceFramework ?? [],
     };
   }
   return out;
@@ -83,10 +84,10 @@ function normalizeAIOutput(value: unknown): unknown {
   ) {
     return {
       dimensions: {
-        user_value: { score: uvScore, analysis: '', evidence: [], suggestions: [] },
-        business_logic: { score: bizScore, analysis: '', evidence: [], suggestions: [] },
-        feature_design: { score: designScore, analysis: '', evidence: [], suggestions: [] },
-        competition_analysis: { score: compScore, analysis: '', evidence: [], suggestions: [] },
+        user_value: { score: uvScore, analysis: '', evidence: [], suggestions: [], reference: [] },
+        business_logic: { score: bizScore, analysis: '', evidence: [], suggestions: [], reference: [] },
+        feature_design: { score: designScore, analysis: '', evidence: [], suggestions: [], reference: [] },
+        competition_analysis: { score: compScore, analysis: '', evidence: [], suggestions: [], reference: [] },
       },
       overall: {
         strengths: root.strengths ?? [],
@@ -124,6 +125,7 @@ function normalizeAIOutput(value: unknown): unknown {
             directUser?.citations ??
             [],
           suggestions: directUser?.suggestions ?? directUser?.suggestion ?? directUser?.advice ?? [],
+          reference: directUser?.reference ?? directUser?.reference_framework ?? directUser?.referenceFramework ?? [],
         },
         business_logic: {
           score: directBiz?.score,
@@ -137,6 +139,7 @@ function normalizeAIOutput(value: unknown): unknown {
             directBiz?.citations ??
             [],
           suggestions: directBiz?.suggestions ?? directBiz?.suggestion ?? directBiz?.advice ?? [],
+          reference: directBiz?.reference ?? directBiz?.reference_framework ?? directBiz?.referenceFramework ?? [],
         },
         feature_design: {
           score: directDesign?.score,
@@ -150,6 +153,7 @@ function normalizeAIOutput(value: unknown): unknown {
             directDesign?.citations ??
             [],
           suggestions: directDesign?.suggestions ?? directDesign?.suggestion ?? directDesign?.advice ?? [],
+          reference: directDesign?.reference ?? directDesign?.reference_framework ?? directDesign?.referenceFramework ?? [],
         },
         competition_analysis: {
           score: directComp?.score,
@@ -163,6 +167,7 @@ function normalizeAIOutput(value: unknown): unknown {
             directComp?.citations ??
             [],
           suggestions: directComp?.suggestions ?? directComp?.suggestion ?? directComp?.advice ?? [],
+          reference: directComp?.reference ?? directComp?.reference_framework ?? directComp?.referenceFramework ?? [],
         },
       },
       overall: {
@@ -204,6 +209,7 @@ function normalizeAIOutput(value: unknown): unknown {
               nestedUser?.citations ??
               [],
             suggestions: nestedUser?.suggestions ?? nestedUser?.suggestion ?? nestedUser?.advice ?? [],
+            reference: nestedUser?.reference ?? nestedUser?.reference_framework ?? nestedUser?.referenceFramework ?? [],
           },
           business_logic: {
             score: nestedBiz?.score,
@@ -217,6 +223,7 @@ function normalizeAIOutput(value: unknown): unknown {
               nestedBiz?.citations ??
               [],
             suggestions: nestedBiz?.suggestions ?? nestedBiz?.suggestion ?? nestedBiz?.advice ?? [],
+            reference: nestedBiz?.reference ?? nestedBiz?.reference_framework ?? nestedBiz?.referenceFramework ?? [],
           },
           feature_design: {
             score: nestedDesign?.score,
@@ -230,6 +237,7 @@ function normalizeAIOutput(value: unknown): unknown {
               nestedDesign?.citations ??
               [],
             suggestions: nestedDesign?.suggestions ?? nestedDesign?.suggestion ?? nestedDesign?.advice ?? [],
+            reference: nestedDesign?.reference ?? nestedDesign?.reference_framework ?? nestedDesign?.referenceFramework ?? [],
           },
           competition_analysis: {
             score: nestedComp?.score,
@@ -243,6 +251,7 @@ function normalizeAIOutput(value: unknown): unknown {
               nestedComp?.citations ??
               [],
             suggestions: nestedComp?.suggestions ?? nestedComp?.suggestion ?? nestedComp?.advice ?? [],
+            reference: nestedComp?.reference ?? nestedComp?.reference_framework ?? nestedComp?.referenceFramework ?? [],
           },
         },
         overall: {
@@ -282,6 +291,7 @@ function normalizeAIOutput(value: unknown): unknown {
           pickByKeyHint(root, 'user_basis') ??
           [],
         suggestions: pickByKeyHint(suggestions ?? {}, 'user_value') ?? pickByKeyHint(suggestions ?? {}, 'user') ?? [],
+        reference: pickByKeyHint(root, 'user_value_reference') ?? pickByKeyHint(root, 'user_reference') ?? [],
       },
       business_logic: {
         score: bizKey,
@@ -293,6 +303,7 @@ function normalizeAIOutput(value: unknown): unknown {
           pickByKeyHint(root, 'business_basis') ??
           [],
         suggestions: pickByKeyHint(suggestions ?? {}, 'business_logic') ?? pickByKeyHint(suggestions ?? {}, 'business') ?? [],
+        reference: pickByKeyHint(root, 'business_logic_reference') ?? pickByKeyHint(root, 'business_reference') ?? [],
       },
       feature_design: {
         score: designKey,
@@ -304,6 +315,7 @@ function normalizeAIOutput(value: unknown): unknown {
           pickByKeyHint(root, 'design_basis') ??
           [],
         suggestions: pickByKeyHint(suggestions ?? {}, 'feature_design') ?? pickByKeyHint(suggestions ?? {}, 'design') ?? [],
+        reference: pickByKeyHint(root, 'feature_design_reference') ?? pickByKeyHint(root, 'design_reference') ?? [],
       },
       competition_analysis: {
         score: compKey,
@@ -322,6 +334,7 @@ function normalizeAIOutput(value: unknown): unknown {
           pickByKeyHint(suggestions ?? {}, 'competition') ??
           pickByKeyHint(suggestions ?? {}, 'competitor') ??
           [],
+        reference: pickByKeyHint(root, 'competition_analysis_reference') ?? pickByKeyHint(root, 'competition_reference') ?? [],
       },
     },
     overall: {
@@ -344,24 +357,28 @@ const aiOutputSchema = z.preprocess(
           analysis: z.string(),
           evidence: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
           suggestions: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
+          reference: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
         }),
         business_logic: z.object({
           score: z.coerce.number(),
           analysis: z.string(),
           evidence: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
           suggestions: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
+          reference: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
         }),
         feature_design: z.object({
           score: z.coerce.number(),
           analysis: z.string(),
           evidence: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
           suggestions: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
+          reference: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
         }),
         competition_analysis: z.object({
           score: z.coerce.number(),
           analysis: z.string(),
           evidence: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
           suggestions: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
+          reference: z.preprocess(coerceOptionalStringArray, z.array(z.string())),
         }),
       })
     ),
@@ -482,31 +499,35 @@ function fallbackEvaluate(answer: string): TrainingEvaluationResult {
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['补充目标用户与关键场景', '明确核心痛点与价值主张', '给出可验证的指标与方法'],
+          reference: ['价值主张画布', '用户画像与旅程图'],
         },
         business_logic: {
           score: businessScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['补充收入/成本/定价与增长路径', '说明关键指标口径与漏斗', '识别约束条件与风险点'],
+          reference: ['商业模式画布', 'AARRR 漏斗'],
         },
         feature_design: {
           score: designScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['明确关键流程与信息架构', '阐明功能取舍与优先级', '补充异常/边界与埋点'],
+          reference: ['用户故事地图', '信息架构', '流程图'],
         },
         competition_analysis: {
           score: competitionScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['选择 2-3 个直接竞品做对比', '从用户/供给/分发/履约维度对比差异', '总结可复制与不可复制点'],
+          reference: ['竞品矩阵', 'SWOT 分析'],
         },
       },
       overall: {
         strengths: ['结构完整度随答案长度提升而提高'],
         weaknesses: ['当前为规则兜底，无法替代AI评审的推理与专业判断'],
         next_steps: ['配置 DEEPSEEK_API_KEY 以启用 AI 评分'],
-        reference_framework: ['价值主张画布', '商业模式画布', 'AARRR', '竞品矩阵'],
+        reference_framework: [],
       },
     },
     model: '',
@@ -539,32 +560,36 @@ function invalidAnswerEvaluate(): TrainingEvaluationResult {
           score,
           analysis: '答案内容缺少有效文字与结构，无法进行正常评审。',
           evidence: [],
-          suggestions: ['按“用户价值/商业逻辑/功能设计/竞品分析”补全结构', '用具体用户场景与机制描述替代口号', '给出关键指标与验证方法'],
+          suggestions: ['按"用户价值/商业逻辑/功能设计/竞品分析"补全结构', '用具体用户场景与机制描述替代口号', '给出关键指标与验证方法'],
+          reference: ['价值主张画布', '用户画像与旅程图'],
         },
         business_logic: {
           score,
           analysis: '答案内容缺少有效文字与结构，无法进行正常评审。',
           evidence: [],
           suggestions: ['说明收入/成本/转化路径', '补充关键指标口径与漏斗', '指出合规/资源等约束与取舍'],
+          reference: ['商业模式画布', 'AARRR 漏斗'],
         },
         feature_design: {
           score,
           analysis: '答案内容缺少有效文字与结构，无法进行正常评审。',
           evidence: [],
           suggestions: ['给出关键流程与信息架构', '描述核心功能模块与取舍理由', '补充边界条件与异常处理'],
+          reference: ['用户故事地图', '信息架构', '流程图'],
         },
         competition_analysis: {
           score,
           analysis: '答案内容缺少有效文字与结构，无法进行正常评审。',
           evidence: [],
           suggestions: ['选择 2-3 个竞品做对比', '用维度矩阵总结差异与壁垒', '给出可验证的改进点'],
+          reference: ['竞品矩阵', 'SWOT 分析'],
         },
       },
       overall: {
         strengths: [],
         weaknesses: ['当前答案有效信息不足或疑似无意义输入'],
         next_steps: ['补充完整答案后再提交评分'],
-        reference_framework: ['价值主张画布', '商业模式画布', 'AARRR', '竞品矩阵'],
+        reference_framework: [],
       },
     },
     model: '',
@@ -601,9 +626,10 @@ export async function evaluateWithAI(input: {
     '2) 商业逻辑完整性 business_logic（25%）',
     '3) 功能设计合理性 feature_design（25%）',
     '4) 竞争分析深度 competition_analysis（20%）',
-    '整体部分给出 strengths/weaknesses/next_steps/reference_framework（数组）。',
+    '每个维度请在 evidence 同级增加 reference 字段（数组），给出该维度对应的参考答案框架/分析要点，仅与该维度相关，不要混入其他维度内容。',
+    '整体部分给出 strengths/weaknesses/next_steps。',
     '输出 JSON 结构必须严格遵循：',
-    '{"dimensions":{"user_value":{"score":0,"analysis":"","evidence":[""],"suggestions":[""]},"business_logic":{"score":0,"analysis":"","evidence":[""],"suggestions":[""]},"feature_design":{"score":0,"analysis":"","evidence":[""],"suggestions":[""]},"competition_analysis":{"score":0,"analysis":"","evidence":[""],"suggestions":[""]}},"overall":{"strengths":[""],"weaknesses":[""],"next_steps":[""],"reference_framework":[""]}}',
+    '{"dimensions":{"user_value":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"business_logic":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"feature_design":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"competition_analysis":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]}},"overall":{"strengths":[""],"weaknesses":[""],"next_steps":[""]}}',
   ].join('\n');
 
   const user = [
