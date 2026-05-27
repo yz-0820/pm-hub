@@ -182,8 +182,8 @@ export default function ResultsPage() {
     return labels[domain] || domain;
   };
 
-  const getDomainColor = (domain: DomainType) => {
-    const colors: Record<DomainType, string> = {
+  const getDomainColor = (domain: DomainType | 'mixed') => {
+    const colors: Record<DomainType | 'mixed', string> = {
       frontend: 'bg-blue-500/10 text-blue-600',
       backend: 'bg-green-500/10 text-green-600',
       database: 'bg-purple-500/10 text-purple-600',
