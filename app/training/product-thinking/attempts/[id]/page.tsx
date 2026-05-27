@@ -152,74 +152,28 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
 
             {/* 总分卡片 */}
             <div className={`rounded-xl border-2 p-5 ${overallBg}`}>
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-background shadow-sm">
-                    <Trophy className={`h-7 w-7 ${overallColor}`} />
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-0.5 font-medium">综合评分</div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className={`text-3xl font-extrabold tabular-nums ${overallColor}`}>
-                        {evaluation.totalScore}
-                      </span>
-                      <span className="text-sm text-muted-foreground">/ 100</span>
-                      <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${overallBg}`}>
-                        {overallLabel}
-                      </span>
-                    </div>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-background shadow-sm">
+                  <Trophy className={`h-7 w-7 ${overallColor}`} />
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {sections.map((s) => (
-                    <div key={s.key} className="flex items-center gap-1.5 text-xs bg-background/80 rounded-full px-3 py-1.5 border">
-                      <span className="text-muted-foreground">{s.name.split('分析')[0]}</span>
-                      <span className={`font-bold ${scoreToColor(s.score)}`}>{s.score}</span>
-                    </div>
-                  ))}
+                <div>
+                  <div className="text-sm text-muted-foreground mb-0.5 font-medium">综合评分</div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className={`text-3xl font-extrabold tabular-nums ${overallColor}`}>
+                      {evaluation.totalScore}
+                    </span>
+                    <span className="text-sm text-muted-foreground">/ 100</span>
+                    <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${overallBg}`}>
+                      {overallLabel}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* 维度简览 */}
-            <div className="grid grid-cols-4 gap-2 mt-4">
-              {sections.map((s) => (
-                <div key={s.key} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-muted/40">
-                  <span className={`text-base font-extrabold tabular-nums ${scoreToColor(s.score)}`}>{s.score}</span>
-                  <span className="text-[10px] text-muted-foreground text-center leading-tight">{s.name.replace('分析', '')}</span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* 维度详情 */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-base font-bold">维度详细分析</h2>
-          </div>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            {sections.map((s) => {
-              const detail = report?.dimensions?.[s.key];
-              return (
-                <DimensionScoreCard
-                  key={s.key}
-                  name={s.name}
-                  score={s.score}
-                  weight={s.weight}
-                  description={s.description}
-                  analysis={detail?.analysis}
-                  evidence={detail?.evidence}
-                  suggestions={detail?.suggestions}
-                  referenceFramework={report?.overall?.reference_framework}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* 整体点评 */}
           <div className="rounded-2xl border bg-card/60 backdrop-blur-sm p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -276,6 +230,32 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
             <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed bg-muted/30 rounded-xl p-4 max-h-[500px] overflow-y-auto">
               {attempt.answer}
             </div>
+          </div>
+        </div>
+
+        {/* 维度详情 */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-base font-bold">维度详细分析</h2>
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            {sections.map((s) => {
+              const detail = report?.dimensions?.[s.key];
+              return (
+                <DimensionScoreCard
+                  key={s.key}
+                  name={s.name}
+                  score={s.score}
+                  weight={s.weight}
+                  description={s.description}
+                  analysis={detail?.analysis}
+                  evidence={detail?.evidence}
+                  suggestions={detail?.suggestions}
+                  referenceFramework={report?.overall?.reference_framework}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

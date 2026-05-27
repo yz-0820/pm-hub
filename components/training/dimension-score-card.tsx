@@ -46,7 +46,7 @@ export function DimensionScoreCard({
   suggestions,
   referenceFramework,
 }: DimensionScoreCardProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const colors = scoreToColor(score);
   const label = scoreLabel(score);
 
