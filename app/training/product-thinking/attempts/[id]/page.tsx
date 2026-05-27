@@ -181,14 +181,11 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
               </div>
             </div>
 
-            {/* 维度的迷你预览 */}
+            {/* 维度简览 */}
             <div className="grid grid-cols-4 gap-2 mt-4">
               {sections.map((s) => (
                 <div key={s.key} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-muted/40">
                   <span className={`text-base font-extrabold tabular-nums ${scoreToColor(s.score)}`}>{s.score}</span>
-                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${s.score >= 85 ? 'bg-emerald-500' : s.score >= 70 ? 'bg-blue-500' : s.score >= 55 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${Math.max(4, s.score)}%` }} />
-                  </div>
                   <span className="text-[10px] text-muted-foreground text-center leading-tight">{s.name.replace('分析', '')}</span>
                 </div>
               ))}
