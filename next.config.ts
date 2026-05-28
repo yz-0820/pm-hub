@@ -19,15 +19,7 @@ const nextConfig: NextConfig = {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         crypto: false,
-        stream: false,
-        path: false,
-        fs: false,
       };
-    }
-    // 将 Node.js 内置模块标记为外部依赖
-    config.externals = config.externals || [];
-    if (Array.isArray(config.externals)) {
-      config.externals.push({ crypto: 'commonjs crypto' });
     }
     return config;
   },
