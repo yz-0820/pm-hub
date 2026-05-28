@@ -1,7 +1,7 @@
 'use client';
 
 import { CareerContent } from '@/lib/db/schema';
-import { platformLabels } from '@/config/content-sources';
+import { getDefaultCover, isDefaultCoverImage, platformLabels } from '@/config/content-sources';
 import { 
   FileText, 
   Video, 
@@ -121,7 +121,11 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const categoryColorClass = categoryColors[content.category] || 'bg-gray-50 text-gray-600 border-gray-100';
   const safeHref = getSafeExternalHref(content.originalUrl);
   if (!safeHref) return null;
-  const proxyCover = getProxiedImageUrl(content.coverImage);
+  const coverImage =
+    content.coverImage && !isDefaultCoverImage(content.coverImage)
+      ? content.coverImage
+      : getDefaultCover(content.category, content.originalId || content.originalUrl || content.title || String(content.id));
+  const proxyCover = getProxiedImageUrl(coverImage);
   const hideSubtitle = content.contentType === 'video' || content.contentType === 'short_video';
 
   // 格式化数字

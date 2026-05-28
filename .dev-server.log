@@ -1,0 +1,1113 @@
+
+> pm-website@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://10.32.28.130:3000
+- Environments: .env.local
+✓ Ready in 408ms
+
+[Career][SchedulerProcess] 
+> pm-website@0.1.0 career:schedule
+> tsx scripts/scheduled-fetch-career.ts
+
+[RSS][SchedulerProcess] 
+> pm-website@0.1.0 rss:schedule
+> tsx scripts/scheduled-fetch-rss.ts
+
+[RSS][SchedulerProcess] [Scheduler] RSS fetch scheduler started
+[RSS][SchedulerProcess] [Scheduler] Interval: 60min
+[RSS][SchedulerProcess] 
+[Fetch] Starting at 2026-05-28T05:06:24.179Z
+[RSS][SchedulerProcess] Fetching: 人人都是产品经理
+[Career][SchedulerProcess] [Scheduler] Career content fetch scheduler started
+[Career][SchedulerProcess] [Scheduler] Interval: 300s (5min)
+[Scheduler] DB: ./data/sqlite.db
+[Career][SchedulerProcess] 
+[Fetch] Starting at 2026-05-28T05:06:24.252Z
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[Career][SchedulerProcess] [人人都是产品经理-职场] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-运营] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Skipped (interval not reached)
+[Career][SchedulerProcess] [少数派] Skipped (interval not reached)
+[Career][SchedulerProcess] [知乎-热榜] Starting fetch...
+[RSS][SchedulerProcess] Fetching: 极客公园
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+ GET / 200 in 2.5s (next.js: 2.2s, application-code: 298ms)
+[RSS][SchedulerProcess] Failed to parse RSS feed: https://www.geekpark.net/rss Error: Request timed out after 20000ms
+    at Timeout.<anonymous> (C:\Users\MECHREVO\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\work-mode-projects\6a0fc2f3f7ec912ef0662871\pm-website\node_modules\rss-parser\lib\parser.js:101:23)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+[RSS][SchedulerProcess] Fetching: 36氪
+[RSS][SchedulerProcess] Skipped (no relevant category): "8点1氪丨“高考期间AI工具将禁用”？豆包等回应；亚朵门店回应酒店免费提供隐藏摄像头检测仪；三星工会同意新薪酬方案，人均270万元奖金"
+[RSS][SchedulerProcess] Skipped (no relevant category): "化险为夷的洛克王国，给所有长青游戏上了一课"
+[RSS][SchedulerProcess] Skipped (no relevant category): "36氪首发｜男士美妆品牌「GREENLAB绿所」获宝顶创投战略投资，张耀东出任公司董事"
+[RSS][SchedulerProcess] Skipped (no relevant category): "硅谷AI一线观察：一人花掉50万美金Token背后的大厂焦虑"
+[RSS][SchedulerProcess] Skipped (no relevant category): "滔搏发布2025/26财年业绩：营收257.4亿元"
+[RSS][SchedulerProcess] Auto-categorized as ai (49): "科大讯飞发布讯飞AI眼镜"
+[RSS][SchedulerProcess] Using default image for "科大讯飞发布讯飞AI眼镜"
+[RSS][SchedulerProcess] Skipped (no relevant category): "双汇发展：下一步将在下属各个屠宰厂加强源头控制，加大检测频次"
+[RSS][SchedulerProcess] Skipped (no relevant category): "中国联通增资至312.6亿"
+[RSS][SchedulerProcess] Skipped (no relevant category): "微博：2026年Q1，AI相关讨论量同比增长18%"
+[RSS][SchedulerProcess] Skipped (no relevant category): "洁美科技：目前公司MLCC离型膜聚焦中高端"
+[RSS][SchedulerProcess] Skipped (no relevant category): "山推股份：目前公司主营业务未涉及智能机器人相关业务"
+[RSS][SchedulerProcess] Skipped (no relevant category): "蔚来关联公司在海南成立新公司"
+[RSS][SchedulerProcess] Skipped (no relevant category): "天源迪科：董事长陈友解除留置"
+[RSS][SchedulerProcess] Skipped (no relevant category): "恒指午间休盘跌2.29%，恒生科技指数跌1.49%"
+[RSS][SchedulerProcess] Skipped (no relevant category): "半日主力资金加仓电子股，抛售非银金融股"
+[RSS][SchedulerProcess] Skipped (no relevant category): "腾讯：《王者荣耀》将与阅文集团继续开展战略合作，并积极探索游戏AI应用"
+[RSS][SchedulerProcess] Skipped (no relevant category): "京东方减资至约370.4亿"
+[RSS][SchedulerProcess] Skipped (no relevant category): "去哪儿旅行：六一景区门票预订量涨七成"
+[RSS][SchedulerProcess] Skipped (no relevant category): "富达基金中国公司增资至2.18亿美元"
+[RSS][SchedulerProcess] Fetching: 爱范儿
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "国产AI编程冲上全球第二！实测五大模型，谁才是Vibe Coding神器"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜余承东发布新问界M9：地球最强SUV /海力士市值突破1万亿美元/小红书拿下世界杯独家转播"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "雷鸟 GT Max 体验：267 英寸的私人影院，搬家带走只需一秒"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "最好的手机 AI，是仿佛没有 AI｜AI 器物志"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "小米：请叫我 Token 价格屠夫"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "再访 XREAL 徐驰：做眼镜是场万米长跑，靠运气也靠打怪升级"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜小米卢伟冰：大型新车今年下半年上市/支付宝推出全球首个Token Pay服务/滴滴崩了，官方致歉"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "带摄像头的 AI 耳机能替代 iPhone 吗？我戴了 72 小时之后有了答案"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "用 Codex 优化网速狂飙 900Mbps？实测之后我发现了新的隐藏玩法"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜华为公布韬定律，Mate 90有望搭载更强芯片/宇树科技上会估值420亿/DeepSeek登顶全球调用榜"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "DeepSeek 要用蜜雪冰城的打法，做中国版 Claude Code"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜国产手机618前集体降价/微信解释「2 分钟内可撤回」/买智能手表以后不能再刷医保"
+[RSS][SchedulerProcess] Fetching: IT之家
+[RSS][SchedulerProcess] Skipped (no relevant category): "网友反馈其三星 Galaxy S25 FE 手机夜间充电爆炸，事发时使用第三方 20W 充电器"
+[RSS][SchedulerProcess] Skipped (no relevant category): "蔚来新乐道 L60 汽车 5 月 29 日在粤港澳大湾区车展发布并预售"
+[RSS][SchedulerProcess] Skipped (no relevant category): "初探微软 Win11 共享音频功能：1 台电脑 2 副耳机同步播放"
+[RSS][SchedulerProcess] Skipped (no relevant category): "天象巨龙：微星预热 40 周年纪念 Draco Epic 特别版 MEG ACE 主板"
+[RSS][SchedulerProcess] Skipped (no relevant category): "优衣库、沪上阿姨、汉堡王、可口可乐、迪卡侬等被通报，App 或小程序涉及收集非必要个人信息等"
+[RSS][SchedulerProcess] Skipped (no relevant category): "vivo 首款无线头戴降噪耳机卖点公布：75 小时续航、58dB 降噪，5 月 29 日发布"
+[RSS][SchedulerProcess] Skipped (no relevant category): "比亚迪全新腾势 Z9GT 两个半月累计交付超 1 万台，26.98 万元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "海韵 2026 台北国际电脑展将展 80 PLUS Ruby 认证 5200W 电源"
+[RSS][SchedulerProcess] Skipped (no relevant category): "《揭秘日》电影终极预告放出，导演斯皮尔伯格称人类并非宇宙唯一智慧文明"
+[RSS][SchedulerProcess] Skipped (no relevant category): "开源鸿蒙 OpenHarmony 6.1 LTS 长期维护版发布，明确 7.X 版本 9 月商用"
+[RSS][SchedulerProcess] Skipped (no relevant category): "10 年了还在更：《无人深空》游戏获“虫群”更新，聚焦太空战斗"
+[RSS][SchedulerProcess] Skipped (no relevant category): "zalman 推出 18W/m·K 高导热系数硅脂 ZM-STC11"
+[RSS][SchedulerProcess] Skipped (no relevant category): "照片变身搞笑小游戏：任天堂全新手游《Pictonico!》上线"
+[RSS][SchedulerProcess] Skipped (no relevant category): "DeepSeek 服务“部分中断”半小时，现已修复"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称 LG 电子就出售电视业务与海信交涉"
+[RSS][SchedulerProcess] Skipped (no relevant category): "极米 MIRA 4K 系列激光电视开售：0.175:1 投射比、哈曼卡顿 36W 扬声器，6499 元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "工信部公告新版电器电子产品有害物质管控产品目录，新增智能手环手表、耳机等 23 种产品"
+[RSS][SchedulerProcess] Skipped (no relevant category): "鸿蒙智行尚界 H5 改款预售：新增 15.6 英寸随动屏、W-HUD 抬头显示等，16.98 万元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "LG Display 宣布世界首款 240Hz RGB 条纹子像素 OLED 面板进入量产"
+[RSS][SchedulerProcess] Skipped (no relevant category): "“全球最小智能戒指”：Oura Ring 5 曝光，覆盖追踪 50+ 健康数据"
+[RSS][SchedulerProcess] Skipped (no relevant category): "华为相关负责人：鸿蒙生态设备累计数已超 13 亿台"
+[RSS][SchedulerProcess] Skipped (no relevant category): "索尼家庭影院 Trio 发布：360 智能穹顶声场 3.0，售价 14990 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "小米蓝牙音箱 C 上新：3D 幻彩灯光、多台串联播放，到手价 269 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "中兴 G5 Pro 高性能版 5G 移动路由器 CPE 开售：双 2.5G 网口，2099 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "奇瑞与日企合资公司将在日本推出轻型电动汽车：与油车价格接近，2027 年春季上市"
+[RSS][SchedulerProcess] Skipped (no relevant category): "索尼电视 9 系、8 系、7 系二代发布：可选 True RGB 真彩原色，10999 元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "长城 H10 更多信息公布，归元平台首款方盒子车型"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称英伟达黄仁勋将加入清华大学经管学院顾问委员会，苹果库克是委员会主席"
+[RSS][SchedulerProcess] Skipped (no relevant category): "《天外世界》游戏原版下架，Steam 等商店改售《太空人之选》版本"
+[RSS][SchedulerProcess] Skipped (no relevant category): "你想在上海打 TI 吗？《DOTA2》TI15 中国赛区公开预选赛报名开启"
+[RSS][SchedulerProcess] Skipped (no relevant category): "Win11 学院：如何在 Windows 11 26200.8524 启用“低延迟配置”功能"
+[RSS][SchedulerProcess] Skipped (no relevant category): "2026 粤港澳大湾区车展官方展位图公布：张雪机车参展，比亚迪首设芯片展区，近百台老爷车首次同台亮相"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称某厂 2nm 新机测试 1 亿方形前置摄像头，预计为 OPPO 旗下"
+[RSS][SchedulerProcess] Skipped (no relevant category): "京东红包今日 10 点再加码：猜数字抢 5 元红包"
+[RSS][SchedulerProcess] Skipped (no relevant category): "免费看：小红书官宣成为 2026 年美加墨世界杯持权转播商"
+[RSS][SchedulerProcess] Skipped (no relevant category): "启境汽车回应 GT7 内饰品鉴活动嘉宾争议：并非品牌代言人，已停止相关内容传播"
+[RSS][SchedulerProcess] Skipped (no relevant category): "华为何刚宣布时代少年团成为 nova 代言人"
+[RSS][SchedulerProcess] Skipped (no relevant category): "B站大会员狂促继续：年卡 102 元新低，京东 PLUS 会员联名卡 148 元等"
+[RSS][SchedulerProcess] Fetching: 少数派
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "免费试读 | 零基础美术启蒙，该如何准备适合的美术器材"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "派早报：鸿蒙智行发布新一代问界 M9、蔚来正式推出 ES9 等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "客制化键盘｜近期值得一看的套件与键帽：怪诞主题、复古创新与静电容"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "派早报：法拉利发布首款纯电跑车 Luce、森海塞尔发布 Momentum 5 耳机等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "社区速递 142 | 派友的四月「情绪账单」、换壳重生的鼠标与仿真柠檬树"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "Hyrox 首战攻略：从新手到完赛，普通人亦可澎湃赛场"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "App+1 | 有太多香水不知道用哪个？我做了一款能帮你选香水的记录 App"
+[RSS][SchedulerProcess] Fetching: 雷峰网
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "官宣成为世界杯持权转播商，小红书加速打造“社区的社区”"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "领世而上，全新一代问界M9正式上市，官方零售价47.98万元起"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "拼多多发布Q1财报，陈磊：全力推进品牌自营业务，三年再造一个拼多多"
+[RSS][SchedulerProcess] Skipped (low AI relevance 32): "一人9篇ICRA！MIT Keynote定档+14展商抢发，开幕倒计时5天引爆"
+[RSS][SchedulerProcess] Skipped (low AI relevance 8): "第三代元PLUS 11.99万元起正式上市，全系搭载第二代刀片电池及闪充技术"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "珀乐互动基于Wan2.7打造《羞羞的铁拳》漫剧，制作效率提升超90%"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "经过华为、传音、拓竹历炼，95后打造AI母婴界特斯拉"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "有钱能为所欲为？黄仁勋在夜市买烤玉米，「付费插队」引热议；投毒杀害董事长，三体公司原CEO许垚被执行死刑；华为成立「莫邪」工作小组"
+[RSS][SchedulerProcess] Fetching: 量子位
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "1400亿Agent入场，“流量”这条护城河要塌了"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "5秒完成3D场景编辑，北大&港中文&上海AI Lab搞出VGGT-Edit，120倍加速太炸了"
+[RSS][SchedulerProcess] Skipped (low AI relevance 8): "触觉具身来了个梦之队：天使轮近亿"
+[RSS][SchedulerProcess] Fetching: 雪球
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "2026年水电旺季投资机会分析：多重利好共振下的板块机遇"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "聊聊泡泡玛特"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "产品差异化与AI能源互联网——为什么高能电池过去没有，未来更不会成为光伏"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "打破周期叙事：从奈飞的谷底反转，看泡泡玛特的估值破局"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "随想281 长协改变存储的估值逻辑"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "A股为何择时友好，红利为什么适合躺平？一篇论文给出了数学解释"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "一鲸落，万物生"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "粮厂研究员Will | 26年Q1小米财报点评：从烧钱造车，到押注物理AI"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "Anthropic不会一直领先，腾讯也未被淘汰：关于大模型竞争下半场的几点判断"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "杭州银行2026年一季报点评"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "随便聊聊韬定律5.26"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "长期定投纳指，阶段止盈vs从不止盈，哪个更赚钱？"
+[RSS][SchedulerProcess] Fetching: IT之家财经
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "网友反馈其三星 Galaxy S25 FE 手机夜间充电爆炸，事发时使用第三方 20W 充电器"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "蔚来新乐道 L60 汽车 5 月 29 日在粤港澳大湾区车展发布并预售"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "初探微软 Win11 共享音频功能：1 台电脑 2 副耳机同步播放"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "天象巨龙：微星预热 40 周年纪念 Draco Epic 特别版 MEG ACE 主板"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "优衣库、沪上阿姨、汉堡王、可口可乐、迪卡侬等被通报，App 或小程序涉及收集非必要个人信息等"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "vivo 首款无线头戴降噪耳机卖点公布：75 小时续航、58dB 降噪，5 月 29 日发布"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "比亚迪全新腾势 Z9GT 两个半月累计交付超 1 万台，26.98 万元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "海韵 2026 台北国际电脑展将展 80 PLUS Ruby 认证 5200W 电源"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "《揭秘日》电影终极预告放出，导演斯皮尔伯格称人类并非宇宙唯一智慧文明"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "开源鸿蒙 OpenHarmony 6.1 LTS 长期维护版发布，明确 7.X 版本 9 月商用"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "10 年了还在更：《无人深空》游戏获“虫群”更新，聚焦太空战斗"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "zalman 推出 18W/m·K 高导热系数硅脂 ZM-STC11"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "照片变身搞笑小游戏：任天堂全新手游《Pictonico!》上线"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "DeepSeek 服务“部分中断”半小时，现已修复"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称 LG 电子就出售电视业务与海信交涉"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "极米 MIRA 4K 系列激光电视开售：0.175:1 投射比、哈曼卡顿 36W 扬声器，6499 元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "工信部公告新版电器电子产品有害物质管控产品目录，新增智能手环手表、耳机等 23 种产品"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "鸿蒙智行尚界 H5 改款预售：新增 15.6 英寸随动屏、W-HUD 抬头显示等，16.98 万元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "LG Display 宣布世界首款 240Hz RGB 条纹子像素 OLED 面板进入量产"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "“全球最小智能戒指”：Oura Ring 5 曝光，覆盖追踪 50+ 健康数据"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "华为相关负责人：鸿蒙生态设备累计数已超 13 亿台"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "索尼家庭影院 Trio 发布：360 智能穹顶声场 3.0，售价 14990 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "小米蓝牙音箱 C 上新：3D 幻彩灯光、多台串联播放，到手价 269 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "中兴 G5 Pro 高性能版 5G 移动路由器 CPE 开售：双 2.5G 网口，2099 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "奇瑞与日企合资公司将在日本推出轻型电动汽车：与油车价格接近，2027 年春季上市"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "索尼电视 9 系、8 系、7 系二代发布：可选 True RGB 真彩原色，10999 元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "长城 H10 更多信息公布，归元平台首款方盒子车型"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称英伟达黄仁勋将加入清华大学经管学院顾问委员会，苹果库克是委员会主席"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "《天外世界》游戏原版下架，Steam 等商店改售《太空人之选》版本"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "你想在上海打 TI 吗？《DOTA2》TI15 中国赛区公开预选赛报名开启"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "Win11 学院：如何在 Windows 11 26200.8524 启用“低延迟配置”功能"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "2026 粤港澳大湾区车展官方展位图公布：张雪机车参展，比亚迪首设芯片展区，近百台老爷车首次同台亮相"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称某厂 2nm 新机测试 1 亿方形前置摄像头，预计为 OPPO 旗下"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "京东红包今日 10 点再加码：猜数字抢 5 元红包"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "免费看：小红书官宣成为 2026 年美加墨世界杯持权转播商"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "启境汽车回应 GT7 内饰品鉴活动嘉宾争议：并非品牌代言人，已停止相关内容传播"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "华为何刚宣布时代少年团成为 nova 代言人"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "B站大会员狂促继续：年卡 102 元新低，京东 PLUS 会员联名卡 148 元等"
+[RSS][SchedulerProcess] [Fetch] Done in 26.0s
+[Fetch] Sources: 10, Fetched: 245, New: 2, Errors: 0
+ GET / 200 in 67ms (next.js: 6ms, application-code: 62ms)
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+ GET /training/product-thinking 200 in 842ms (next.js: 750ms, application-code: 92ms)
+ GET /training/product-thinking 200 in 42ms (next.js: 3ms, application-code: 39ms)
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[知乎-热榜] Fetch failed: fetch failed
+[Career][SchedulerProcess] [知乎-日报] Skipped (interval not reached)
+[Career][SchedulerProcess] [36氪-文章资讯] Skipped (interval not reached)
+[Career][SchedulerProcess] [虎嗅] Skipped (interval not reached)
+[Career][SchedulerProcess] [钛媒体] Skipped (interval not reached)
+[Career][SchedulerProcess] [爱范儿] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[哔哩哔哩] Fetch failed: fetch failed
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Skipped (interval not reached)
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Starting fetch...
+ GET /training 200 in 531ms (next.js: 489ms, application-code: 43ms)
+ GET /training 200 in 15ms (next.js: 1975µs, application-code: 13ms)
+⨯ ./lib/db/client.ts
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\MECHREVO\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\work-mode-projects\6a0fc2f3f7ec912ef0662871\pm-website\lib\db\client.ts
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./lib/db/client.ts
+./app/training/product-thinking/page.tsx
+⨯ ./lib/db/client.ts
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\MECHREVO\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\work-mode-projects\6a0fc2f3f7ec912ef0662871\pm-website\lib\db\client.ts
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./lib/db/client.ts
+./app/training/product-thinking/page.tsx
+ GET /training 500 in 1156ms (next.js: 1061ms, application-code: 95ms)
+ GET /training 500 in 15ms (next.js: 4ms, application-code: 11ms)
+ GET /training 500 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /training 500 in 17ms (next.js: 4ms, application-code: 14ms)
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\MECHREVO\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\work-mode-projects\6a0fc2f3f7ec912ef0662871\pm-website\lib\db\client.ts
+    1: 系统找不到指定的文件。 (os error 2)
+○ Compiling /_error ...
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /training 200 in 404ms (next.js: 236ms, application-code: 168ms)
+ GET /training 200 in 117ms (next.js: 78ms, application-code: 39ms)
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Starting fetch...
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://10.32.28.130:3000
+- Environments: .env.local
+✓ Ready in 430ms
+
+[RSS][SchedulerProcess] 
+> pm-website@0.1.0 rss:schedule
+> tsx scripts/scheduled-fetch-rss.ts
+
+[Career][SchedulerProcess] 
+> pm-website@0.1.0 career:schedule
+> tsx scripts/scheduled-fetch-career.ts
+
+[Career][SchedulerProcess] [Scheduler] Career content fetch scheduler started
+[Scheduler] Interval: 300s (5min)
+[Scheduler] DB: ./data/sqlite.db
+
+[Fetch] Starting at 2026-05-28T05:10:57.397Z
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[人人都是产品经理-职场] Skipped (interval not reached)
+[人人都是产品经理-运营] Skipped (interval not reached)
+[人人都是产品经理-管理] Skipped (interval not reached)
+[人人都是产品经理-标签：领导力] Skipped (interval not reached)
+[人人都是产品经理-标签：战略] Skipped (interval not reached)
+[人人都是产品经理-标签：变革] Skipped (interval not reached)
+[人人都是产品经理-标签：变革管理] Skipped (interval not reached)
+[人人都是产品经理-标签：组织变革] Skipped (interval not reached)
+[人人都是产品经理-标签：沟通] Skipped (interval not reached)
+[人人都是产品经理-标签：向上管理] Skipped (interval not reached)
+[人人都是产品经理-标签：反馈] Skipped (interval not reached)
+[人人都是产品经理-标签：复盘] Skipped (interval not reached)
+[少数派] Skipped (interval not reached)
+[Career][SchedulerProcess] [知乎-热榜] Skipped (interval not reached)
+[知乎-日报] Skipped (interval not reached)
+[36氪-文章资讯] Skipped (interval not reached)
+[虎嗅] Skipped (interval not reached)
+[钛媒体] Skipped (interval not reached)
+[爱范儿] Skipped (interval not reached)
+[哔哩哔哩] Skipped (interval not reached)
+[哔哩哔哩-每周必看] Skipped (interval not reached)
+[哔哩哔哩-职场热榜] Skipped (interval not reached)
+[B站-视频搜索：职场沟通] Skipped (interval not reached)
+[B站-视频搜索：领导力] Skipped (interval not reached)
+[B站-视频搜索：向上管理] Starting fetch...
+[RSS][SchedulerProcess] [Scheduler] RSS fetch scheduler started
+[Scheduler] Interval: 60min
+
+[Fetch] Starting at 2026-05-28T05:10:57.464Z
+Fetching: 人人都是产品经理
+[RSS][SchedulerProcess] Fetching: 极客公园
+○ Compiling /training ...
+ GET /training 200 in 3.5s (next.js: 3.3s, application-code: 238ms)
+ GET /training 200 in 33ms (next.js: 6ms, application-code: 28ms)
+[RSS][SchedulerProcess] Failed to parse RSS feed: https://www.geekpark.net/rss Error: Request timed out after 20000ms
+    at Timeout.<anonymous> (C:\Users\MECHREVO\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\work-mode-projects\6a0fc2f3f7ec912ef0662871\pm-website\node_modules\rss-parser\lib\parser.js:101:23)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+[RSS][SchedulerProcess] Fetching: 36氪
+[RSS][SchedulerProcess] Skipped (no relevant category): "8点1氪丨“高考期间AI工具将禁用”？豆包等回应；亚朵门店回应酒店免费提供隐藏摄像头检测仪；三星工会同意新薪酬方案，人均270万元奖金"
+[RSS][SchedulerProcess] Skipped (no relevant category): "化险为夷的洛克王国，给所有长青游戏上了一课"
+[RSS][SchedulerProcess] Skipped (no relevant category): "36氪首发｜男士美妆品牌「GREENLAB绿所」获宝顶创投战略投资，张耀东出任公司董事"
+[RSS][SchedulerProcess] Skipped (no relevant category): "硅谷AI一线观察：一人花掉50万美金Token背后的大厂焦虑"
+[RSS][SchedulerProcess] Skipped (no relevant category): "滔搏发布2025/26财年业绩：营收257.4亿元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "双汇发展：下一步将在下属各个屠宰厂加强源头控制，加大检测频次"
+[RSS][SchedulerProcess] Skipped (no relevant category): "中国联通增资至312.6亿"
+[RSS][SchedulerProcess] Skipped (no relevant category): "微博：2026年Q1，AI相关讨论量同比增长18%"
+[RSS][SchedulerProcess] Skipped (no relevant category): "洁美科技：目前公司MLCC离型膜聚焦中高端"
+[RSS][SchedulerProcess] Skipped (no relevant category): "山推股份：目前公司主营业务未涉及智能机器人相关业务"
+[RSS][SchedulerProcess] Skipped (no relevant category): "蔚来关联公司在海南成立新公司"
+[RSS][SchedulerProcess] Skipped (no relevant category): "天源迪科：董事长陈友解除留置"
+[RSS][SchedulerProcess] Skipped (no relevant category): "恒指午间休盘跌2.29%，恒生科技指数跌1.49%"
+[RSS][SchedulerProcess] Skipped (no relevant category): "半日主力资金加仓电子股，抛售非银金融股"
+[RSS][SchedulerProcess] Skipped (no relevant category): "腾讯：《王者荣耀》将与阅文集团继续开展战略合作，并积极探索游戏AI应用"
+[RSS][SchedulerProcess] Skipped (no relevant category): "京东方减资至约370.4亿"
+[RSS][SchedulerProcess] Skipped (no relevant category): "去哪儿旅行：六一景区门票预订量涨七成"
+[RSS][SchedulerProcess] Skipped (no relevant category): "富达基金中国公司增资至2.18亿美元"
+[RSS][SchedulerProcess] Fetching: 爱范儿
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "国产AI编程冲上全球第二！实测五大模型，谁才是Vibe Coding神器"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜余承东发布新问界M9：地球最强SUV /海力士市值突破1万亿美元/小红书拿下世界杯独家转播"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "雷鸟 GT Max 体验：267 英寸的私人影院，搬家带走只需一秒"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "最好的手机 AI，是仿佛没有 AI｜AI 器物志"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "小米：请叫我 Token 价格屠夫"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "再访 XREAL 徐驰：做眼镜是场万米长跑，靠运气也靠打怪升级"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜小米卢伟冰：大型新车今年下半年上市/支付宝推出全球首个Token Pay服务/滴滴崩了，官方致歉"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "带摄像头的 AI 耳机能替代 iPhone 吗？我戴了 72 小时之后有了答案"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "用 Codex 优化网速狂飙 900Mbps？实测之后我发现了新的隐藏玩法"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜华为公布韬定律，Mate 90有望搭载更强芯片/宇树科技上会估值420亿/DeepSeek登顶全球调用榜"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "DeepSeek 要用蜜雪冰城的打法，做中国版 Claude Code"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "早报｜国产手机618前集体降价/微信解释「2 分钟内可撤回」/买智能手表以后不能再刷医保"
+[RSS][SchedulerProcess] Fetching: IT之家
+[RSS][SchedulerProcess] Skipped (no relevant category): "网友反馈其三星 Galaxy S25 FE 手机夜间充电爆炸，事发时使用第三方 20W 充电器"
+[RSS][SchedulerProcess] Skipped (no relevant category): "蔚来新乐道 L60 汽车 5 月 29 日在粤港澳大湾区车展发布并预售"
+[RSS][SchedulerProcess] Skipped (no relevant category): "初探微软 Win11 共享音频功能：1 台电脑 2 副耳机同步播放"
+[RSS][SchedulerProcess] Skipped (no relevant category): "天象巨龙：微星预热 40 周年纪念 Draco Epic 特别版 MEG ACE 主板"
+[RSS][SchedulerProcess] Skipped (no relevant category): "优衣库、沪上阿姨、汉堡王、可口可乐、迪卡侬等被通报，App 或小程序涉及收集非必要个人信息等"
+[RSS][SchedulerProcess] Skipped (no relevant category): "vivo 首款无线头戴降噪耳机卖点公布：75 小时续航、58dB 降噪，5 月 29 日发布"
+[RSS][SchedulerProcess] Skipped (no relevant category): "比亚迪全新腾势 Z9GT 两个半月累计交付超 1 万台，26.98 万元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "海韵 2026 台北国际电脑展将展 80 PLUS Ruby 认证 5200W 电源"
+[RSS][SchedulerProcess] Skipped (no relevant category): "《揭秘日》电影终极预告放出，导演斯皮尔伯格称人类并非宇宙唯一智慧文明"
+[RSS][SchedulerProcess] Skipped (no relevant category): "开源鸿蒙 OpenHarmony 6.1 LTS 长期维护版发布，明确 7.X 版本 9 月商用"
+[RSS][SchedulerProcess] Skipped (no relevant category): "10 年了还在更：《无人深空》游戏获“虫群”更新，聚焦太空战斗"
+[RSS][SchedulerProcess] Skipped (no relevant category): "zalman 推出 18W/m·K 高导热系数硅脂 ZM-STC11"
+[RSS][SchedulerProcess] Skipped (no relevant category): "照片变身搞笑小游戏：任天堂全新手游《Pictonico!》上线"
+[RSS][SchedulerProcess] Skipped (no relevant category): "DeepSeek 服务“部分中断”半小时，现已修复"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称 LG 电子就出售电视业务与海信交涉"
+[RSS][SchedulerProcess] Skipped (no relevant category): "极米 MIRA 4K 系列激光电视开售：0.175:1 投射比、哈曼卡顿 36W 扬声器，6499 元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "工信部公告新版电器电子产品有害物质管控产品目录，新增智能手环手表、耳机等 23 种产品"
+[RSS][SchedulerProcess] Skipped (no relevant category): "鸿蒙智行尚界 H5 改款预售：新增 15.6 英寸随动屏、W-HUD 抬头显示等，16.98 万元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "LG Display 宣布世界首款 240Hz RGB 条纹子像素 OLED 面板进入量产"
+[RSS][SchedulerProcess] Skipped (no relevant category): "“全球最小智能戒指”：Oura Ring 5 曝光，覆盖追踪 50+ 健康数据"
+[RSS][SchedulerProcess] Skipped (no relevant category): "华为相关负责人：鸿蒙生态设备累计数已超 13 亿台"
+[RSS][SchedulerProcess] Skipped (no relevant category): "索尼家庭影院 Trio 发布：360 智能穹顶声场 3.0，售价 14990 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "小米蓝牙音箱 C 上新：3D 幻彩灯光、多台串联播放，到手价 269 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "中兴 G5 Pro 高性能版 5G 移动路由器 CPE 开售：双 2.5G 网口，2099 元"
+[RSS][SchedulerProcess] Skipped (no relevant category): "奇瑞与日企合资公司将在日本推出轻型电动汽车：与油车价格接近，2027 年春季上市"
+[RSS][SchedulerProcess] Skipped (no relevant category): "索尼电视 9 系、8 系、7 系二代发布：可选 True RGB 真彩原色，10999 元起"
+[RSS][SchedulerProcess] Skipped (no relevant category): "长城 H10 更多信息公布，归元平台首款方盒子车型"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称英伟达黄仁勋将加入清华大学经管学院顾问委员会，苹果库克是委员会主席"
+[RSS][SchedulerProcess] Skipped (no relevant category): "《天外世界》游戏原版下架，Steam 等商店改售《太空人之选》版本"
+[RSS][SchedulerProcess] Skipped (no relevant category): "你想在上海打 TI 吗？《DOTA2》TI15 中国赛区公开预选赛报名开启"
+[RSS][SchedulerProcess] Skipped (no relevant category): "Win11 学院：如何在 Windows 11 26200.8524 启用“低延迟配置”功能"
+[RSS][SchedulerProcess] Skipped (no relevant category): "2026 粤港澳大湾区车展官方展位图公布：张雪机车参展，比亚迪首设芯片展区，近百台老爷车首次同台亮相"
+[RSS][SchedulerProcess] Skipped (no relevant category): "消息称某厂 2nm 新机测试 1 亿方形前置摄像头，预计为 OPPO 旗下"
+[RSS][SchedulerProcess] Skipped (no relevant category): "京东红包今日 10 点再加码：猜数字抢 5 元红包"
+[RSS][SchedulerProcess] Skipped (no relevant category): "免费看：小红书官宣成为 2026 年美加墨世界杯持权转播商"
+[RSS][SchedulerProcess] Skipped (no relevant category): "启境汽车回应 GT7 内饰品鉴活动嘉宾争议：并非品牌代言人，已停止相关内容传播"
+[RSS][SchedulerProcess] Skipped (no relevant category): "华为何刚宣布时代少年团成为 nova 代言人"
+[RSS][SchedulerProcess] Skipped (no relevant category): "B站大会员狂促继续：年卡 102 元新低，京东 PLUS 会员联名卡 148 元等"
+[RSS][SchedulerProcess] Fetching: 少数派
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "免费试读 | 零基础美术启蒙，该如何准备适合的美术器材"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "派早报：鸿蒙智行发布新一代问界 M9、蔚来正式推出 ES9 等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "客制化键盘｜近期值得一看的套件与键帽：怪诞主题、复古创新与静电容"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "派早报：法拉利发布首款纯电跑车 Luce、森海塞尔发布 Momentum 5 耳机等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "社区速递 142 | 派友的四月「情绪账单」、换壳重生的鼠标与仿真柠檬树"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "Hyrox 首战攻略：从新手到完赛，普通人亦可澎湃赛场"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "App+1 | 有太多香水不知道用哪个？我做了一款能帮你选香水的记录 App"
+[RSS][SchedulerProcess] Fetching: 雷峰网
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "官宣成为世界杯持权转播商，小红书加速打造“社区的社区”"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "领世而上，全新一代问界M9正式上市，官方零售价47.98万元起"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "拼多多发布Q1财报，陈磊：全力推进品牌自营业务，三年再造一个拼多多"
+[RSS][SchedulerProcess] Skipped (low AI relevance 32): "一人9篇ICRA！MIT Keynote定档+14展商抢发，开幕倒计时5天引爆"
+[RSS][SchedulerProcess] Skipped (low AI relevance 8): "第三代元PLUS 11.99万元起正式上市，全系搭载第二代刀片电池及闪充技术"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "珀乐互动基于Wan2.7打造《羞羞的铁拳》漫剧，制作效率提升超90%"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "经过华为、传音、拓竹历炼，95后打造AI母婴界特斯拉"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "有钱能为所欲为？黄仁勋在夜市买烤玉米，「付费插队」引热议；投毒杀害董事长，三体公司原CEO许垚被执行死刑；华为成立「莫邪」工作小组"
+[RSS][SchedulerProcess] Fetching: 量子位
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "「斯隆奖」得主戴亮全职加盟复旦"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "清华有了新老师：黄仁勋"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "1400亿Agent入场，“流量”这条护城河要塌了"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "5秒完成3D场景编辑，北大&港中文&上海AI Lab搞出VGGT-Edit，120倍加速太炸了"
+[RSS][SchedulerProcess] Skipped (low AI relevance 8): "触觉具身来了个梦之队：天使轮近亿"
+[RSS][SchedulerProcess] Fetching: 雪球
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "2026年水电旺季投资机会分析：多重利好共振下的板块机遇"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "聊聊泡泡玛特"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "产品差异化与AI能源互联网——为什么高能电池过去没有，未来更不会成为光伏"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "打破周期叙事：从奈飞的谷底反转，看泡泡玛特的估值破局"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "随想281 长协改变存储的估值逻辑"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "A股为何择时友好，红利为什么适合躺平？一篇论文给出了数学解释"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "一鲸落，万物生"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "粮厂研究员Will | 26年Q1小米财报点评：从烧钱造车，到押注物理AI"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "Anthropic不会一直领先，腾讯也未被淘汰：关于大模型竞争下半场的几点判断"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "杭州银行2026年一季报点评"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "随便聊聊韬定律5.26"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "长期定投纳指，阶段止盈vs从不止盈，哪个更赚钱？"
+[RSS][SchedulerProcess] Fetching: IT之家财经
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "网友反馈其三星 Galaxy S25 FE 手机夜间充电爆炸，事发时使用第三方 20W 充电器"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "蔚来新乐道 L60 汽车 5 月 29 日在粤港澳大湾区车展发布并预售"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "初探微软 Win11 共享音频功能：1 台电脑 2 副耳机同步播放"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "天象巨龙：微星预热 40 周年纪念 Draco Epic 特别版 MEG ACE 主板"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "优衣库、沪上阿姨、汉堡王、可口可乐、迪卡侬等被通报，App 或小程序涉及收集非必要个人信息等"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "vivo 首款无线头戴降噪耳机卖点公布：75 小时续航、58dB 降噪，5 月 29 日发布"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "比亚迪全新腾势 Z9GT 两个半月累计交付超 1 万台，26.98 万元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "海韵 2026 台北国际电脑展将展 80 PLUS Ruby 认证 5200W 电源"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "《揭秘日》电影终极预告放出，导演斯皮尔伯格称人类并非宇宙唯一智慧文明"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "开源鸿蒙 OpenHarmony 6.1 LTS 长期维护版发布，明确 7.X 版本 9 月商用"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "10 年了还在更：《无人深空》游戏获“虫群”更新，聚焦太空战斗"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "zalman 推出 18W/m·K 高导热系数硅脂 ZM-STC11"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "照片变身搞笑小游戏：任天堂全新手游《Pictonico!》上线"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "DeepSeek 服务“部分中断”半小时，现已修复"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称 LG 电子就出售电视业务与海信交涉"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "极米 MIRA 4K 系列激光电视开售：0.175:1 投射比、哈曼卡顿 36W 扬声器，6499 元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "工信部公告新版电器电子产品有害物质管控产品目录，新增智能手环手表、耳机等 23 种产品"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "鸿蒙智行尚界 H5 改款预售：新增 15.6 英寸随动屏、W-HUD 抬头显示等，16.98 万元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "LG Display 宣布世界首款 240Hz RGB 条纹子像素 OLED 面板进入量产"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "“全球最小智能戒指”：Oura Ring 5 曝光，覆盖追踪 50+ 健康数据"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "华为相关负责人：鸿蒙生态设备累计数已超 13 亿台"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "索尼家庭影院 Trio 发布：360 智能穹顶声场 3.0，售价 14990 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "小米蓝牙音箱 C 上新：3D 幻彩灯光、多台串联播放，到手价 269 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "中兴 G5 Pro 高性能版 5G 移动路由器 CPE 开售：双 2.5G 网口，2099 元"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "奇瑞与日企合资公司将在日本推出轻型电动汽车：与油车价格接近，2027 年春季上市"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "索尼电视 9 系、8 系、7 系二代发布：可选 True RGB 真彩原色，10999 元起"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "长城 H10 更多信息公布，归元平台首款方盒子车型"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称英伟达黄仁勋将加入清华大学经管学院顾问委员会，苹果库克是委员会主席"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "《天外世界》游戏原版下架，Steam 等商店改售《太空人之选》版本"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "你想在上海打 TI 吗？《DOTA2》TI15 中国赛区公开预选赛报名开启"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "Win11 学院：如何在 Windows 11 26200.8524 启用“低延迟配置”功能"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "2026 粤港澳大湾区车展官方展位图公布：张雪机车参展，比亚迪首设芯片展区，近百台老爷车首次同台亮相"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "消息称某厂 2nm 新机测试 1 亿方形前置摄像头，预计为 OPPO 旗下"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "京东红包今日 10 点再加码：猜数字抢 5 元红包"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "免费看：小红书官宣成为 2026 年美加墨世界杯持权转播商"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "启境汽车回应 GT7 内饰品鉴活动嘉宾争议：并非品牌代言人，已停止相关内容传播"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "华为何刚宣布时代少年团成为 nova 代言人"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "B站大会员狂促继续：年卡 102 元新低，京东 PLUS 会员联名卡 148 元等"
+[RSS][SchedulerProcess] [Fetch] Done in 25.5s
+[Fetch] Sources: 10, Fetched: 245, New: 0, Errors: 0
+ GET /career?category=communication 200 in 3.2s (next.js: 2.9s, application-code: 305ms)
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] Fetch completed: [
+  {
+    sourceId: 'bilibili-vsearch-upward-management',
+    sourceName: 'B站-视频搜索：向上管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-cross-team-communication',
+    sourceName: 'B站-视频搜索：跨部门沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  }
+]
+[Career][SchedulerProcess] [Fetch] Done in 153.4s
+[Fetch] Sources: 2, Fetched: 0, New: 0, Updated: 0, Errors: 2
+[Career][SchedulerProcess] [Cache] Memory: 0/300
+ GET /training 200 in 72ms (next.js: 13ms, application-code: 59ms)
+ GET /career 200 in 49ms (next.js: 2ms, application-code: 47ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.huxiucdn.com%2Farticle%2Fcontent%2F26-05-27%2Fbd702abe-3840-490d-85e9-7ecd8414fc4f.png%3FimageView2%2F2%2Fw%2F1000%2Fformat%2Fpng%2Finterlace%2F1%2Fq%2F85 200 in 708ms (next.js: 674ms, application-code: 34ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1454165804606-c3d57bc86b40%3Fw%3D800%26h%3D400%26fit%3Dcrop 200 in 707ms (next.js: 673ms, application-code: 34ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.alicdn.com%2Fimgextra%2Fi1%2FO1CN01L12MaQ1ZwfYKk7Yrc_!!6000000003259-2-tps-900-594.png 200 in 762ms (next.js: 674ms, application-code: 88ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.huxiucdn.com%2Farticle%2Fcontent%2F26-05-25%2F67da119d-4b2d-47ae-a33c-9fd79e08a5c9.png%3FimageView2%2F2%2Fw%2F1000%2Fformat%2Fpng%2Finterlace%2F1%2Fq%2F85 200 in 1073ms (next.js: 673ms, application-code: 400ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.36krcdn.com%2Fhsossms%2F20260527%2Fv2_2ebe7b64a3c94c119f5948d47ef02632%406391638_oswg125201oswg1080oswg569_img_000%3Fx-oss-process%3Dimage%2Fformat%2Cjpg%2Finterlace%2C1 200 in 1078ms (next.js: 675ms, application-code: 403ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2F723384dc-d9df-11ed-8fc2-00163e0b5ff3.jpg 200 in 1167ms (next.js: 665ms, application-code: 502ms)
+ GET /career 200 in 323ms (next.js: 38ms, application-code: 285ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F85ddeba4-daa1-11ed-95a1-00163e0b5ff3.png 200 in 697ms (next.js: 3ms, application-code: 694ms)
+ GET /career 200 in 370ms (next.js: 2ms, application-code: 368ms)
+ GET /career 200 in 200ms (next.js: 2ms, application-code: 198ms)
+ GET /career 200 in 45ms (next.js: 3ms, application-code: 42ms)
+ GET /articles 200 in 803ms (next.js: 711ms, application-code: 92ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F0436ac24-a175-446b-93ae-22d3919a6140.jpg%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 179ms (next.js: 1400µs, application-code: 177ms)
+ GET /articles 200 in 35ms (next.js: 1831µs, application-code: 33ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.36krcdn.com%2Fhsossms%2F20260524%2Fv2_bb55f36da7ed440dbb2362e61818bdcf%406022551_oswg2867771oswg4608oswg3072_img_jpg%3Fx-oss-process%3Dimage%2Fquality%2Cq_80%2Fformat%2Cjpg%2Finterlace%2C1 200 in 432ms (next.js: 9ms, application-code: 423ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1518770660439-4636190af475%3Fw%3D800%26h%3D400%26fit%3Dcrop 200 in 474ms (next.js: 1369µs, application-code: 473ms)
+ GET /articles 200 in 32ms (next.js: 2ms, application-code: 30ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F37b4423c-088c-4da3-9da1-e7265f847f95.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 620ms (next.js: 1415µs, application-code: 618ms)
+ GET /articles 200 in 27ms (next.js: 1955µs, application-code: 26ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F1c108fd2-447b-419f-ab9c-c837c7e90eda.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 1269ms (next.js: 1357µs, application-code: 1268ms)
+ GET /articles 200 in 29ms (next.js: 1809µs, application-code: 28ms)
+ GET /articles?category=product-management 200 in 24ms (next.js: 1808µs, application-code: 22ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2Fwp-files%2F2026%2F05%2F4nojXqQj701dV1uN7dYS.jpeg 200 in 325ms (next.js: 1538µs, application-code: 324ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2Fdeb05e96-d9df-11ed-8fc2-00163e0b5ff3.jpg 200 in 377ms (next.js: 1441µs, application-code: 375ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F7b018376-da8d-11ed-8c17-00163e0b5ff3.jpg 200 in 444ms (next.js: 1274µs, application-code: 443ms)
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/api/image-proxy'
+}
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2025%2F01%2F14%2F3a665c0c-d24c-11ef-affb-00163e09d72f.png 200 in 555ms (next.js: 1587µs, application-code: 554ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F7b0b51b2-da8d-11ed-96fe-00163e0b5ff3.jpg 200 in 225ms (next.js: 1510µs, application-code: 223ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2025%2F03%2F04%2F4deb97f4-f8be-11ef-8fb7-00163e09d72f.png 200 in 546ms (next.js: 1347µs, application-code: 545ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2025%2F03%2F06%2F950cff24-fa62-11ef-9972-00163e09d72f.png 200 in 558ms (next.js: 1340µs, application-code: 556ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F5c31dc70-da8d-11ed-8c17-00163e0b5ff3.jpg 200 in 82ms (next.js: 1848µs, application-code: 80ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2026%2F05%2F28%2F64e729f0-5a01-11f1-9542-00163e09d72f.png 200 in 557ms (next.js: 1279µs, application-code: 556ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F8818f74c-da8d-11ed-96fe-00163e0b5ff3.jpg 500 in 2.2s (next.js: 2.0s, application-code: 232ms)
+ GET /articles?category=tech 200 in 1117ms (next.js: 968ms, application-code: 149ms)
+ GET /articles?category=tech 200 in 745ms (next.js: 594ms, application-code: 151ms)
+ GET /articles?category=tech 200 in 58ms (next.js: 2ms, application-code: 55ms)
+ GET /articles?category=tech 200 in 30ms (next.js: 1737µs, application-code: 28ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2Fc915f1e6-3cb2-454d-afdf-699ef91cd6a8.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 291ms (next.js: 1240µs, application-code: 290ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2Fb766dc41-20d0-4eee-89da-9e6ccc0e152c.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 387ms (next.js: 1423µs, application-code: 386ms)
+ GET /articles?category=tech 200 in 141ms (next.js: 2ms, application-code: 139ms)
+ GET /articles?category=tech 200 in 24ms (next.js: 1825µs, application-code: 22ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F71116920-683a-4c67-9b40-7e29df840a14.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto%2Fauto-orient%2Co_1 200 in 1069ms (next.js: 7ms, application-code: 1061ms)
+ GET /articles?category=tech 200 in 31ms (next.js: 1903µs, application-code: 29ms)
+ GET /articles?category=ai 200 in 25ms (next.js: 1565µs, application-code: 24ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F113b14fb-393a-49b7-b7b2-be024774733e.jpg%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 115ms (next.js: 1238µs, application-code: 114ms)
+ GET /articles?category=ai 200 in 32ms (next.js: 1860µs, application-code: 31ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fstatic.leiphone.com%2Fuploads%2Fnew%2Fimages%2F20260528%2F6a17a07a541aa.png%3FimageMogr2%2Fquality%2F90 200 in 378ms (next.js: 1607µs, application-code: 376ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F23e700fa-f407-48eb-a328-0b53698e50d8.jpg%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 460ms (next.js: 1117µs, application-code: 459ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2F2cf69318-4399-4067-af0a-a6b188f55132.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 516ms (next.js: 1379µs, application-code: 515ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimg.ithome.com%2Fnewsuploadfiles%2F2026%2F5%2Fff24d770-15e2-47a0-838e-b1a23c7704ae.png%3Fx-bce-process%3Dimage%2Fformat%2Cf_auto 200 in 577ms (next.js: 1485µs, application-code: 576ms)
+ GET /articles?category=ai 200 in 139ms (next.js: 1773µs, application-code: 137ms)
+ GET /articles?category=ai 200 in 42ms (next.js: 2ms, application-code: 39ms)
+ GET /articles?category=finance 200 in 22ms (next.js: 2ms, application-code: 20ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fxqimg.imedao.com%2F19e643909c34f63f3feaa18a.png 200 in 180ms (next.js: 1537µs, application-code: 178ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1611974789855-9c2a0a7236a3%3Fw%3D800%26h%3D400%26fit%3Dcrop 200 in 310ms (next.js: 1799µs, application-code: 308ms)
+ GET /articles?category=finance 200 in 52ms (next.js: 2ms, application-code: 49ms)
+ GET /articles?category=finance 200 in 40ms (next.js: 2ms, application-code: 38ms)
+ GET /career 200 in 51ms (next.js: 12ms, application-code: 39ms)
+ GET /career?category=leadership 200 in 29ms (next.js: 2ms, application-code: 27ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2Fd34ae8a8-d9e1-11ed-9d7a-00163e0b5ff3.jpg 200 in 343ms (next.js: 1517µs, application-code: 341ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F76dafe6a-da9e-11ed-9b82-00163e0b5ff3.png 200 in 488ms (next.js: 1349µs, application-code: 487ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2F7791bb84-daa1-11ed-aee8-00163e0b5ff3.png 200 in 541ms (next.js: 1974µs, application-code: 539ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2024%2F07%2F02%2Fe8e89704-384b-11ef-90af-00163e142b65.png 200 in 654ms (next.js: 1595µs, application-code: 652ms)
+ GET /career?category=leadership 200 in 203ms (next.js: 1691µs, application-code: 202ms)
+ GET /career?category=teamwork 200 in 87ms (next.js: 2ms, application-code: 85ms)
+ GET /career?category=teamwork 200 in 37ms (next.js: 1711µs, application-code: 35ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2F6ffcbdf6-d9de-11ed-9d2f-00163e0b5ff3.jpg 200 in 116ms (next.js: 1195µs, application-code: 115ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2F60f5e1f2-d9de-11ed-8fc2-00163e0b5ff3.jpg 200 in 156ms (next.js: 1495µs, application-code: 155ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2024%2F07%2F02%2F083e0566-386b-11ef-90af-00163e142b65.png 200 in 196ms (next.js: 1238µs, application-code: 195ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2F558c696660cb0c7b9d7f9d815e833dbaa0fd52d5.jpg 200 in 298ms (next.js: 1564µs, application-code: 296ms)
+ GET /career?category=teamwork 200 in 151ms (next.js: 2ms, application-code: 149ms)
+ GET /career?category=teamwork 200 in 35ms (next.js: 1914µs, application-code: 33ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2026%2F03%2F20%2F4eb554fc-243e-11f1-9440-00163e09d72f.jpg 200 in 673ms (next.js: 1303µs, application-code: 671ms)
+ GET /career?category=teamwork 200 in 33ms (next.js: 1787µs, application-code: 31ms)
+ GET /career?category=productivity 200 in 29ms (next.js: 1717µs, application-code: 27ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F14%2Fc60d0eee-daa1-11ed-af94-00163e0b5ff3.png 200 in 9ms (next.js: 1780µs, application-code: 7ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2026%2F05%2F10%2F9ed4c0c8-4c3c-11f1-a934-00163e4b86a1.jpg 200 in 6ms (next.js: 2ms, application-code: 4ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2024%2F07%2F29%2Fea2d5256-4dab-11ef-8321-00163e142b65.png 200 in 5ms (next.js: 1933µs, application-code: 4ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2024%2F10%2F31%2F5301697a-972b-11ef-8da6-00163e142b65.jpg 200 in 5ms (next.js: 1623µs, application-code: 3ms)
+ GET /career?category=communication 200 in 36ms (next.js: 4ms, application-code: 32ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F08%2F11%2F2ff7472c-380b-11ee-8bde-00163e0b5ff3.jpg 200 in 5ms (next.js: 1678µs, application-code: 3ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fi2.hdslb.com%2Fbfs%2Farchive%2F71a8cf0736c119c83e86dcc7775d0248a02cb9b9.png%401280w_720h_1c 200 in 4ms (next.js: 1511µs, application-code: 3ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2Fe4d4f48344557fe962853924da7dbf75e03fc215.jpg%401280w_720h_1c 200 in 5ms (next.js: 1528µs, application-code: 3ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fi2.hdslb.com%2Fbfs%2Farchive%2F8099da63b53c92d04befb7f16691956886b3828f.jpg%401280w_720h_1c 200 in 122ms (next.js: 1583µs, application-code: 121ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2F5fc0e6764bd206994ea057564bce76da11596c66.jpg%401280w_720h_1c 200 in 190ms (next.js: 1609µs, application-code: 188ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2F8b744e8e-d9eb-11ed-9d7a-00163e0b5ff3.jpg 200 in 252ms (next.js: 1717µs, application-code: 250ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fimage.woshipm.com%2F2023%2F04%2F13%2Fedbbf7ba-d9ee-11ed-a6e8-00163e0b5ff3.jpg 200 in 262ms (next.js: 1961µs, application-code: 260ms)
+ GET /career?category=communication 200 in 37ms (next.js: 2ms, application-code: 34ms)
+ GET / 200 in 718ms (next.js: 657ms, application-code: 61ms)
+ GET / 200 in 29ms (next.js: 1912µs, application-code: 27ms)
+ GET /training 200 in 23ms (next.js: 8ms, application-code: 15ms)
+ GET /training/programming 200 in 673ms (next.js: 650ms, application-code: 23ms)
+ POST /api/training/programming/sessions 200 in 1117ms (next.js: 1101ms, application-code: 16ms)
+ GET /training/programming/quiz/23?domains=database&difficulty=intermediate 200 in 1791ms (next.js: 1632ms, application-code: 159ms)
+ GET /api/training/programming/sessions/23 200 in 971ms (next.js: 953ms, application-code: 17ms)
+ GET /training 200 in 58ms (next.js: 28ms, application-code: 30ms)
+ GET / 200 in 34ms (next.js: 6ms, application-code: 29ms)
+[Career][SchedulerProcess] 
+[Fetch] Starting at 2026-05-28T05:18:30.821Z
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[人人都是产品经理-职场] Skipped (interval not reached)
+[人人都是产品经理-运营] Skipped (interval not reached)
+[人人都是产品经理-管理] Skipped (interval not reached)
+[人人都是产品经理-标签：领导力] Skipped (interval not reached)
+[人人都是产品经理-标签：战略] Skipped (interval not reached)
+[人人都是产品经理-标签：变革] Skipped (interval not reached)
+[人人都是产品经理-标签：变革管理] Skipped (interval not reached)
+[人人都是产品经理-标签：组织变革] Skipped (interval not reached)
+[人人都是产品经理-标签：沟通] Skipped (interval not reached)
+[人人都是产品经理-标签：向上管理] Skipped (interval not reached)
+[人人都是产品经理-标签：反馈] Skipped (interval not reached)
+[人人都是产品经理-标签：复盘] Skipped (interval not reached)
+[少数派] Skipped (interval not reached)
+[知乎-热榜] Starting fetch...
+ GET / 200 in 68ms (next.js: 3ms, application-code: 65ms)
+ GET / 200 in 27ms (next.js: 2ms, application-code: 25ms)
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[知乎-热榜] Fetch failed: fetch failed
+[Career][SchedulerProcess] [知乎-日报] Skipped (interval not reached)
+[Career][SchedulerProcess] [36氪-文章资讯] Skipped (interval not reached)
+[Career][SchedulerProcess] [虎嗅] Skipped (interval not reached)
+[Career][SchedulerProcess] [钛媒体] Skipped (interval not reached)
+[Career][SchedulerProcess] [爱范儿] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[哔哩哔哩] Fetch failed: fetch failed
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Skipped (interval not reached)
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] Fetch completed: [
+  {
+    sourceId: 'zhihu-hotlist-career',
+    sourceName: '知乎-热榜',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-video-curation',
+    sourceName: '哔哩哔哩',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-workplace-communication',
+    sourceName: 'B站-视频搜索：职场沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-leadership',
+    sourceName: 'B站-视频搜索：领导力',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-upward-management',
+    sourceName: 'B站-视频搜索：向上管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-cross-team-communication',
+    sourceName: 'B站-视频搜索：跨部门沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  }
+]
+[Career][SchedulerProcess] [Fetch] Done in 364.3s
+[Fetch] Sources: 6, Fetched: 0, New: 0, Updated: 0, Errors: 6
+[Cache] Memory: 0/300
+ GET / 200 in 487ms (next.js: 3ms, application-code: 484ms)
+ GET / 200 in 387ms (next.js: 4ms, application-code: 384ms)
+ GET / 200 in 119ms (next.js: 3ms, application-code: 116ms)
+ GET / 200 in 167ms (next.js: 97ms, application-code: 70ms)
+ GET / 200 in 150ms (next.js: 80ms, application-code: 70ms)
+ GET / 200 in 74ms (next.js: 31ms, application-code: 43ms)
+ GET / 200 in 92ms (next.js: 35ms, application-code: 57ms)
+ GET / 200 in 78ms (next.js: 30ms, application-code: 48ms)
+ GET / 200 in 74ms (next.js: 30ms, application-code: 44ms)
+ GET / 200 in 90ms (next.js: 34ms, application-code: 57ms)
+[Career][SchedulerProcess] 
+[Fetch] Starting at 2026-05-28T05:29:35.138Z
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[Career][SchedulerProcess] [人人都是产品经理-职场] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-职场] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-运营] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-运营] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-管理] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Fetched 14 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Fetched 8 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Fetched 6 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Fetched 15 items
+[Career][SchedulerProcess] [少数派] Skipped (interval not reached)
+[Career][SchedulerProcess] [知乎-热榜] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+ GET /tools/prd 200 in 1438ms (next.js: 1318ms, application-code: 120ms)
+ GET / 200 in 184ms (next.js: 10ms, application-code: 173ms)
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] [知乎-热榜] Fetch failed: fetch failed
+[Career][SchedulerProcess] [知乎-日报] Skipped (interval not reached)
+[Career][SchedulerProcess] [36氪-文章资讯] Skipped (interval not reached)
+[Career][SchedulerProcess] [虎嗅] Skipped (interval not reached)
+[Career][SchedulerProcess] [钛媒体] Skipped (interval not reached)
+[Career][SchedulerProcess] [爱范儿] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] [哔哩哔哩] Fetch failed: fetch failed
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Starting fetch...
+ POST /api/tools/prd 200 in 18.8s (next.js: 986ms, application-code: 17.8s)
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Fetched 49 items
+ GET /tools/prd 200 in 156ms (next.js: 34ms, application-code: 121ms)
+ GET / 200 in 157ms (next.js: 9ms, application-code: 148ms)
+ GET /tools/prd 200 in 44ms (next.js: 2ms, application-code: 42ms)
+ GET / 200 in 28ms (next.js: 1753µs, application-code: 26ms)
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Starting fetch...
+ GET /tools/prd 200 in 148ms (next.js: 60ms, application-code: 88ms)
+ GET / 200 in 59ms (next.js: 9ms, application-code: 49ms)
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Fetched 20 items
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Starting fetch...
+ GET /tools/prd 200 in 18ms (next.js: 2ms, application-code: 15ms)
+ GET /tools 200 in 858ms (next.js: 819ms, application-code: 39ms)
+ GET /training 200 in 620ms (next.js: 586ms, application-code: 34ms)
+ GET /tools 200 in 21ms (next.js: 6ms, application-code: 15ms)
+ GET /tools/prd 200 in 24ms (next.js: 8ms, application-code: 16ms)
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Starting fetch...
+ GET /tools/prd 200 in 182ms (next.js: 112ms, application-code: 70ms)
+ GET /tools/prd 200 in 30ms (next.js: 2ms, application-code: 27ms)
+ GET /tools/prd 200 in 55ms (next.js: 2ms, application-code: 52ms)
+ GET /tools/prd 200 in 28ms (next.js: 2ms, application-code: 26ms)
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] Fetch completed: [
+  {
+    sourceId: 'woshipm-career',
+    sourceName: '人人都是产品经理-职场',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 15,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-operation',
+    sourceName: '人人都是产品经理-运营',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-manage',
+    sourceName: '人人都是产品经理-管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-leadership',
+    sourceName: '人人都是产品经理-标签：领导力',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 2,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-strategy',
+    sourceName: '人人都是产品经理-标签：战略',
+    fetched: 14,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-change',
+    sourceName: '人人都是产品经理-标签：变革',
+    fetched: 8,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-change-mgmt',
+    sourceName: '人人都是产品经理-标签：变革管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-org-change',
+    sourceName: '人人都是产品经理-标签：组织变革',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 15,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-communication',
+    sourceName: '人人都是产品经理-标签：沟通',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-upward-management',
+    sourceName: '人人都是产品经理-标签：向上管理',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 4,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-feedback',
+    sourceName: '人人都是产品经理-标签：反馈',
+    fetched: 6,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-review',
+    sourceName: '人人都是产品经理-标签：复盘',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'zhihu-hotlist-career',
+    sourceName: '知乎-热榜',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-video-curation',
+    sourceName: '哔哩哔哩',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-weekly',
+    sourceName: '哔哩哔哩-每周必看',
+    fetched: 49,
+    newContents: 0,
+    updatedContents: 49,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-career-ranking',
+    sourceName: '哔哩哔哩-职场热榜',
+    fetched: 20,
+    newContents: 0,
+    updatedContents: 20,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-vsearch-workplace-communication',
+    sourceName: 'B站-视频搜索：职场沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-leadership',
+    sourceName: 'B站-视频搜索：领导力',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-upward-management',
+    sourceName: 'B站-视频搜索：向上管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-cross-team-communication',
+    sourceName: 'B站-视频搜索：跨部门沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  }
+]
+[Career][SchedulerProcess] [Fetch] Done in 489.3s
+[Fetch] Sources: 20, Fetched: 187, New: 0, Updated: 105, Errors: 6
+[Career][SchedulerProcess] [Cache] Invalidated due to new/updated content
+[Career][SchedulerProcess] [Cache] Memory: 0/300
+ GET /tools/prd 200 in 157ms (next.js: 3ms, application-code: 154ms)
+ GET /tools/prd 200 in 66ms (next.js: 3ms, application-code: 63ms)
+ GET /tools/prd 200 in 108ms (next.js: 41ms, application-code: 68ms)
+ GET /tools/prd 200 in 25ms (next.js: 2ms, application-code: 23ms)
+ POST /api/tools/prd 200 in 16.2s (next.js: 963ms, application-code: 15.2s)
+ POST /api/tools/prd 200 in 17.4s (next.js: 2ms, application-code: 17.4s)
+ GET /tools/prd 200 in 198ms (next.js: 123ms, application-code: 75ms)
+ GET /tools/prd 200 in 28ms (next.js: 2ms, application-code: 26ms)
+ GET /tools/prd 200 in 54ms (next.js: 4ms, application-code: 50ms)
+ GET /tools/prd 200 in 30ms (next.js: 1909µs, application-code: 28ms)
+[Career][SchedulerProcess] 
+[Fetch] Starting at 2026-05-28T05:42:44.496Z
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[Career][SchedulerProcess] [人人都是产品经理-职场] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-运营] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Skipped (interval not reached)
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Skipped (interval not reached)
+[Career][SchedulerProcess] [少数派] Skipped (interval not reached)
+[Career][SchedulerProcess] [知乎-热榜] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.app/zhihu/hotlist?filter=产品经理|职场|沟通|汇报|领导力|效率|时间管理|跨部门|项目管理|OKR|面试: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.rssforever.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 503: Service Unavailable
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://i.scnu.edu.cn/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: HTTP 404: Not Found
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.qiuyuair.com/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rss.feiyuyu.net/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[Career][SchedulerProcess] Fetch attempt 1 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+ GET /tools/prd 200 in 152ms (next.js: 4ms, application-code: 149ms)
+[Career][SchedulerProcess] Fetch attempt 2 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+ GET /tools/prd 200 in 73ms (next.js: 3ms, application-code: 70ms)
+[Career][SchedulerProcess] Fetch attempt 3 failed for https://rsshub.anyant.xyz/zhihu/hotlist?filter=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86|%E8%81%8C%E5%9C%BA|%E6%B2%9F%E9%80%9A|%E6%B1%87%E6%8A%A5|%E9%A2%86%E5%AF%BC%E5%8A%9B|%E6%95%88%E7%8E%87|%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86|%E8%B7%A8%E9%83%A8%E9%97%A8|%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86|OKR|%E9%9D%A2%E8%AF%95: fetch failed
+[知乎-热榜] Fetch failed: fetch failed
+[Career][SchedulerProcess] [知乎-日报] Skipped (interval not reached)
+[Career][SchedulerProcess] [36氪-文章资讯] Skipped (interval not reached)
+[Career][SchedulerProcess] [虎嗅] Skipped (interval not reached)
+[Career][SchedulerProcess] [钛媒体] Skipped (interval not reached)
+[Career][SchedulerProcess] [爱范儿] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩] Starting fetch...
+[Career][SchedulerProcess] Fetch attempt 1 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 2 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[Career][SchedulerProcess] Fetch attempt 3 failed for http://localhost:3001/api/career/video-feed?platform=bilibili: fetch failed
+[哔哩哔哩] Fetch failed: fetch failed
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Skipped (interval not reached)
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Skipped (interval not reached)
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Starting fetch...
+ GET /tools/prd 200 in 55ms (next.js: 2ms, application-code: 53ms)
+ GET /tools/prd 200 in 109ms (next.js: 42ms, application-code: 67ms)
+ GET /tools/prd 200 in 26ms (next.js: 3ms, application-code: 24ms)
+ POST /api/tools/prd 200 in 9.4s (next.js: 911ms, application-code: 8.5s)
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Starting fetch...
+ POST /api/tools/prd 200 in 20.6s (next.js: 1729µs, application-code: 20.6s)
+ GET /tools 200 in 36ms (next.js: 12ms, application-code: 23ms)
+ GET /tools/prd 200 in 21ms (next.js: 1889µs, application-code: 19ms)
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Fetch failed: fetch failed
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Fetch failed: fetch failed
+[Career][SchedulerProcess] Fetch completed: [
+  {
+    sourceId: 'zhihu-hotlist-career',
+    sourceName: '知乎-热榜',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-video-curation',
+    sourceName: '哔哩哔哩',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-workplace-communication',
+    sourceName: 'B站-视频搜索：职场沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-leadership',
+    sourceName: 'B站-视频搜索：领导力',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-upward-management',
+    sourceName: 'B站-视频搜索：向上管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-cross-team-communication',
+    sourceName: 'B站-视频搜索：跨部门沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  }
+]
+[Fetch] Done in 356.2s
+[Fetch] Sources: 6, Fetched: 0, New: 0, Updated: 0, Errors: 6
+[Cache] Memory: 0/300
+ GET /tools/prd 200 in 58ms (next.js: 2ms, application-code: 55ms)
+ GET /tools/prd 200 in 33ms (next.js: 2ms, application-code: 31ms)
+ GET /tools 200 in 16ms (next.js: 2ms, application-code: 14ms)

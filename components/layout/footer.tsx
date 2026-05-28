@@ -86,6 +86,17 @@ export function Footer() {
               </ul>
             </div>
 
+            <div>
+              <h3 className="font-semibold mb-3">
+                <Link href="/tools" className="hover:text-primary transition-colors">实用工具</Link>
+              </h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/tools/prd" className="hover:text-primary">PRD 生成</Link>
+                </li>
+              </ul>
+            </div>
+
           </div>
 
           <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">

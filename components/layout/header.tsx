@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Search, Menu, X, ChevronDown, Briefcase, Home, Newspaper, BookOpen } from 'lucide-react';
+import { Search, Menu, X, ChevronDown, Briefcase, Home, Newspaper, BookOpen, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -27,12 +27,17 @@ const trainingModules = [
   { href: '/training/programming', label: '编程知识训练' },
 ];
 
+const toolModules = [
+  { href: '/tools/prd', label: 'PRD 生成' },
+];
+
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState(false);
   const [isCareerDropdownOpen, setIsCareerDropdownOpen] = useState(false);
   const [isTrainingDropdownOpen, setIsTrainingDropdownOpen] = useState(false);
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,6 +187,45 @@ export function Header() {
                 </div>
               </div>
             </div>
+
+            <div
+              className="relative"
+              onMouseEnter={() => setIsToolsDropdownOpen(true)}
+              onMouseLeave={() => setIsToolsDropdownOpen(false)}
+            >
+              <Link
+                href="/tools"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary h-9"
+              >
+                <Wrench className="h-4 w-4" />
+                <span className="leading-none">实用工具</span>
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  isToolsDropdownOpen && "rotate-180"
+                )} />
+              </Link>
+
+              <div
+                className={cn(
+                  "absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-200",
+                  isToolsDropdownOpen
+                    ? "opacity-100 visible translate-y-0"
+                    : "opacity-0 invisible -translate-y-1"
+                )}
+              >
+                <div className="w-48 rounded-xl border bg-popover p-2 shadow-lg">
+                  {toolModules.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
           </nav>
 
           {/* Search */}
@@ -279,6 +323,23 @@ export function Header() {
                 题库训练
               </Link>
               {trainingModules.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="pl-6 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href="/tools"
+                className="px-2 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md mt-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                实用工具
+              </Link>
+              {toolModules.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

@@ -4,7 +4,7 @@
  */
 
 import { XMLParser } from 'fast-xml-parser';
-import { contentSources, getEnabledSources, defaultCoverImages, getDefaultCover } from '@/config/content-sources';
+import { contentSources, getEnabledSources, getDefaultCover, isDefaultCoverImage } from '@/config/content-sources';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable, contentFetchLogs } from '@/lib/db/schema';
 import { eq, notInArray } from 'drizzle-orm';
@@ -16,11 +16,8 @@ import { fetchXiaohongshuFeed, fetchDouyinFeed, fetchBilibiliFeed } from './plat
 import { validateExternalUrl } from './url-validator';
 import { extractMetaFromUrl } from './cover-extractor';
 
-const DEFAULT_COVERS = new Set(Object.values(defaultCoverImages));
-
 function isDefaultCoverUrl(url?: string | null): boolean {
-  if (!url) return false;
-  return DEFAULT_COVERS.has(url);
+  return isDefaultCoverImage(url);
 }
 
 function upscaleCoverUrl(url: string): string {
@@ -439,7 +436,8 @@ async function saveContent(
   const contentStatus =
     (!urlValidation.ok || isHardReject) ? 'rejected' : (quality.passed && finalMatchPassed ? 'active' : isNonRelevant ? 'rejected' : 'pending');
 
-  const desiredCover = content.coverImage || getDefaultCover(content.category);
+  const coverSeed = content.originalId || content.originalUrl || content.title;
+  const desiredCover = content.coverImage || getDefaultCover(content.category, coverSeed);
 
   const existing = await db.query.careerContents.findFirst({
     where: eq(careerContents.originalUrl, content.originalUrl),
