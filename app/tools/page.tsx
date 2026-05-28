@@ -7,13 +7,13 @@ const tools = [
   {
     href: '/tools/prd',
     title: 'PRD 生成',
-    description: '把背景、目标、用户和功能点整理成可评审的产品需求文档。',
+    description: '输入需求背景、目标用户与功能点，AI 自动生成结构化 Markdown 产品需求文档。',
     icon: FileText,
   },
   {
     href: '/tools/prototype',
-    title: '原型绘制',
-    description: '上传原型图或界面截图，用文字说明修改内容，生成新的原型图。',
+    title: '原型编辑',
+    description: '上传界面截图，用文字描述修改需求，AI 生成编辑后的原型图。',
     icon: ImageIcon,
   },
 ];
@@ -29,7 +29,7 @@ export default function ToolsHomePage() {
           </div>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">实用工具</h1>
           <p className="text-muted-foreground text-lg mb-10">
-            面向产品经理的轻量工作台，覆盖 PRD 生成、原型绘制等高频工作流。
+            AI 驱动的轻量工作台，覆盖 PRD 生成与原型编辑两种高频场景。
           </p>
         </div>
 
