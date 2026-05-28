@@ -40,6 +40,102 @@ const initialState: FormState = {
   metrics: '',
 };
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatInline(value: string): string {
+  return escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code>$1</code>');
+}
+
+function markdownToHtml(markdown: string): string {
+  const lines = markdown.split(/\r?\n/);
+  const html: string[] = [];
+  let listType: 'ul' | 'ol' | null = null;
+
+  const closeList = () => {
+    if (!listType) return;
+    html.push(`</${listType}>`);
+    listType = null;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      closeList();
+      continue;
+    }
+
+    const heading = /^(#{1,6})\s+(.+)$/.exec(line);
+    if (heading) {
+      closeList();
+      const level = Math.min(heading[1].length, 4);
+      html.push(`<h${level}>${formatInline(heading[2])}</h${level}>`);
+      continue;
+    }
+
+    const unordered = /^[-*]\s+(.+)$/.exec(line);
+    if (unordered) {
+      if (listType !== 'ul') {
+        closeList();
+        html.push('<ul>');
+        listType = 'ul';
+      }
+      html.push(`<li>${formatInline(unordered[1])}</li>`);
+      continue;
+    }
+
+    const ordered = /^\d+[.)]\s+(.+)$/.exec(line);
+    if (ordered) {
+      if (listType !== 'ol') {
+        closeList();
+        html.push('<ol>');
+        listType = 'ol';
+      }
+      html.push(`<li>${formatInline(ordered[1])}</li>`);
+      continue;
+    }
+
+    closeList();
+    html.push(`<p>${formatInline(line)}</p>`);
+  }
+
+  closeList();
+  return html.join('\n');
+}
+
+function buildDocumentHtml(markdown: string, title: string): string {
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; color: #111827; line-height: 1.72; padding: 40px; }
+    h1 { font-size: 28px; margin: 0 0 24px; }
+    h2 { font-size: 22px; margin: 28px 0 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; }
+    h3 { font-size: 18px; margin: 22px 0 8px; }
+    h4 { font-size: 16px; margin: 18px 0 8px; }
+    p { margin: 8px 0; }
+    ul, ol { margin: 8px 0 12px 24px; padding: 0; }
+    li { margin: 4px 0; }
+    code { font-family: Consolas, monospace; background: #f3f4f6; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+${markdownToHtml(markdown)}
+</body>
+</html>`;
+}
+
 function TextareaField({
   label,
   value,
@@ -74,7 +170,6 @@ export function PrdGeneratorForm() {
   const [form, setForm] = useState<FormState>(initialState);
   const [result, setResult] = useState('');
   const [statusText, setStatusText] = useState('');
-  const [usedAI, setUsedAI] = useState<boolean | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -112,7 +207,6 @@ export function PrdGeneratorForm() {
 
       if (data.success) {
         setResult(data.data.content);
-        setUsedAI(data.data.usedAI);
         setStatusText(data.data.usedAI ? `已生成，模型：${data.data.model}` : '已生成结构化模板');
       } else {
         setStatusText(data.error || '生成失败');
@@ -131,13 +225,27 @@ export function PrdGeneratorForm() {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
-  const handleDownload = () => {
+  const documentTitle = form.productName.trim() || 'PRD';
+
+  const handleDownloadMarkdown = () => {
     if (!result) return;
     const blob = new Blob([result], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${form.productName.trim() || 'PRD'}.md`;
+    anchor.download = `${documentTitle}.md`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadWord = () => {
+    if (!result) return;
+    const html = buildDocumentHtml(result, documentTitle);
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${documentTitle}.doc`;
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -224,18 +332,19 @@ export function PrdGeneratorForm() {
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
             <h2 className="text-lg font-semibold">生成结果</h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              {usedAI === null ? '提交后将在这里展示 Markdown PRD' : usedAI ? 'AI 生成内容' : '结构化模板内容'}
-            </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="outline" onClick={handleCopy} disabled={!result}>
               {copied ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}
               {copied ? '已复制' : '复制'}
             </Button>
-            <Button variant="outline" onClick={handleDownload} disabled={!result}>
+            <Button variant="outline" onClick={handleDownloadMarkdown} disabled={!result}>
               <Download className="h-4 w-4" />
-              下载
+              Markdown
+            </Button>
+            <Button variant="outline" onClick={handleDownloadWord} disabled={!result}>
+              <FileText className="h-4 w-4" />
+              Word
             </Button>
           </div>
         </div>

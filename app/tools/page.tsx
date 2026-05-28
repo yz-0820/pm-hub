@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, Wrench } from 'lucide-react';
+import { ArrowRight, FileText, Image as ImageIcon, Wrench } from 'lucide-react';
 
 export const revalidate = 60;
 
@@ -9,6 +9,12 @@ const tools = [
     title: 'PRD 生成',
     description: '把背景、目标、用户和功能点整理成可评审的产品需求文档。',
     icon: FileText,
+  },
+  {
+    href: '/tools/prototype',
+    title: '原型绘制',
+    description: '上传原型图或界面截图，用文字说明修改内容，生成新的原型图。',
+    icon: ImageIcon,
   },
 ];
 
@@ -23,7 +29,7 @@ export default function ToolsHomePage() {
           </div>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">实用工具</h1>
           <p className="text-muted-foreground text-lg mb-10">
-            面向产品经理的轻量工作台，先从 PRD 生成开始，后续可继续扩展更多工具。
+            面向产品经理的轻量工作台，覆盖 PRD 生成、原型绘制等高频工作流。
           </p>
         </div>
 
