@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error generating prototype image:', error);
     const message = error instanceof Error ? error.message : '原型图生成失败';
-    const isConfigError = message.includes('OPENAI_API_KEY');
+    const isConfigError = message.includes('DASHSCOPE_API_KEY');
     return NextResponse.json(
       {
         success: false,

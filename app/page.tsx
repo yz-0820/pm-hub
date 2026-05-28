@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Lightbulb, Cpu, Brain, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Wrench } from 'lucide-react';
+import { ArrowRight, Lightbulb, Cpu, Brain, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench } from 'lucide-react';
 import { db } from '@/lib/db/client';
 import { articles, resources } from '@/lib/db/schema';
 import { desc, sql } from 'drizzle-orm';
@@ -264,15 +264,22 @@ export default async function HomePage() {
                 </div>
               </div>
             </Link>
-            <div className="rounded-2xl border border-dashed bg-card/40 p-6 flex items-center gap-4 text-muted-foreground">
-              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                <Wrench className="h-6 w-6" />
+            <Link href="/tools/prototype" className="group relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+              <div className="relative p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-violet-200 transition-all duration-300 h-full flex flex-col">
+                <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <ImageIcon className="h-6 w-6 text-violet-600" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-violet-600 transition-colors">原型生成</h3>
+                <p className="text-sm text-muted-foreground flex-1">
+                  上传原型图或界面截图，用文字描述修改内容，生成调整后的原型图。
+                </p>
+                <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground group-hover:text-violet-600 transition-colors">
+                  <span>打开工具</span>
+                  <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-lg text-foreground mb-1">更多工具</h3>
-                <p className="text-sm">后续可继续在实用工具下扩展竞品分析、用户故事拆解、验收用例生成等功能。</p>
-              </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>

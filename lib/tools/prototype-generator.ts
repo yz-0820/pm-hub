@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const SUPPORTED_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+const DEFAULT_DASHSCOPE_ENDPOINT = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 
 export type PrototypeGenerationResult = {
   imageDataUrl: string;
@@ -22,8 +23,8 @@ export function validatePrototypeInput(input: PrototypeInput): string | null {
   return null;
 }
 
-function ensureOpenAIEnv(): void {
-  if (process.env.OPENAI_API_KEY) return;
+function ensureQwenEnv(): void {
+  if (process.env.DASHSCOPE_API_KEY) return;
 
   try {
     let dir = process.cwd();
@@ -38,7 +39,7 @@ function ensureOpenAIEnv(): void {
           if (idx <= 0) continue;
 
           const key = trimmed.slice(0, idx).trim();
-          if (key !== 'OPENAI_API_KEY' && key !== 'OPENAI_IMAGE_MODEL') continue;
+          if (key !== 'DASHSCOPE_API_KEY' && key !== 'QWEN_IMAGE_MODEL' && key !== 'DASHSCOPE_BASE_URL') continue;
 
           const value = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
           if (value && !process.env[key]) process.env[key] = value;
@@ -55,31 +56,50 @@ function ensureOpenAIEnv(): void {
   }
 }
 
-function toFilename(file: File): string {
-  const name = file.name?.trim();
-  if (name) return name;
-  if (file.type === 'image/jpeg') return 'prototype.jpg';
-  if (file.type === 'image/webp') return 'prototype.webp';
-  return 'prototype.png';
+async function fileToDataUrl(file: File): Promise<string> {
+  const bytes = Buffer.from(await file.arrayBuffer());
+  return `data:${file.type};base64,${bytes.toString('base64')}`;
 }
 
 async function imageUrlToDataUrl(url: string): Promise<string> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`OpenAI image URL fetch failed: ${res.status}`);
+  if (!res.ok) throw new Error(`Qwen image URL fetch failed: ${res.status}`);
   const contentType = res.headers.get('content-type') || 'image/png';
   const bytes = Buffer.from(await res.arrayBuffer());
   return `data:${contentType};base64,${bytes.toString('base64')}`;
+}
+
+function extractImageUrl(data: unknown): string | null {
+  const root = data as {
+    output?: {
+      choices?: Array<{
+        message?: {
+          content?: Array<{ image?: unknown }>;
+        };
+      }>;
+    };
+  };
+
+  const content = root.output?.choices?.[0]?.message?.content;
+  if (!Array.isArray(content)) return null;
+
+  for (const item of content) {
+    if (typeof item.image === 'string' && item.image.trim()) return item.image;
+  }
+
+  return null;
 }
 
 export async function generatePrototypeImage(input: PrototypeInput): Promise<PrototypeGenerationResult> {
   const validationError = validatePrototypeInput(input);
   if (validationError) throw new Error(validationError);
 
-  ensureOpenAIEnv();
+  ensureQwenEnv();
 
-  const apiKey = process.env.OPENAI_API_KEY || '';
-  const model = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2';
-  if (!apiKey) throw new Error('未配置 OPENAI_API_KEY，无法生成原型图');
+  const apiKey = process.env.DASHSCOPE_API_KEY || '';
+  const model = process.env.QWEN_IMAGE_MODEL || 'qwen-image-2.0-pro';
+  const endpoint = process.env.DASHSCOPE_BASE_URL || DEFAULT_DASHSCOPE_ENDPOINT;
+  if (!apiKey) throw new Error('未配置 DASHSCOPE_API_KEY，无法生成原型图');
 
   const prompt = [
     '你是一名产品原型设计师。请基于用户上传的图片进行原型图编辑。',
@@ -90,40 +110,46 @@ export async function generatePrototypeImage(input: PrototypeInput): Promise<Pro
     `用户修改说明：${input.prompt.trim()}`,
   ].join('\n');
 
-  const formData = new FormData();
-  formData.append('model', model);
-  formData.append('prompt', prompt);
-  formData.append('image', input.image, toFilename(input.image));
-  formData.append('output_format', 'png');
+  const imageDataUrl = await fileToDataUrl(input.image);
 
-  const res = await fetch('https://api.openai.com/v1/images/edits', {
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-    body: formData,
+    body: JSON.stringify({
+      model,
+      input: {
+        messages: [
+          {
+            role: 'user',
+            content: [{ image: imageDataUrl }, { text: prompt }],
+          },
+        ],
+      },
+      parameters: {
+        n: 1,
+        watermark: false,
+        prompt_extend: true,
+        negative_prompt: '模糊、低清晰度、无关元素、整体重绘',
+      },
+    }),
   });
 
+  const responseText = await res.text();
+  const data = responseText ? JSON.parse(responseText) : null;
+
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`OpenAI 图片编辑失败：${res.status} ${text.slice(0, 300)}`);
+    const message = data?.message || data?.code || responseText.slice(0, 300);
+    throw new Error(`Qwen 图片编辑失败：${res.status} ${message}`);
   }
 
-  const data = await res.json().catch(() => null);
-  const image = data?.data?.[0];
-  if (typeof image?.b64_json === 'string' && image.b64_json.trim()) {
-    return {
-      imageDataUrl: `data:image/png;base64,${image.b64_json}`,
-      model,
-    };
-  }
+  const imageUrl = extractImageUrl(data);
+  if (!imageUrl) throw new Error('Qwen 未返回可用图片');
 
-  if (typeof image?.url === 'string' && image.url.trim()) {
-    return {
-      imageDataUrl: await imageUrlToDataUrl(image.url),
-      model,
-    };
-  }
-
-  throw new Error('OpenAI 未返回可用图片');
+  return {
+    imageDataUrl: await imageUrlToDataUrl(imageUrl),
+    model,
+  };
 }
