@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '/*': ['./data/sqlite.db', './data/sqlite.db-wal', './data/sqlite.db-shm'],
+  },
   images: {
     remotePatterns: [
       {
