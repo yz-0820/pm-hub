@@ -89,6 +89,64 @@ const CAREER_POSITIVE_ANCHORS = [
   '效率',
 ];
 
+const EXPLICIT_CAREER_METHOD_ANCHORS = [
+  '职场',
+  '职业发展',
+  '工作方法',
+  '工作效率',
+  '团队协作',
+  '项目管理',
+  '会议效率',
+  '向上管理',
+  '绩效',
+  '沟通',
+  '汇报',
+  '复盘',
+  '时间管理',
+  '优先级',
+  '领导力',
+];
+
+const NON_CAREER_TOPIC_PATTERNS: Array<{ label: string; patterns: RegExp[]; allowWithCareerAnchor?: boolean }> = [
+  {
+    label: 'AI行业榜单/赛道资讯',
+    allowWithCareerAnchor: true,
+    patterns: [
+      /ai\s*(应用|工具)?\s*(榜|榜单|排行|排行榜|top\s*\d+)/i,
+      /(模型|大模型|应用|工具).*(榜|榜单|排行|排行榜|top\s*\d+)/i,
+      /(赛道格局|赛道之星|行业全景|全景图|生态图谱|产业图谱)/i,
+      /(gpt|deepseek|claude|gemini|kimi|豆包).*(榜|榜单|排行|测评|发布|更新)/i,
+    ],
+  },
+  {
+    label: '商业人物/财阀叙事',
+    patterns: [
+      /(财阀|继承者|继承权|继承人|家族企业|豪门|三星会长|总统府|财团)/i,
+      /(企业家|创始人|ceo|董事长).*(传记|往事|秘史|困境|出路|权力|家族)/i,
+    ],
+  },
+  {
+    label: '行业新闻/产品发布',
+    allowWithCareerAnchor: true,
+    patterns: [
+      /(发布|上线|推出|更新).*(模型|芯片|手机|汽车|机器人|应用|产品)/i,
+      /(融资|IPO|上市|估值|获投|募资|投资方|股价|财报|营收|利润)/i,
+      /(报告|白皮书|榜单|排行榜|top\s*\d+).*(行业|市场|赛道|应用|模型)/i,
+    ],
+  },
+];
+
+function findNonCareerTopic(text: string): string | null {
+  const hasMethodAnchor = EXPLICIT_CAREER_METHOD_ANCHORS.some((k) => text.includes(k.toLowerCase()));
+  for (const group of NON_CAREER_TOPIC_PATTERNS) {
+    const matched = group.patterns.some((pattern) => pattern.test(text));
+    if (!matched) continue;
+    if (group.allowWithCareerAnchor && hasMethodAnchor) continue;
+    return group.label;
+  }
+  return null;
+}
+
 export const CAREER_EXCLUDED_VIDEO_PATTERNS: RegExp[] = [
   /(ai)?产品经理.*(入门|基础|进阶|教程|课程|训练营|公开课|合集|全集|系列|实战|从零到(一|1)|从0到1|从零到精通|手把手|必学|速成|系统课)/i,
   /产品运营.*(入门|基础|进阶|教程|课程|训练营|公开课|合集|全集|系列|实战|从零到(一|1)|从0到1|从零到精通|手把手|必学|速成|系统课)?/i,
@@ -127,6 +185,11 @@ export function hasCareerRelevance(content: Pick<NormalizedContent, 'title' | 'd
   reason: string;
 } {
   const text = `${content.title || ''} ${content.description || ''} ${(content.content || '').slice(0, 600)}`.toLowerCase();
+
+  const nonCareerTopic = findNonCareerTopic(text);
+  if (nonCareerTopic) {
+    return { relevant: false, reason: `非职业发展主题: ${nonCareerTopic}` };
+  }
 
   // ========== 优先检查：强商业/融资信号 ==========
   // 如果标题包含这些词，说明是商业新闻而非职场内容，直接排除
@@ -421,6 +484,30 @@ const CATEGORY_CAREER_ANCHORS: Partial<Record<string, string[]>> = {
   teamwork: ['职场', '工作', '公司', '老板', '同事', '上司', '下属', '汇报', '绩效', '面试', '招聘', '跨部门', '部门', '述职', '周报', 'OKR', 'KPI', '开会', '会议', '项目'],
 };
 
+const CATEGORY_REQUIRED_ACTIONS: Record<string, string[]> = {
+  communication: [
+    '沟通', '表达', '汇报', '反馈', '谈判', '协商', '协调', '冲突', '分歧', '说服',
+    '倾听', '聆听', '提问', '述职', '演讲', '会议发言', '向上管理', '跨部门', '对齐', '共识',
+  ],
+  productivity: [
+    '时间管理', '时间规划', '优先级', '任务管理', '待办', '专注', '深度工作', '效率',
+    '生产力', '工作流', '流程优化', '自动化', '批处理', '复盘', '总结', '知识管理',
+  ],
+  teamwork: [
+    '团队协作', '协作', '协同', '合作', '目标对齐', '共识', '角色分工', '职责',
+    '项目管理', '会议效率', '跨团队', '跨部门', '远程协作', '心理安全', '团队建设',
+  ],
+  leadership: [
+    '领导力', '管理', '带团队', '团队管理', '绩效', '激励', '授权', '培养',
+    '辅导', '教练', '战略', '决策', '权衡', '资源配置', '变革', '转型',
+  ],
+};
+
+function verifyRequiredAction(category: string, text: string): boolean {
+  const actions = CATEGORY_REQUIRED_ACTIONS[category] || [];
+  return actions.length === 0 || actions.some((action) => text.includes(action.toLowerCase()));
+}
+
 export function verifyCategoryMatch(content: NormalizedContent): CategoryMatchResult {
   const text = buildText(content);
   const keywords = categoryKeywords[content.category] || [];
@@ -444,7 +531,8 @@ export function verifyCategoryMatch(content: NormalizedContent): CategoryMatchRe
     content.platform === 'bilibili' ? Math.max(2, baseMinHits - 1) : baseMinHits;
   const anchors = CATEGORY_CAREER_ANCHORS[content.category] || [];
   const careerAnchorOk = anchors.length === 0 || anchors.some(a => text.includes(a.toLowerCase()));
-  const matched = matchScore >= CATEGORY_MATCH_THRESHOLD && matchedKeywords.length >= minHits && coreMatched && careerAnchorOk;
+  const actionOk = verifyRequiredAction(content.category, text);
+  const matched = matchScore >= CATEGORY_MATCH_THRESHOLD && matchedKeywords.length >= minHits && coreMatched && careerAnchorOk && actionOk;
 
   return {
     category: content.category,
