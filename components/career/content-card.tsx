@@ -149,6 +149,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
               className="object-cover transition-transform group-hover:scale-105"
               sizes="64px"
               quality={90}
+              referrerPolicy="no-referrer"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gray-100">
@@ -192,6 +193,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 50vw"
               quality={90}
+              referrerPolicy="no-referrer"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
@@ -280,6 +282,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
                 sizes="(max-width: 640px) 100vw, 256px"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 quality={90}
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
