@@ -7,13 +7,13 @@ process.on('SIGTERM', () => { console.log('\n[Shutdown] Stopping...'); running =
 
 const intervalMs = (() => {
   const idx = process.argv.indexOf('--interval');
-  if (idx >= 0) return parseInt(process.argv[idx + 1] || '300', 10) * 1000;
+  if (idx >= 0) return parseInt(process.argv[idx + 1] || '3600', 10) * 1000;
   const envMinutes = process.env.CAREER_FETCH_INTERVAL_MINUTES?.trim();
   if (envMinutes) {
     const minutes = parseInt(envMinutes, 10);
     if (Number.isFinite(minutes) && minutes > 0) return minutes * 60_000;
   }
-  return 300_000;
+  return 3_600_000;
 })();
 
 console.log('[Scheduler] Career content fetch scheduler started');

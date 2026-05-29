@@ -4,13 +4,14 @@ type SchedulerProcessState = {
   started: Partial<Record<SchedulerName, boolean>>;
 };
 
-const schedulerCommands: Record<SchedulerName, { envKey?: string; script: string; logPrefix: string }> = {
+const schedulerCommands: Record<SchedulerName, { envKey: string; script: string; logPrefix: string }> = {
   rss: {
     envKey: 'ENABLE_LOCAL_RSS_SCHEDULER',
     script: 'rss:schedule',
     logPrefix: 'RSS',
   },
   career: {
+    envKey: 'ENABLE_LOCAL_CAREER_SCHEDULER',
     script: 'career:schedule',
     logPrefix: 'Career',
   },
@@ -27,8 +28,7 @@ function getSchedulerProcessState(): SchedulerProcessState {
 function shouldStartScheduler(name: SchedulerName): boolean {
   if (process.env.NODE_ENV === 'production') return false;
   const envKey = schedulerCommands[name].envKey;
-  if (!envKey) return true;
-  return (process.env[envKey] || '').toLowerCase() === 'true';
+  return (process.env[envKey] || 'true').toLowerCase() !== 'false';
 }
 
 async function startSchedulerProcess(name: SchedulerName) {
