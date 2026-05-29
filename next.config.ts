@@ -2,9 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  outputFileTracingIncludes: {
-    '/*': ['./data/sqlite.db', './data/sqlite.db-wal', './data/sqlite.db-shm'],
-  },
   images: {
     remotePatterns: [
       {
@@ -15,7 +12,6 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     qualities: [75, 90],
   },
-  serverExternalPackages: ['better-sqlite3'],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.resolve = config.resolve || {};

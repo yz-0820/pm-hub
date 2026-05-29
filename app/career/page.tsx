@@ -15,13 +15,19 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { and, desc, eq, inArray, notLike, sql, SQLWrapper } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lt, notLike, or, sql, SQLWrapper } from 'drizzle-orm';
 
 export const revalidate = 0;
 
 const CONTENTS_PER_PAGE = 10;
 
 function normalizeTimestamp(value: unknown): Date | null {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  // PostgreSQL 返回字符串格式的时间戳，如 "2026-05-29 10:27:41+00"
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
   const n = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(n)) return null;
   const ms = n < 10_000_000_000 ? n * 1000 : n;
@@ -42,8 +48,8 @@ async function getCareerData(
   page: number
 ) {
   const offset = (page - 1) * CONTENTS_PER_PAGE;
-  const yearStart = Math.floor(Date.parse('2026-01-01T00:00:00.000Z') / 1000);
-  const yearEnd = Math.floor(Date.parse('2027-01-01T00:00:00.000Z') / 1000);
+  const yearStart = new Date('2026-01-01T00:00:00.000Z');
+  const yearEnd = new Date('2027-01-01T00:00:00.000Z');
 
   const conditions: SQLWrapper[] = [
     eq(careerContents.status, 'active'),
@@ -51,7 +57,10 @@ async function getCareerData(
     notLike(careerContents.originalUrl, '%rsshub.app/%'),
     notLike(careerContents.originalUrl, '%localhost%'),
     notLike(careerContents.originalUrl, '%127.0.0.1%'),
-    sql`((${careerContents.contentType} IN ('video', 'short_video')) OR (${careerContents.publishedAt} >= ${yearStart} AND ${careerContents.publishedAt} < ${yearEnd}))`,
+    or(
+      inArray(careerContents.contentType, ['video', 'short_video']),
+      and(gte(careerContents.publishedAt, yearStart), lt(careerContents.publishedAt, yearEnd))
+    )!,
   ];
   if (category !== 'all') conditions.push(eq(careerContents.category, category));
 
@@ -84,12 +93,12 @@ async function getCareerData(
       : [];
 
   const latestPublishedResult = await db
-    .select({ latest: sql<number | null>`max(${careerContents.publishedAt})` })
+    .select({ latest: sql<Date | null>`max(${careerContents.publishedAt})` })
     .from(careerContents)
     .where(whereClause);
 
   const latestFetchResult = await db
-    .select({ latest: sql<number | null>`max(${contentSourcesTable.lastFetchAt})` })
+    .select({ latest: sql<Date | null>`max(${contentSourcesTable.lastFetchAt})` })
     .from(contentSourcesTable);
 
   const stats = {

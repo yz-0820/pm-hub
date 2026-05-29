@@ -5,6 +5,6 @@ export default defineConfig({
   out: './lib/db/migrations',
   dialect: 'sqlite',
   dbCredentials: {
-    url: process.env.DATABASE_URL || './data/sqlite.db',
+    url: process.env.DATABASE_URL || '',
   },
 });

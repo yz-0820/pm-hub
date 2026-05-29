@@ -1,4 +1,4 @@
-import { db, sqlite } from '@/lib/db/client';
+import { db } from '@/lib/db/client';
 import { contentCache, careerContents } from '@/lib/db/schema';
 import { eq, and, lt, gte, desc, notLike, SQLWrapper, sql } from 'drizzle-orm';
 import { CareerContent } from '@/lib/db/schema';
@@ -149,9 +149,11 @@ export async function deleteCache(cacheKey: string): Promise<void> {
 }
 
 export async function cleanExpiredCache(): Promise<number> {
-  const result = await db.delete(contentCache).where(lt(contentCache.expiresAt, new Date()));
-  const deleted = (result as { changes?: number }).changes || 0;
-  return deleted;
+  const deleted = await db
+    .delete(contentCache)
+    .where(lt(contentCache.expiresAt, new Date()))
+    .returning({ id: contentCache.id });
+  return deleted.length;
 }
 
 // 按类型清除
@@ -213,8 +215,8 @@ const CACHE_CONFIG = {
   },
 };
 
-const YEAR_2026_START = Math.floor(Date.parse('2026-01-01T00:00:00.000Z') / 1000);
-const YEAR_2026_END = Math.floor(Date.parse('2027-01-01T00:00:00.000Z') / 1000);
+const YEAR_2026_START = new Date('2026-01-01T00:00:00.000Z');
+const YEAR_2026_END = new Date('2027-01-01T00:00:00.000Z');
 
 export interface ContentListParams {
   category?: string;
@@ -267,7 +269,8 @@ export async function getContentList(params: ContentListParams): Promise<Content
   conditions.push(notLike(careerContents.originalUrl, '%rsshub.app/%'));
   conditions.push(notLike(careerContents.originalUrl, '%localhost%'));
   conditions.push(notLike(careerContents.originalUrl, '%127.0.0.1%'));
-  conditions.push(sql`(${careerContents.publishedAt} >= ${YEAR_2026_START} AND ${careerContents.publishedAt} < ${YEAR_2026_END})`);
+  conditions.push(gte(careerContents.publishedAt, YEAR_2026_START));
+  conditions.push(lt(careerContents.publishedAt, YEAR_2026_END));
   if (category && category !== 'all') {
     conditions.push(eq(careerContents.category, category));
   }
@@ -374,7 +377,8 @@ export async function getContentFeed(
           notLike(careerContents.originalUrl, '%rsshub.app/%'),
           notLike(careerContents.originalUrl, '%localhost%'),
           notLike(careerContents.originalUrl, '%127.0.0.1%'),
-          sql`(${careerContents.publishedAt} >= ${YEAR_2026_START} AND ${careerContents.publishedAt} < ${YEAR_2026_END})`,
+          gte(careerContents.publishedAt, YEAR_2026_START),
+          lt(careerContents.publishedAt, YEAR_2026_END),
           lt(careerContents.publishedAt, lastContent.publishedAt)
         ),
         orderBy: [desc(careerContents.publishedAt)],
@@ -391,7 +395,8 @@ export async function getContentFeed(
         notLike(careerContents.originalUrl, '%rsshub.app/%'),
         notLike(careerContents.originalUrl, '%localhost%'),
         notLike(careerContents.originalUrl, '%127.0.0.1%'),
-        sql`(${careerContents.publishedAt} >= ${YEAR_2026_START} AND ${careerContents.publishedAt} < ${YEAR_2026_END})`
+        gte(careerContents.publishedAt, YEAR_2026_START),
+        lt(careerContents.publishedAt, YEAR_2026_END)
       ),
       orderBy: [desc(careerContents.publishedAt)],
       limit,
@@ -430,7 +435,8 @@ export async function getContentStats(): Promise<ContentStats> {
       notLike(careerContents.originalUrl, '%rsshub.app/%'),
       notLike(careerContents.originalUrl, '%localhost%'),
       notLike(careerContents.originalUrl, '%127.0.0.1%'),
-      sql`(${careerContents.publishedAt} >= ${YEAR_2026_START} AND ${careerContents.publishedAt} < ${YEAR_2026_END})`
+      gte(careerContents.publishedAt, YEAR_2026_START),
+      lt(careerContents.publishedAt, YEAR_2026_END)
     ),
   });
 
@@ -456,7 +462,8 @@ export async function getContentStats(): Promise<ContentStats> {
       notLike(careerContents.originalUrl, '%rsshub.app/%'),
       notLike(careerContents.originalUrl, '%localhost%'),
       notLike(careerContents.originalUrl, '%127.0.0.1%'),
-      sql`(${careerContents.publishedAt} >= ${YEAR_2026_START} AND ${careerContents.publishedAt} < ${YEAR_2026_END})`
+      gte(careerContents.publishedAt, YEAR_2026_START),
+      lt(careerContents.publishedAt, YEAR_2026_END)
     ),
     orderBy: [desc(careerContents.publishedAt)],
   });

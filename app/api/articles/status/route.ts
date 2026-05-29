@@ -20,7 +20,7 @@ export async function GET() {
 
     // 获取文章总数
     const countResult = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`cast(count(*) as int)` })
       .from(articles);
 
     const totalArticles = countResult[0]?.count || 0;

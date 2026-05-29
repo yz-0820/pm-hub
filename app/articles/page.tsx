@@ -20,6 +20,12 @@ interface ArticlesPageProps {
 }
 
 function normalizeTimestamp(value: unknown): Date | null {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  // PostgreSQL 返回字符串格式的时间戳，如 "2026-05-29 10:27:41+00"
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
   const n = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(n)) return null;
   const ms = n < 10_000_000_000 ? n * 1000 : n;
@@ -56,7 +62,6 @@ async function getArticles(page: number, category?: string) {
   const dedupResults = await db
     .select({
       id: sql<number>`MIN(${articles.id})`.as('id'),
-      title: articles.title,
     })
     .from(articles)
     .where(whereClause)
@@ -80,12 +85,12 @@ async function getArticles(page: number, category?: string) {
       : [];
 
   const latestPublishedResult = await db
-    .select({ latest: sql<number | null>`max(${articles.publishedAt})` })
+    .select({ latest: sql<Date | null>`max(${articles.publishedAt})` })
     .from(articles)
     .where(whereClause);
 
   const latestFetchResult = await db
-    .select({ latest: sql<number | null>`max(${rssSourceStatus.lastFetchAt})` })
+    .select({ latest: sql<Date | null>`max(${rssSourceStatus.lastFetchAt})` })
     .from(rssSourceStatus);
 
   return {

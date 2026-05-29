@@ -1,3 +1,4 @@
+import './load-env';
 import { fetchAllRSS } from '@/lib/rss/fetcher';
 import { db } from '@/lib/db/client';
 import { fetchLogs } from '@/lib/db/schema';

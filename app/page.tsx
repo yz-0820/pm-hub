@@ -39,7 +39,7 @@ const categoryConfig: Record<string, { icon: React.ElementType; color: string; g
 async function getHomeData() {
   // 获取统计数据
   const stats = await db.select({
-    total: sql<number>`count(*)`,
+    total: sql<number>`cast(count(*) as int)`,
   }).from(articles);
 
   return {

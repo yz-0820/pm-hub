@@ -73,7 +73,7 @@ export async function GET() {
     });
 
     const totalActive = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`cast(count(*) as int)` })
       .from(careerContents)
       .where(activeConditions);
 
@@ -109,4 +109,3 @@ export async function GET() {
     );
   }
 }
-

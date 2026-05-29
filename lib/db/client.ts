@@ -1,47 +1,22 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
-import { copyFileSync, existsSync, mkdirSync } from 'fs';
-import { dirname, join, resolve } from 'path';
+﻿import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from './schema';
 
-const configuredDbPath = process.env.DATABASE_URL || './data/sqlite.db';
+const connectionString = process.env.DATABASE_URL;
 
-function copyIfExists(source: string, target: string) {
-  if (existsSync(source) && !existsSync(target)) {
-    copyFileSync(source, target);
-  }
+if (!connectionString) {
+  throw new Error('DATABASE_URL is required. Configure a Neon/Postgres connection string.');
 }
 
-function prepareDatabasePath(): string {
-  if (process.env.VERCEL === '1' && !configuredDbPath.startsWith('/tmp/')) {
-    const source = resolve(configuredDbPath);
-    const targetDir = '/tmp/pm-hub-db';
-    const target = join(targetDir, 'sqlite.db');
-
-    mkdirSync(targetDir, { recursive: true });
-    copyIfExists(source, target);
-    copyIfExists(`${source}-wal`, `${target}-wal`);
-    copyIfExists(`${source}-shm`, `${target}-shm`);
-
-    return target;
-  }
-
-  try {
-    mkdirSync(dirname(configuredDbPath), { recursive: true });
-  } catch {
-    // Directory may already exist or be read-only in constrained environments.
-  }
-
-  return configuredDbPath;
+if (!/^postgres(?:ql)?:\/\//i.test(connectionString)) {
+  throw new Error('DATABASE_URL must be a postgres:// or postgresql:// connection string.');
 }
 
-const dbPath = prepareDatabasePath();
-const sqlite = new Database(dbPath);
-sqlite.pragma('journal_mode = WAL');
-sqlite.pragma('synchronous = NORMAL');
-sqlite.pragma('busy_timeout = 5000');
+export const postgresClient = postgres(connectionString, {
+  prepare: false,
+  max: 10,
+});
 
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(postgresClient, { schema });
 
-export { sqlite };
 export { schema };

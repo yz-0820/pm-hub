@@ -6,6 +6,11 @@ import { desc, sql } from 'drizzle-orm';
 function normalizeTimestamp(value: unknown): Date | null {
   if (!value) return null;
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  // PostgreSQL 返回字符串格式的时间戳，如 "2026-05-29 10:27:41+00"
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
   const n = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(n)) return null;
   const ms = n < 10_000_000_000 ? n * 1000 : n;

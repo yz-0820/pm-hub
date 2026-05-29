@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db/client';
 import { trainingQuestions } from '@/lib/db/schema';
-import { and, eq, like, desc } from 'drizzle-orm';
+import { and, desc, eq, ilike } from 'drizzle-orm';
 import { ensureTrainingSchema } from '@/lib/training/ensure-schema';
 
 function isAdmin(request: NextRequest): boolean {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     if (industry) conditions.push(eq(trainingQuestions.industry, industry));
     if (productType) conditions.push(eq(trainingQuestions.productType, productType));
     if (!includeInactive) conditions.push(eq(trainingQuestions.isActive, true));
-    if (q) conditions.push(like(trainingQuestions.title, `%${q}%`));
+    if (q) conditions.push(ilike(trainingQuestions.title, `%${q}%`));
 
     const where = conditions.length ? and(...conditions) : undefined;
 

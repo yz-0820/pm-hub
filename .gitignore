@@ -38,6 +38,9 @@ yarn-error.log*
 
 # image cache
 /data/image-cache/
+/data/sqlite.db
+/data/sqlite.db-shm
+/data/sqlite.db-wal
 
 # typescript
 *.tsbuildinfo

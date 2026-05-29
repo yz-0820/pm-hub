@@ -4,7 +4,7 @@ import { articles, careerContents } from '@/lib/db/schema';
 import { categoryLabels } from '@/config/rss';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
-import { and, desc, eq, gte, inArray, like, ne, notLike, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, inArray, ne, notIlike, or, sql } from 'drizzle-orm';
 
 type SearchHit =
   | {
@@ -56,7 +56,12 @@ export async function GET(request: NextRequest) {
     const allowedCategories = Object.keys(categoryLabels);
     const articleWhere = and(
       inArray(articles.category, allowedCategories),
-      like(articles.title, pattern),
+      or(
+        ilike(articles.title, pattern),
+        ilike(articles.summary, pattern),
+        ilike(articles.content, pattern),
+        ilike(articles.sourceName, pattern)
+      ),
       and(
         or(ne(articles.category, 'tech'), gte(articles.relevanceScore, TECH_THRESHOLD)),
         or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD))
@@ -65,11 +70,16 @@ export async function GET(request: NextRequest) {
 
     const careerWhere = and(
       eq(careerContents.status, 'active'),
-      like(careerContents.title, pattern),
-      notLike(careerContents.originalUrl, '%example.com/%'),
-      notLike(careerContents.originalUrl, '%rsshub.app/%'),
-      notLike(careerContents.originalUrl, '%localhost%'),
-      notLike(careerContents.originalUrl, '%127.0.0.1%')
+      or(
+        ilike(careerContents.title, pattern),
+        ilike(careerContents.description, pattern),
+        ilike(careerContents.content, pattern),
+        ilike(careerContents.sourceName, pattern)
+      ),
+      notIlike(careerContents.originalUrl, '%example.com/%'),
+      notIlike(careerContents.originalUrl, '%rsshub.app/%'),
+      notIlike(careerContents.originalUrl, '%localhost%'),
+      notIlike(careerContents.originalUrl, '%127.0.0.1%')
     );
 
     const [articleRows, careerRows, articleCountRes, careerCountRes] = await Promise.all([
@@ -85,8 +95,8 @@ export async function GET(request: NextRequest) {
         limit: fetchSize,
         offset: 0,
       }),
-      db.select({ count: sql<number>`count(*)` }).from(articles).where(articleWhere),
-      db.select({ count: sql<number>`count(*)` }).from(careerContents).where(careerWhere),
+      db.select({ count: sql<number>`cast(count(*) as int)` }).from(articles).where(articleWhere),
+      db.select({ count: sql<number>`cast(count(*) as int)` }).from(careerContents).where(careerWhere),
     ]);
 
     const hits: SearchHit[] = [

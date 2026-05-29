@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable } from '@/lib/db/schema';
-import { and, desc, notLike, eq, sql } from 'drizzle-orm';
+import { and, desc, notLike, eq, gte, lt, sql } from 'drizzle-orm';
 
 function normalizeTimestamp(value: unknown): number | null {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.getTime();
+  // PostgreSQL 返回字符串格式的时间戳，如 "2026-05-29 10:27:41+00"
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) return d.getTime();
+  }
   const n = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(n)) return null;
   return n < 10_000_000_000 ? n * 1000 : n;
@@ -13,8 +19,8 @@ export async function GET(req: Request) {
   try {
     const u = new URL(req.url);
     const category = u.searchParams.get('category') || 'all';
-    const yearStart = Math.floor(Date.parse('2026-01-01T00:00:00.000Z') / 1000);
-    const yearEnd = Math.floor(Date.parse('2027-01-01T00:00:00.000Z') / 1000);
+    const yearStart = new Date('2026-01-01T00:00:00.000Z');
+    const yearEnd = new Date('2027-01-01T00:00:00.000Z');
 
     const conditions = and(
       eq(careerContents.status, 'active'),
@@ -22,7 +28,8 @@ export async function GET(req: Request) {
       notLike(careerContents.originalUrl, '%rsshub.app/%'),
       notLike(careerContents.originalUrl, '%localhost%'),
       notLike(careerContents.originalUrl, '%127.0.0.1%'),
-      sql`(${careerContents.publishedAt} >= ${yearStart} AND ${careerContents.publishedAt} < ${yearEnd})`,
+      gte(careerContents.publishedAt, yearStart),
+      lt(careerContents.publishedAt, yearEnd),
       ...(category !== 'all' ? [eq(careerContents.category, category)] : [])
     );
 
@@ -36,14 +43,14 @@ export async function GET(req: Request) {
     });
 
     const countResult = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`cast(count(*) as int)` })
       .from(careerContents)
       .where(conditions);
 
     const totalContents = countResult[0]?.count || 0;
 
     const latestFetchResult = await db
-      .select({ latest: sql<number | null>`max(${contentSourcesTable.lastFetchAt})` })
+      .select({ latest: sql<Date | null>`max(${contentSourcesTable.lastFetchAt})` })
       .from(contentSourcesTable);
 
     const latestFetchedAtMs = normalizeTimestamp(latestFetchResult[0]?.latest ?? null);
