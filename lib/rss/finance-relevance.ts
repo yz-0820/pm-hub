@@ -11,10 +11,101 @@ type FinanceRelevanceResult = {
     adHits: string[];
     threshold: number;
     strongFinanceSignal?: boolean;  // 强金融信号标记
+    rejectedBy?: string;  // 拒绝原因
   };
 };
 
 export const FINANCE_THRESHOLD = 45;
+
+// ========== 低质量金融新闻过滤 ==========
+
+// 知名公司白名单 - 这些公司的一句话公告有信息价值
+const WELL_KNOWN_COMPANIES = [
+  // 科技巨头
+  '腾讯', '阿里', '阿里巴巴', '百度', '字节跳动', '字节', '京东', '美团', '拼多多', '网易',
+  '小米', '华为', '苹果', '微软', '谷歌', '亚马逊', 'meta', '英伟达', 'nvidia', '特斯拉',
+  '三星', '台积电', 'intel', 'amd', '高通', 'openai', '特斯拉',
+  // 金融巨头
+  '工商银行', '建设银行', '农业银行', '中国银行', '招商银行', '交通银行',
+  '中信证券', '中金公司', '华泰证券', '国泰君安',
+  '中国平安', '中国人寿', '中国人保',
+  // 头部新能源/制造
+  '比亚迪', '宁德时代', '中芯国际', '贵州茅台', '五粮液',
+  '隆基绿能', '阳光电源', '海尔', '美的', '格力',
+  '中国石油', '中国石化', '中国神华',
+  // 互联网/平台
+  '滴滴', '快手', '哔哩哔哩', 'b站', '微博', '知乎', '小红书',
+  '蚂蚁集团', '微众银行', '网商银行',
+  // 知名车企
+  '蔚来', '理想汽车', '小鹏', '小鹏汽车', '赛力斯', '吉利', '长城汽车', '上汽',
+  '宝马', '奔驰', '奥迪', '丰田', '本田', '大众',
+  // 知名AI公司
+  'deepseek', '智谱', '月之暗面', 'minimax', '零一万物', '百川智能', '商汤', '科大讯飞',
+  // 知名金融机构/央行
+  '央行', '美联储', '欧洲央行', '英国央行', '日本央行', '瑞士央行', '加拿大央行',
+  '高盛', '摩根', '花旗', '瑞银', '德银', '黑石', '贝莱德',
+  '方正证券', '中信建投', '海通证券', '申万宏源', '银河证券', '广发证券',
+  '中国信达', '东方财富', '同花顺',
+];
+
+// 一句话公告模式 - 标题格式为"公司名：XXX"的简短公告
+const ONE_LINE_ANNOUNCEMENT_RE = /^[\u4e00-\u9fa5a-zA-Z0-9（）()]+[：:]\s*.+$/;
+
+// 低价值公告关键词 - 这些公告即使来自知名公司也缺乏分析价值
+const LOW_VALUE_ANNOUNCEMENT_KEYWORDS = [
+  '不减持', '承诺不减持', '承诺不减持公司股份',
+  '增持', '增持公司股份', '增持公司股票',
+  '减持', '减持计划', '减持公司股份', '减持股份',
+  '质押', '解除质押', '股份质押', '质押股份',
+  '收到监管函', '收到警示函', '收到关注函', '收到问询函',
+  '立案调查', '被立案',
+  '回购', '回购股份', '回购公司股份',
+  '变更', '变更董事长', '变更董事', '变更监事', '人事变动',
+  '聘任', '解聘', '辞职', '离任',
+];
+
+/**
+ * 检测是否为低质量的一句式公告新闻
+ * 特征：标题为"公司名：一句话"，正文极短，缺乏分析价值
+ */
+function detectLowQualityAnnouncement(title: string, body: string): { rejected: boolean; reason: string } {
+  // 检查标题是否符合"公司名：XXX"格式
+  if (!ONE_LINE_ANNOUNCEMENT_RE.test(title)) {
+    return { rejected: false, reason: '' };
+  }
+
+  // 提取公司名（冒号前的部分）
+  const colonIdx = title.indexOf('：') !== -1 ? title.indexOf('：') : title.indexOf(':');
+  const companyName = title.substring(0, colonIdx).trim();
+
+  // 检查是否为知名公司
+  const isWellKnown = WELL_KNOWN_COMPANIES.some(c =>
+    companyName.includes(c) || c.includes(companyName)
+  );
+
+  // 检查正文长度（去除空白后）
+  const bodyLength = body.replace(/\s+/g, '').length;
+
+  // 检查是否命中低价值公告关键词
+  const hasLowValueKeyword = LOW_VALUE_ANNOUNCEMENT_KEYWORDS.some(k => title.includes(k));
+
+  // 规则1：不知名公司 + 短内容 → 拒绝
+  if (!isWellKnown && bodyLength < 150) {
+    return { rejected: true, reason: 'unknown_company_short_content' };
+  }
+
+  // 规则2：不知名公司 + 低价值公告关键词 → 拒绝
+  if (!isWellKnown && hasLowValueKeyword) {
+    return { rejected: true, reason: 'unknown_company_low_value_announcement' };
+  }
+
+  // 规则3：不知名公司 + 正文极短（<80字）→ 拒绝
+  if (!isWellKnown && bodyLength < 80) {
+    return { rejected: true, reason: 'unknown_company_very_short' };
+  }
+
+  return { rejected: false, reason: '' };
+}
 
 // 强金融信号词 - 标题中出现这些词，几乎可以确定是金融内容
 // 这些词的检测优先级最高，只要命中就直接通过
@@ -283,6 +374,25 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   // 如果标题中包含强金融信号词，直接判定为金融内容，忽略其他信号
   const strongFinanceHits = matchKeywords(title, STRONG_FINANCE_SIGNALS_TITLE);
   if (strongFinanceHits.length >= 1) {
+    // ========== 质量门槛检查：过滤低质量的一句式公告 ==========
+    const qualityCheck = detectLowQualityAnnouncement(title, body);
+    if (qualityCheck.rejected) {
+      return {
+        passed: false,
+        score: 0,
+        meta: {
+          score: 0,
+          positiveHits: strongFinanceHits,
+          titleHits: strongFinanceHits,
+          negativeHits: [],
+          adHits: [],
+          threshold: FINANCE_THRESHOLD,
+          strongFinanceSignal: true,
+          rejectedBy: qualityCheck.reason,
+        },
+      };
+    }
+
     // 强信号：只要标题命中1个就通过，分数给到70以上确保优先级
     const strongSignalScore = Math.max(70, 70 + strongFinanceHits.length * 10);
     return {
@@ -366,6 +476,26 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   const bodyScore = Math.min(bodyHits.length * 12, 50);
   const score = Math.max(0, Math.min(100, Math.round(titleScore + bodyScore)));
   const passed = score >= FINANCE_THRESHOLD && hasFinanceSignal;
+
+  // ========== 最终质量门槛：即使通过了分数检查，也要过滤低质量公告 ==========
+  if (passed) {
+    const qualityCheck = detectLowQualityAnnouncement(title, body);
+    if (qualityCheck.rejected) {
+      return {
+        passed: false,
+        score: 0,
+        meta: {
+          score: 0,
+          positiveHits: uniq,
+          titleHits,
+          negativeHits: [],
+          adHits: [],
+          threshold: FINANCE_THRESHOLD,
+          rejectedBy: qualityCheck.reason,
+        },
+      };
+    }
+  }
 
   return {
     passed,
