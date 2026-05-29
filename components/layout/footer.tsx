@@ -95,7 +95,7 @@ export function Footer() {
                   <Link href="/tools/prd" className="hover:text-primary">PRD 生成</Link>
                 </li>
                 <li>
-                  <Link href="/tools/prototype" className="hover:text-primary">原型绘制</Link>
+                  <Link href="/tools/prototype" className="hover:text-primary">原型生成</Link>
                 </li>
               </ul>
             </div>

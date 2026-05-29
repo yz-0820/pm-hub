@@ -89,40 +89,67 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           let finalCategory = source.category;
           
           // 对于综合类源（如36氪、IT之家），根据内容智能判断分类
-          // 优先级：AI > 金融 > 科技
+          // 优先级调整：金融 > AI > 科技
+          // 理由：标题中出现"涨超"、"港股"、"概念股"等强金融信号时，
+          //       即使文章包含 AI 关键词（如"大模型"），也应归为金融而非 AI
           if (source.id === '36kr' || source.id === 'ithome') {
             const aiR = evaluateAIRelevance(article);
             const financeR = evaluateFinanceRelevance(article);
             const techR = evaluateTechRelevance(article);
 
-            if (aiR.passed && aiR.score >= 35) {
-              // AI相关度高，归类到 ai
+            // 优先检查：强金融信号（分数 >= 70 表示命中强信号词）
+            if (financeR.passed && financeR.score >= 70) {
+              // 强金融信号：归类到 finance
+              finalCategory = 'finance';
+              relevanceScore = financeR.score;
+              relevanceMeta = JSON.stringify({ ...financeR.meta, autoCategorized: true, originalCategory: source.category });
+              console.log(`Auto-categorized as finance (strong signal ${financeR.score}): "${article.title}"`);
+            } else if (aiR.passed && !aiR.meta.financeConflict && aiR.score >= 35) {
+              // AI相关度高（且无金融冲突）：归类到 ai
               finalCategory = 'ai';
               relevanceScore = aiR.score;
               relevanceMeta = JSON.stringify({ ...aiR.meta, autoCategorized: true, originalCategory: source.category });
               console.log(`Auto-categorized as ai (${aiR.score}): "${article.title}"`);
-            } else if (financeR.passed && financeR.score >= 60) {
-              // 金融相关度高，归类到 finance
+            } else if (financeR.passed && financeR.score >= 45) {
+              // 常规金融信号：归类到 finance
               finalCategory = 'finance';
               relevanceScore = financeR.score;
               relevanceMeta = JSON.stringify({ ...financeR.meta, autoCategorized: true, originalCategory: source.category });
               console.log(`Auto-categorized as finance (${financeR.score}): "${article.title}"`);
             } else if (techR.passed) {
-              // 科技相关，保持 tech
+              // 科技相关：保持 tech
               finalCategory = 'tech';
               relevanceScore = techR.score;
               relevanceMeta = JSON.stringify({ ...techR.meta, autoCategorized: true, originalCategory: source.category });
             } else {
-              // 都不相关，跳过
-              console.log(`Skipped (no relevant category): "${article.title}"`);
-              continue;
+              // 都不相关：
+              // - 如果 AI 有一定相关性（分数 >= 15），可以考虑保留到 AI
+              // - 否则保持源分类（tech），但不应该是无意义的 fallback
+              if (aiR.score >= 15 && !aiR.meta.financeConflict) {
+                finalCategory = 'ai';
+                relevanceScore = Math.max(aiR.score, 20);
+                relevanceMeta = JSON.stringify({ ...aiR.meta, autoCategorized: true, originalCategory: source.category, fallback: true });
+                console.log(`Fallback to ai (aiR.score=${aiR.score}): "${article.title}"`);
+              } else {
+                // 真的不相关，跳过这篇文章
+                // 原因：不是科技新闻，不是金融新闻，也不真正与 AI 相关
+                console.log(`Skipped (no relevant category - aiR.score=${aiR.score}, techR.passed=${techR.passed}): "${article.title}"`);
+                continue;
+              }
             }
           } else if (source.category === 'tech') {
             const r = evaluateTechRelevance(article);
             relevanceScore = r.score;
             relevanceMeta = JSON.stringify(r.meta);
-            if (!r.passed) {
-              console.log(`Skipped (low tech relevance ${r.score}): "${article.title}"`);
+            // 如果有金融冲突或产品发布，应该跳过
+            if (!r.passed || r.meta.rejectedBy === 'finance' || r.meta.rejectedBy === 'product_release') {
+              if (r.meta.rejectedBy === 'finance') {
+                console.log(`Skipped (tech article with strong finance signal): "${article.title}"`);
+              } else if (r.meta.rejectedBy === 'product_release') {
+                console.log(`Skipped (product release news): "${article.title}"`);
+              } else {
+                console.log(`Skipped (low tech relevance ${r.score}): "${article.title}"`);
+              }
               continue;
             }
           } else if (source.category === 'finance') {
@@ -134,11 +161,17 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
               continue;
             }
           } else if (source.category === 'ai') {
+            // 对于 AI 分类的源，也需要检查是否有强金融信号
             const r = evaluateAIRelevance(article);
             relevanceScore = r.score;
             relevanceMeta = JSON.stringify(r.meta);
-            if (!r.passed) {
-              console.log(`Skipped (low AI relevance ${r.score}): "${article.title}"`);
+            // 如果有金融冲突，应该跳过而不是保留为 AI
+            if (!r.passed || r.meta.financeConflict) {
+              if (r.meta.financeConflict) {
+                console.log(`Skipped (AI article with strong finance signal): "${article.title}"`);
+              } else {
+                console.log(`Skipped (low AI relevance ${r.score}): "${article.title}"`);
+              }
               continue;
             }
           }

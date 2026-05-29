@@ -19,7 +19,7 @@ export default function PrototypeGeneratorPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               <ImageIcon className="h-4 w-4" />
-              <span>原型绘制</span>
+              <span>原型生成</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">AI 原型图编辑</h1>
             <p className="text-muted-foreground">

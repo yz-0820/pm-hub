@@ -10,12 +10,65 @@ type FinanceRelevanceResult = {
     negativeHits: string[];
     adHits: string[];
     threshold: number;
+    strongFinanceSignal?: boolean;  // 强金融信号标记
   };
 };
 
 export const FINANCE_THRESHOLD = 45;
 
+// 强金融信号词 - 标题中出现这些词，几乎可以确定是金融内容
+// 这些词的检测优先级最高，只要命中就直接通过
+// 注意：只包含最明确的金融术语，避免与科技/AI文章混淆
+const STRONG_FINANCE_SIGNALS_TITLE = [
+  // === 股票涨跌信号（最明确）===
+  '涨超', '跌超', '涨逾', '跌逾', '涨幅', '跌幅', '暴涨', '暴跌',
+  '涨停', '跌停', '停牌', '复牌',
+
+  // === 指数信号（最明确）===
+  '创业板指', '创业板', '科创50', '科创板', '上证指数', '深证成指', '沪深300', '沪指', '深指',
+  '恒生指数', '纳斯达克', '道琼斯',
+
+  // === 市场/股票类型信号（最明确）===
+  'A股', '港股', '美股', '中概股', '概念股', 'ST股',
+  '龙头股', '白马股', '蓝筹股', '权重股', '成分股',
+
+  // === 资金流向信号（最明确）===
+  '北向资金', '南向资金', '北向', '南向',
+  '主力资金', '主力', '庄家', '游资',
+  '做多', '做空', '多头', '空头',
+
+  // === 交易行为信号（最明确）===
+  '拉升', '跳水', '砸盘', '护盘',
+  '全线上涨', '全线下跌', '全线飘红', '全线飘绿',
+
+  // === 公司/股票财务信号（最明确）===
+  '股价', '每股', '市值', '市值蒸发', '市值缩水',
+  '上市', '上市首日', '破发', '破发价',
+  '财报', '年报', '季报', '半年报', '业绩', '营收', '净利润', '归母净利润',
+  '亏损', '盈利', '扭亏', '预盈', '预亏',
+  '分红', '分红派息', '派息', '股息',
+  '回购', '减持', '增持', '大股东减持', '大股东增持',
+  '定增', '配股', '增发', '股权融资',
+
+  // === IPO/融资信号（最明确）===
+  'IPO', 'ipo', '招股', '招股书', '上市申请', '上会', '过会',
+  '融资', '募资', '估值', '投后估值',
+
+  // === 板块/行业信号（最明确）===
+  '板块大涨', '板块大跌', '板块拉升', '板块跳水',
+  '行业龙头', '行业指数',
+
+  // === 牛熊市场信号（最明确）===
+  '牛市', '熊市', '牛市来了', '熊市来了',
+  '震荡', '反弹', '回调', '筑底', '探底',
+];
+
+// 扩展金融关键词 - 包含强信号词和其他金融术语
 const FINANCE_KEYWORDS = [
+  // === 强金融信号词（标题权重更高）===
+  ...STRONG_FINANCE_SIGNALS_TITLE,
+
+  // === 基础金融词汇 ===
   '金融',
   '财经',
   '股市',
@@ -59,7 +112,6 @@ const FINANCE_KEYWORDS = [
   '债务',
   '违约',
   '重组',
-  'ipo',
   '大盘',
   '降准',
   '放水',
@@ -84,6 +136,12 @@ const FINANCE_KEYWORDS = [
   '期货价格',
   '股票市场',
   '资本市场',
+
+  // === 新增：科技金融交叉领域的股票信号 ===
+  'AI概念股', '大模型概念股', '科技股', '互联网股',
+  '中概科技股', '芯片股', '半导体股', '新能源车股',
+  '智谱', 'MiniMax', '月之暗面', '零一万物',  // AI公司股票（间接）
+  '市值管理', '股票代码', '股价波动',
 ];
 
 // 明显的非金融信号 - 匹配这些关键词的文章不应归类为金融
@@ -106,7 +164,7 @@ const FINANCE_KEYWORDS = [
    // 营销/广告
    '联名', '代言',
  ];
- 
+
 
 // 强信号非金融关键词 - 匹配 1 个就排除（这些词几乎不可能出现在纯金融文章中）
 const STRONG_NON_FINANCE_KEYWORDS = [
@@ -221,7 +279,28 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
     return { passed: false, score: 0, meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: [], adHits, threshold: FINANCE_THRESHOLD } };
   }
 
-  // 优先检查非金融信号 - 如果文章包含明显的非金融关键词，直接排除
+  // ========== 优先检查：强金融信号 ==========
+  // 如果标题中包含强金融信号词，直接判定为金融内容，忽略其他信号
+  const strongFinanceHits = matchKeywords(title, STRONG_FINANCE_SIGNALS_TITLE);
+  if (strongFinanceHits.length >= 1) {
+    // 强信号：只要标题命中1个就通过，分数给到70以上确保优先级
+    const strongSignalScore = Math.max(70, 70 + strongFinanceHits.length * 10);
+    return {
+      passed: true,
+      score: strongSignalScore,
+      meta: {
+        score: strongSignalScore,
+        positiveHits: strongFinanceHits,
+        titleHits: strongFinanceHits,
+        negativeHits: [],
+        adHits: [],
+        threshold: FINANCE_THRESHOLD,
+        strongFinanceSignal: true,
+      },
+    };
+  }
+
+  // ========== 常规检查：非金融信号 ==========
   const nonFinanceHits = matchKeywords(full, NON_FINANCE_KEYWORDS);
   const strongNonFinanceHits = matchKeywords(full, STRONG_NON_FINANCE_KEYWORDS);
 
@@ -282,7 +361,10 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
     }
   }
 
-  const score = Math.max(0, Math.min(100, Math.round(titleHits.length * 26 + uniq.length * 12)));
+  // 分数计算：标题匹配权重更高
+  const titleScore = titleHits.length * 26;
+  const bodyScore = Math.min(bodyHits.length * 12, 50);
+  const score = Math.max(0, Math.min(100, Math.round(titleScore + bodyScore)));
   const passed = score >= FINANCE_THRESHOLD && hasFinanceSignal;
 
   return {

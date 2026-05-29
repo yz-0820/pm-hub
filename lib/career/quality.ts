@@ -128,6 +128,20 @@ export function hasCareerRelevance(content: Pick<NormalizedContent, 'title' | 'd
 } {
   const text = `${content.title || ''} ${content.description || ''} ${(content.content || '').slice(0, 600)}`.toLowerCase();
 
+  // ========== 优先检查：强商业/融资信号 ==========
+  // 如果标题包含这些词，说明是商业新闻而非职场内容，直接排除
+  const strongBusinessSignals = [
+    '融资', '寻求融资', '完成融资', '获投', '获融资', '投资', '投资方', '估值',
+    '天使轮', 'a轮', 'b轮', 'c轮', 'd轮', 'e轮', 'f轮',
+    'pre-ipo', 'ipo', '上市', '招股书', '募资', '定增',
+    'pe', 'vc', '风险投资', '私募股权', '战略投资',
+    '独角兽', '估值', '投后估值',
+  ];
+  const businessHits = strongBusinessSignals.filter(k => text.includes(k.toLowerCase()));
+  if (businessHits.length >= 1) {
+    return { relevant: false, reason: `商业/融资内容: ${businessHits.join(', ')}` };
+  }
+
   // 强锚点检查：命中 1 个就通过
   const strongHits = STRONG_WORKPLACE_ANCHORS.filter(k => text.includes(k.toLowerCase()));
   if (strongHits.length >= 1) {

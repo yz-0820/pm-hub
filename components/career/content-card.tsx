@@ -17,7 +17,6 @@ import {
   ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { formatCareerDate } from '@/lib/utils/date';
 import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
 
@@ -106,7 +105,6 @@ function simplifySourceName(sourceName: string, platform: string): string {
 }
 
 export function ContentCard({ content, variant = 'default' }: ContentCardProps) {
-  // 优先使用 sourceName 作为来源显示名称，避免显示"RSS订阅"
   const displaySourceName =
     (content.sourceName ? simplifySourceName(content.sourceName, content.platform) : '') ||
     (platformLabels[content.platform]?.name) ||
@@ -118,7 +116,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const TypeIcon = contentTypeIcons[content.contentType] || FileText;
   
   const categoryLabel = categoryLabels[content.category] || '';
-  const categoryColorClass = categoryColors[content.category] || 'bg-gray-50 text-gray-600 border-gray-100';
   const safeHref = getSafeExternalHref(content.originalUrl);
   if (!safeHref) return null;
   const coverImage =
@@ -128,14 +125,9 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const proxyCover = getProxiedImageUrl(coverImage);
   const hideSubtitle = content.contentType === 'video' || content.contentType === 'short_video';
 
-  // 格式化数字
   const formatNumber = (num: number): string => {
-    if (num >= 10000) {
-      return (num / 10000).toFixed(1) + 'w';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
-    }
+    if (num >= 10000) return (num / 10000).toFixed(1) + 'w';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num.toString();
   };
 
@@ -182,7 +174,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
     );
   }
 
-  // 特色模式（大图）
+  // 特色模式
   if (variant === 'featured') {
     return (
       <a
@@ -207,7 +199,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
             </div>
           )}
           
-          {/* 视频播放按钮 */}
           {(content.contentType === 'video' || content.contentType === 'short_video') && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
@@ -216,7 +207,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
             </div>
           )}
           
-          {/* 平台标签 */}
           <div className="absolute left-3 top-3 flex items-center gap-2">
             <span 
               className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium backdrop-blur-sm"
@@ -226,7 +216,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
               {displaySourceName}
             </span>
             {categoryLabel && (
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${categoryColorClass}`}>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-600`}>
                 {categoryLabel}
               </span>
             )}
@@ -270,15 +260,9 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
     );
   }
 
-  // 默认模式 - 水平布局，与专业资讯卡片格式一致
+  // 默认模式 - 移动端适配
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.2 }}
-      className="group bg-card rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-all duration-300"
-    >
+    <article className="group bg-card rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-all duration-300">
       <a
         href={safeHref}
         target="_blank"
@@ -286,20 +270,20 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
         className="block"
       >
         <div className="flex flex-col sm:flex-row">
-          {/* Image - 左侧 */}
-          <div className="relative overflow-hidden bg-muted w-full sm:w-64 md:w-72 shrink-0 aspect-[16/10]">
+          {/* Image - 移动端全宽，桌面端左侧 */}
+          <div className="relative overflow-hidden bg-muted w-full sm:w-48 md:w-64 lg:w-72 shrink-0 aspect-[16/9] sm:aspect-[4/3]">
             {proxyCover ? (
               <Image
                 src={proxyCover}
                 alt={displayTitle}
                 fill
-                sizes="(max-width: 640px) 100vw, 288px"
+                sizes="(max-width: 640px) 100vw, 256px"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 quality={90}
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                <ImageIcon className="h-10 w-10 mb-2 opacity-30" />
+                <ImageIcon className="h-8 w-8 sm:h-10 sm:w-10 mb-2 opacity-30" />
                 <span className="text-xs opacity-50">暂无配图</span>
               </div>
             )}
@@ -307,8 +291,8 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
             {/* 视频播放按钮 */}
             {(content.contentType === 'video' || content.contentType === 'short_video') && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
-                  <Play className="h-5 w-5 text-primary ml-0.5" fill="currentColor" />
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
+                  <Play className="h-4 w-4 sm:h-5 sm:w-5 text-primary ml-0.5" fill="currentColor" />
                 </div>
               </div>
             )}
@@ -318,32 +302,33 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
           </div>
 
           {/* Content - 右侧 */}
-          <div className="p-5 md:p-6 flex flex-col justify-center min-w-0 flex-1 gap-3">
+          <div className="p-4 sm:p-5 md:p-6 flex flex-col justify-center min-w-0 flex-1 gap-2 sm:gap-3">
             {/* Meta row */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {categoryLabel && (
-                <span className="inline-block px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
+                <span className="inline-block px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-full shrink-0">
                   {categoryLabel}
                 </span>
               )}
               <span 
-                className="flex items-center gap-1 text-xs text-muted-foreground"
+                className="flex items-center gap-1 text-xs text-muted-foreground shrink-0 max-w-[120px] sm:max-w-none truncate"
+                title={displaySourceName}
               >
-                <PlatformIcon className="h-3 w-3" color={platform.color} />
-                {displaySourceName}
+                <PlatformIcon className="h-3 w-3 shrink-0" color={platform.color} />
+                <span className="truncate">{displaySourceName}</span>
               </span>
               <span className="text-muted-foreground/40">·</span>
-              <time className="text-xs text-muted-foreground">{formatCareerDate(content.publishedAt)}</time>
+              <time className="text-xs text-muted-foreground shrink-0">{formatCareerDate(content.publishedAt)}</time>
             </div>
 
             {/* Title */}
-            <h3 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 text-lg md:text-xl leading-snug">
+            <h3 className="font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:line-clamp-1 text-base sm:text-lg md:text-xl leading-snug">
               {displayTitle}
             </h3>
 
-            {/* Summary/Description */}
+            {/* Summary/Description - 移动端隐藏 */}
             {!hideSubtitle && (
-              <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+              <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 hidden sm:block">
                 {content.description || ''}
               </p>
             )}
@@ -368,6 +353,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
           </div>
         </div>
       </a>
-    </motion.article>
+    </article>
   );
 }

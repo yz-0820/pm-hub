@@ -11,12 +11,59 @@ type TechRelevanceResult = {
     positiveHits: Record<string, string[]>;
     negativeHits: string[];
     adHits: string[];
-    rejectedBy: 'negative' | 'ad' | null;
+    rejectedBy: 'negative' | 'ad' | 'finance' | 'product_release' | null;
+    financeSignal?: string[];
     threshold: number;
   };
 };
 
 export const TECH_THRESHOLD = 40;
+
+// 强金融信号词 - 标题中出现这些词时，即使有科技关键词也应排除
+// 注意：只包含最明确的金融术语，避免与科技/AI文章混淆
+const STRONG_FINANCE_SIGNALS_TITLE = [
+  // === 股票涨跌信号（最明确）===
+  '涨超', '跌超', '涨逾', '跌逾', '涨幅', '跌幅', '暴涨', '暴跌',
+  '涨停', '跌停', '停牌', '复牌',
+
+  // === 指数信号（最明确）===
+  '创业板指', '创业板', '科创50', '科创板', '上证指数', '深证成指', '沪深300', '沪指', '深指',
+  '恒生指数', '纳斯达克', '道琼斯',
+
+  // === 市场/股票类型信号（最明确）===
+  'A股', '港股', '美股', '中概股', '概念股', 'ST股',
+  '龙头股', '白马股', '蓝筹股', '权重股', '成分股',
+
+  // === 资金流向信号（最明确）===
+  '北向资金', '南向资金', '北向', '南向',
+  '主力资金', '主力', '庄家', '游资',
+  '做多', '做空', '多头', '空头',
+
+  // === 交易行为信号（最明确）===
+  '拉升', '跳水', '砸盘', '护盘',
+  '全线上涨', '全线下跌', '全线飘红', '全线飘绿',
+
+  // === 公司/股票财务信号（最明确）===
+  '股价', '每股', '市值', '市值蒸发', '市值缩水',
+  '上市', '上市首日', '破发', '破发价',
+  '财报', '年报', '季报', '半年报', '业绩', '营收', '净利润', '归母净利润',
+  '亏损', '盈利', '扭亏', '预盈', '预亏',
+  '分红', '分红派息', '派息', '股息',
+  '回购', '减持', '增持', '大股东减持', '大股东增持',
+  '定增', '配股', '增发', '股权融资',
+
+  // === IPO/融资信号（最明确）===
+  'IPO', 'ipo', '招股', '招股书', '上市申请', '上会', '过会',
+  '融资', '募资', '估值', '投后估值',
+
+  // === 板块/行业信号（最明确）===
+  '板块大涨', '板块大跌', '板块拉升', '板块跳水',
+  '行业龙头', '行业指数',
+
+  // === 牛熊市场信号（最明确）===
+  '牛市', '熊市', '牛市来了', '熊市来了',
+  '震荡', '反弹', '回调', '筑底', '探底',
+];
 
 const NEGATIVE_KEYWORDS = [
   '游戏',
@@ -247,9 +294,38 @@ function countOccurrences(text: string, token: string): number {
   return count;
 }
 
-function detectAdvertorial(fullText: string): string[] {
+// 产品新闻关键词 - 如果文章包含这些词，说明是正常的产品新闻而非广告
+const PRODUCT_NEWS_KEYWORDS = [
+  '发布', '发售', '上市', '推出', '亮相', '曝光', '开箱', '评测', '体验',
+  '显示器', '手机', '笔记本', '平板', '耳机', '音箱', '键盘', '鼠标',
+  '配置', '参数', '规格', '性能', '跑分', '测试',
+  '售价', '定价', '价格', '元', '美元', '欧元',
+  '英寸', '分辨率', '刷新率', '色域', '亮度',
+];
+
+function isProductNews(title: string, body: string): boolean {
+  const fullText = `${title} ${body}`.toLowerCase();
+  // 检查是否包含产品新闻特征词
+  const productHits = PRODUCT_NEWS_KEYWORDS.filter(k => fullText.includes(k.toLowerCase()));
+  // 如果命中至少 3 个产品新闻关键词，认为是正常产品新闻
+  return productHits.length >= 3;
+}
+
+function detectAdvertorial(fullText: string, title: string = '', body: string = ''): string[] {
   const hits = AD_HINT_PATTERNS.filter((p) => p.re.test(fullText)).map((p) => p.label);
   if (hits.length === 0) return [];
+
+  // 如果是正常的产品新闻，放宽广告检测
+  if (isProductNews(title, body)) {
+    // 产品新闻中只保留最强的广告信号
+    const strongAdSignals = hits.filter(h =>
+      ['广告/推广声明', '广告/赞助', '商务合作', '扫码/加微信', '进群/私信'].includes(h)
+    );
+    if (strongAdSignals.length === 0) {
+      return []; // 产品新闻中忽略弱的广告信号
+    }
+    return strongAdSignals;
+  }
 
   const httpCount = countOccurrences(fullText, 'http');
   const hasStrongCta = hits.some((h) =>
@@ -266,6 +342,64 @@ function detectAdvertorial(fullText: string): string[] {
 export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResult {
   const { title, body } = getText(article);
   const full = `${title}\n${body}`.trim();
+
+  // ========== 优先检查：强金融信号 ==========
+  // 如果标题中包含强金融信号词，排除（应该归为金融而非科技）
+  const financeSignalHits = matchKeywords(title, STRONG_FINANCE_SIGNALS_TITLE);
+  if (financeSignalHits.length >= 1) {
+    return {
+      passed: false,
+      score: 0,
+      topic: null,
+      meta: {
+        score: 0,
+        topic: null,
+        topics: [],
+        positiveHits: {},
+        negativeHits: [],
+        adHits: [],
+        rejectedBy: 'finance',
+        financeSignal: financeSignalHits,
+        threshold: TECH_THRESHOLD,
+      },
+    };
+  }
+
+  // ========== 检查：产品发布/促销新闻 ==========
+  // 如果是明显的产品发布/促销新闻，不收录
+  // 产品发布的典型特征：发布/发售 + 售价/规格
+  // 促销的典型特征：促 + 售价
+  const productReleaseSignals = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '促'];
+  const productPriceSignals = ['元', '售价', '首发价', '起价', '限时价', '优惠价'];
+  const productSpecSignals = ['配置', '参数', '规格', '处理器', '内存', '屏幕', '电池', '英寸', '刷新率'];
+
+  const hasProductRelease = productReleaseSignals.some(s => title.includes(s));
+  const hasProductPrice = productPriceSignals.some(s => title.includes(s));
+  const specCount = productSpecSignals.filter(s => title.includes(s)).length;
+
+  // 如果标题同时包含：
+  // 1. 发布信号 + (价格信号 或 多个规格信号)
+  // 2. 或 促销("促") + 价格信号
+  // 则认为是产品发布/促销新闻
+  const isProductRelease = (hasProductRelease && (hasProductPrice || specCount >= 2)) ||
+                           (title.includes('促') && hasProductPrice);
+  if (isProductRelease) {
+    return {
+      passed: false,
+      score: 0,
+      topic: null,
+      meta: {
+        score: 0,
+        topic: null,
+        topics: [],
+        positiveHits: {},
+        negativeHits: [],
+        adHits: [],
+        rejectedBy: 'product_release',
+        threshold: TECH_THRESHOLD,
+      },
+    };
+  }
 
   const negativeHits = matchKeywords(full, NEGATIVE_KEYWORDS);
   if (negativeHits.length > 0) {
@@ -286,7 +420,7 @@ export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResu
     };
   }
 
-  const adHits = detectAdvertorial(full);
+  const adHits = detectAdvertorial(full, title, body);
   if (adHits.length > 0) {
     return {
       passed: false,
