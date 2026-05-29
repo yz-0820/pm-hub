@@ -149,13 +149,13 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
               <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
                 <Clock className="h-4 w-4 text-primary" />
                 {latestPublishedAt
-                  ? `最新发布: ${latestPublishedAt.toLocaleString('zh-CN')}`
+                  ? `最新发布: ${latestPublishedAt.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`
                   : '暂无发布'}
               </span>
               <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
                 <Rss className="h-4 w-4 text-primary" />
                 {latestFetchedAt
-                  ? `最近抓取: ${latestFetchedAt.toLocaleString('zh-CN')}`
+                  ? `最近抓取: ${latestFetchedAt.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`
                   : '暂无更新'}
               </span>
             </div>

@@ -167,13 +167,13 @@ export default async function CareerPage({ searchParams }: CareerPageProps) {
               <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
                 <Clock className="h-4 w-4 text-primary" />
                 {stats.latestPublishedAt
-                  ? `最新发布: ${new Date(stats.latestPublishedAt).toLocaleString('zh-CN')}`
+                  ? `最新发布: ${new Date(stats.latestPublishedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`
                   : '暂无发布'}
               </span>
               <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 backdrop-blur-sm">
                 <Rss className="h-4 w-4 text-primary" />
                 {stats.latestFetchedAt 
-                  ? `最近抓取: ${new Date(stats.latestFetchedAt).toLocaleString('zh-CN')}`
+                  ? `最近抓取: ${new Date(stats.latestFetchedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`
                   : '暂无更新'
                 }
               </span>
