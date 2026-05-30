@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Brain, Code2, ArrowRight } from 'lucide-react';
+import { Lightbulb, Code2, ArrowRight } from 'lucide-react';
 
 export const revalidate = 60;
 
@@ -51,7 +51,7 @@ export default function TrainingHomePage() {
                   </p>
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Brain className="h-5 w-5 text-primary" />
+                  <Lightbulb className="h-5 w-5 text-primary" />
                 </div>
               </div>
               <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">

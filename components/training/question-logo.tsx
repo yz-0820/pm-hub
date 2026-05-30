@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
-import { Brain } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 
 export function QuestionLogo(props: { logoUrl?: string | null; alt: string; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -24,7 +24,7 @@ export function QuestionLogo(props: { logoUrl?: string | null; alt: string; clas
           onError={() => setFailed(true)}
         />
       ) : (
-        <Brain className="h-5 w-5 text-primary" />
+        <Lightbulb className="h-5 w-5 text-primary" />
       )}
     </div>
   );

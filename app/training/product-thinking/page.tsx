@@ -3,7 +3,7 @@ import { db } from '@/lib/db/client';
 import { trainingQuestions } from '@/lib/db/schema';
 import { and, desc, eq } from 'drizzle-orm';
 import { trainingIndustries, trainingProductTypes, trainingDifficulty } from '@/config/training';
-import { Brain, ArrowLeft } from 'lucide-react';
+import { Lightbulb, ArrowLeft } from 'lucide-react';
 import { ensureTrainingSchema } from '@/lib/training/ensure-schema';
 import { ProductThinkingFilters } from '@/components/training/product-thinking-filters';
 import { QuestionLogo } from '@/components/training/question-logo';
@@ -53,7 +53,7 @@ export default async function ProductThinkingTrainingPage(props: {
         <div className="flex items-start justify-between gap-6 flex-col lg:flex-row mb-8">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-              <Brain className="h-4 w-4" />
+              <Lightbulb className="h-4 w-4" />
               <span>产品思维训练</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">产品拆解题库</h1>

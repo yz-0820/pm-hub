@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { db } from '@/lib/db/client';
 import { trainingAttempts, trainingEvaluations, trainingQuestions } from '@/lib/db/schema';
 import { and, eq } from 'drizzle-orm';
-import { ArrowLeft, Brain, Sparkles, Zap, Trophy, Target } from 'lucide-react';
+import { ArrowLeft, Lightbulb, Sparkles, Zap, Trophy, Target } from 'lucide-react';
 import { ensureTrainingSchema } from '@/lib/training/ensure-schema';
 import { getUserKey } from '@/lib/training/user-key';
 import { DimensionScoreCard } from '@/components/training/dimension-score-card';
@@ -135,7 +135,7 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
             <div className="flex flex-col md:flex-row md:items-center gap-3">
               <div className="flex items-center gap-2.5">
                 <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${usedAI ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-muted text-muted-foreground border'}`}>
-                  {usedAI ? <Sparkles className="h-3 w-3" /> : <Brain className="h-3 w-3" />}
+                  {usedAI ? <Sparkles className="h-3 w-3" /> : <Lightbulb className="h-3 w-3" />}
                   <span>{usedAI ? 'AI 深度评分' : '规则兜底评分'}</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
@@ -224,7 +224,7 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
           {/* 原始答案 */}
           <div className="rounded-2xl border bg-card/60 backdrop-blur-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Brain className="h-4 w-4 text-muted-foreground" />
+              <Lightbulb className="h-4 w-4 text-muted-foreground" />
               <h2 className="text-base font-bold">你的原始答案</h2>
             </div>
             <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed bg-muted/30 rounded-xl p-4 max-h-[500px] overflow-y-auto">

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Lightbulb, Cpu, Brain, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench } from 'lucide-react';
+import { ArrowRight, Lightbulb, Cpu, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench } from 'lucide-react';
 import { db } from '@/lib/db/client';
 import { articles, resources } from '@/lib/db/schema';
 import { desc, sql } from 'drizzle-orm';
@@ -199,7 +199,7 @@ export default async function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
               <div className="relative p-4 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 h-full flex flex-col">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors">产品思维训练</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground flex-1">
