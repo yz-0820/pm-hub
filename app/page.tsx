@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Lightbulb, Cpu, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench } from 'lucide-react';
+import { ArrowRight, Lightbulb, Cpu, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench, LayoutGrid } from 'lucide-react';
 import { db } from '@/lib/db/client';
 import { articles, resources } from '@/lib/db/schema';
 import { desc, sql } from 'drizzle-orm';
@@ -11,7 +11,7 @@ export const revalidate = 60; // 1分钟ISR
 // 分类图标和颜色配置
 const categoryConfig: Record<string, { icon: React.ElementType; color: string; gradient: string; iconBg: string }> = {
   'product-management': {
-    icon: Target,
+    icon: LayoutGrid,
     color: 'text-amber-600',
     gradient: 'from-amber-500/10 to-orange-500/5',
     iconBg: 'bg-amber-500/10',
