@@ -9,12 +9,14 @@ const tools = [
     title: 'PRD 生成',
     description: '输入需求背景与功能点，AI 自动生成结构化产品需求文档。',
     icon: FileText,
+    color: 'sky',
   },
   {
     href: '/tools/prototype',
     title: '原型生成',
     description: '上传界面截图并描述修改需求，AI 生成编辑后的原型图。',
     icon: ImageIcon,
+    color: 'violet',
   },
 ];
 
@@ -56,22 +58,27 @@ export default function ToolsHomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {tools.map((tool) => {
               const Icon = tool.icon;
+              const colorClasses: Record<string, { bg: string; text: string; border: string; hover: string }> = {
+                sky: { bg: 'bg-sky-500/10', text: 'text-sky-600', border: 'hover:border-sky-200', hover: 'group-hover:text-sky-600' },
+                violet: { bg: 'bg-violet-500/10', text: 'text-violet-600', border: 'hover:border-violet-200', hover: 'group-hover:text-violet-600' },
+              };
+              const c = colorClasses[tool.color] || colorClasses.sky;
               return (
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className="group rounded-lg border bg-card/70 backdrop-blur-sm p-6 hover:shadow-lg hover:border-primary/20 transition-all"
+                  className={`group rounded-lg border bg-card/70 backdrop-blur-sm p-6 hover:shadow-lg ${c.border} transition-all`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{tool.title}</h2>
+                      <h2 className={`text-xl font-bold mb-2 ${c.hover} transition-colors`}>{tool.title}</h2>
                       <p className="text-sm text-muted-foreground">{tool.description}</p>
                     </div>
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon className="h-5 w-5 text-primary" />
+                    <div className={`h-10 w-10 rounded-lg ${c.bg} flex items-center justify-center shrink-0`}>
+                      <Icon className={`h-5 w-5 ${c.text}`} />
                     </div>
                   </div>
-                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
+                  <div className={`mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground ${c.hover} transition-colors`}>
                     <span>打开工具</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </div>

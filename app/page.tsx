@@ -11,7 +11,7 @@ export const revalidate = 60; // 1分钟ISR
 // 分类图标和颜色配置
 const categoryConfig: Record<string, { icon: React.ElementType; color: string; gradient: string; iconBg: string }> = {
   'product-management': {
-    icon: Lightbulb,
+    icon: Target,
     color: 'text-amber-600',
     gradient: 'from-amber-500/10 to-orange-500/5',
     iconBg: 'bg-amber-500/10',
