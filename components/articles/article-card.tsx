@@ -7,6 +7,7 @@ import { categoryLabels } from '@/config/rss';
 import { ImageIcon } from 'lucide-react';
 import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
+import { getArticleDefaultCover } from '@/config/default-covers';
 
 interface ArticleCardProps {
   article: Article;
@@ -16,6 +17,9 @@ interface ArticleCardProps {
 export function ArticleCard({ article }: ArticleCardProps) {
   const categoryLabel = categoryLabels[article.category]?.name || article.category;
   const proxiedImageUrl = getProxiedImageUrl(article.imageUrl);
+  // 没有图片时使用分类相关的默认配图
+  const fallbackCover = getArticleDefaultCover(article.category, article.id?.toString() || article.title);
+  const displayImageUrl = proxiedImageUrl || fallbackCover;
   const sourceName = simplifyArticleSourceName(article.sourceName);
 
   return (
@@ -29,14 +33,15 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <div className="flex flex-col sm:flex-row">
           {/* Image - 移动端全宽，桌面端左侧 */}
           <div className="relative overflow-hidden bg-muted w-full sm:w-48 md:w-64 lg:w-72 shrink-0 aspect-[16/9] sm:aspect-[4/3]">
-            {proxiedImageUrl ? (
+            {displayImageUrl ? (
               <Image
-                src={proxiedImageUrl}
+                src={displayImageUrl}
                 alt={article.title}
                 fill
                 sizes="(max-width: 640px) 100vw, 256px"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 priority={false}
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">

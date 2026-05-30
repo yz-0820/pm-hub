@@ -1,7 +1,8 @@
 'use client';
 
 import { CareerContent } from '@/lib/db/schema';
-import { getDefaultCover, isDefaultCoverImage, platformLabels } from '@/config/content-sources';
+import { getCareerDefaultCover, isDefaultCoverImage, platformLabels } from '@/config/content-sources';
+import { getCareerDefaultCover as getExpandedCover } from '@/config/default-covers';
 import { 
   FileText, 
   Video, 
@@ -121,7 +122,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const coverImage =
     content.coverImage && !isDefaultCoverImage(content.coverImage)
       ? content.coverImage
-      : getDefaultCover(content.category, content.originalId || content.originalUrl || content.title || String(content.id));
+      : getExpandedCover(content.category, content.originalId || content.originalUrl || content.title || String(content.id));
   const proxyCover = getProxiedImageUrl(coverImage);
   const hideSubtitle = content.contentType === 'video' || content.contentType === 'short_video';
 
