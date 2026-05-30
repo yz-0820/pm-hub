@@ -141,12 +141,14 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             const r = evaluateTechRelevance(article);
             relevanceScore = r.score;
             relevanceMeta = JSON.stringify(r.meta);
-            // 如果有金融冲突或产品发布，应该跳过
-            if (!r.passed || r.meta.rejectedBy === 'finance' || r.meta.rejectedBy === 'product_release') {
+            // 如果有金融冲突、产品发布或促销导购，应该跳过
+            if (!r.passed || r.meta.rejectedBy === 'finance' || r.meta.rejectedBy === 'product_release' || r.meta.rejectedBy === 'promo_deal') {
               if (r.meta.rejectedBy === 'finance') {
                 console.log(`Skipped (tech article with strong finance signal): "${article.title}"`);
               } else if (r.meta.rejectedBy === 'product_release') {
                 console.log(`Skipped (product release news): "${article.title}"`);
+              } else if (r.meta.rejectedBy === 'promo_deal') {
+                console.log(`Skipped (promo/deal article): "${article.title}"`);
               } else {
                 console.log(`Skipped (low tech relevance ${r.score}): "${article.title}"`);
               }

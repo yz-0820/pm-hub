@@ -110,6 +110,44 @@ const AD_HINT_PATTERNS: Array<{ label: string; re: RegExp }> = [
   { label: '点击链接', re: /(点击(下方|链接)|戳这里|直达链接)/i },
 ];
 
+// ========== 强促销导购检测 ==========
+// 这些模式表明文章是电商促销导购，而非正常科技/产品新闻
+const PROMO_DEAL_PATTERNS: Array<{ label: string; re: RegExp }> = [
+  // 价格箭头模式：原价 → 折后价
+  { label: '价格箭头促销', re: /\d+[\s]*[→➡]\s*\d+\s*元/ },
+  // 国补/以旧换新
+  { label: '国补促销', re: /(国补|以旧换新|晒单返|种草返|叠加|领券|满减|立减)/ },
+  // 京东/天猫促销活动
+  { label: '电商大促', re: /(京东|天猫|淘宝|拼多多|苏宁).*(618|双11|双12|大促|促销|活动|会场)/ },
+  // 折扣率描述
+  { label: '折扣率', re: /\d[\.\d]*折(券)?/ },
+  // "新低"/"到手价"/"史低"
+  { label: '到手价/新低', re: /(新低|史低|到手价|到手仅需|折合仅需|券后|补贴后)/ },
+  // 促销步骤引导
+  { label: '购买步骤引导', re: /(先领|领券后|下单时|加入购物车|按下方|点此查看)/ },
+  // PLUS会员/会员价
+  { label: '会员专享价', re: /(plus|PLUS|会员价|会员专享|仅售|仅需)/ },
+];
+
+/**
+ * 检测是否为强促销导购文章（电商促销、价格导购等）
+ * 这类文章无论是否包含产品新闻关键词，都应该被拒绝
+ */
+function detectPromoDeal(title: string, body: string): { isPromo: boolean; reason: string } {
+  const fullText = `${title} ${body}`;
+  const hits = PROMO_DEAL_PATTERNS.filter(p => p.re.test(fullText));
+  // 命中2个及以上促销模式 → 判定为促销导购
+  if (hits.length >= 2) {
+    return { isPromo: true, reason: `promo_deal(${hits.map(h => h.label).join(',')})` };
+  }
+  // 单个强信号也拒绝：价格箭头 或 国补
+  const strongSignals = ['价格箭头促销', '国补促销', '到手价/新低'];
+  if (hits.some(h => strongSignals.includes(h.label))) {
+    return { isPromo: true, reason: `promo_deal(${hits[0].label})` };
+  }
+  return { isPromo: false, reason: '' };
+}
+
 const GROUPS: Array<{ id: string; label: string; keywords: string[] }> = [
   {
     id: 'it',
@@ -415,6 +453,26 @@ export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResu
         negativeHits,
         adHits: [],
         rejectedBy: 'negative',
+        threshold: TECH_THRESHOLD,
+      },
+    };
+  }
+
+  // ========== 促销导购检测（优先级最高，不可豁免） ==========
+  const promoCheck = detectPromoDeal(title, body);
+  if (promoCheck.isPromo) {
+    return {
+      passed: false,
+      score: 0,
+      topic: null,
+      meta: {
+        score: 0,
+        topic: null,
+        topics: [],
+        positiveHits: {},
+        negativeHits: [],
+        adHits: [promoCheck.reason],
+        rejectedBy: 'promo_deal',
         threshold: TECH_THRESHOLD,
       },
     };
