@@ -128,6 +128,27 @@ const GAMING_ENTERTAINMENT_KEYWORDS = [
   'netflix', '迪士尼', '漫威', 'dc',
 ];
 
+// 产品发布体裁信号 - 即使提及 AI，产品发布新闻也不是 AI 技术新闻
+const PRODUCT_RELEASE_GENRE = [
+  '开启预约', '开启预售', '现已开售', '正式开售', '现已发售',
+  '笔记本发布', '笔记本开启', '手机发布', '手机开启',
+  '显示器发布', '平板发布', '耳机发布', '音箱发布',
+  '路由器发布', '键盘发布', '鼠标发布', '显卡发布',
+  '处理器：', '处理器：', '芯片：', '配置：', '规格：',
+  '英寸', '刷新率', '电池容量', '续航时间',
+  '元起', '元', '售价', '首发价', '预约价',
+];
+
+// 人物特写体裁信号 - 人物专访/传记不是 AI 技术新闻
+const PROFILE_GENRE = [
+  '我所知道的', '我所了解的', '我所认识的',
+  '专访', '独家专访', '深度对话', '对话',
+  '人物', '人物志', '人物故事',
+  '他的故事', '她的故事', '他们的故事',
+  '职业生涯', '职业经历', '从业经历',
+  '离开', '加入', '出任', '担任',
+];
+
 function normalizeText(value: unknown): string {
   if (typeof value !== 'string') return '';
   return value.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -186,6 +207,42 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
         negativeHits: gamingHits,
         threshold: AI_THRESHOLD,
         rejectedBy: 'gaming_entertainment',
+      },
+    };
+  }
+
+  // ========== 高优先级：产品发布体裁检测 ==========
+  // 产品发布新闻即使提及 AI（如"锐龙 AI 7 处理器"），也不是 AI 技术新闻
+  const productGenreHits = matchKeywords(full, PRODUCT_RELEASE_GENRE);
+  if (productGenreHits.length >= 3) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: productGenreHits,
+        threshold: AI_THRESHOLD,
+        rejectedBy: 'product_release_genre',
+      },
+    };
+  }
+
+  // ========== 高优先级：人物特写体裁检测 ==========
+  // 人物专访/传记即使讨论 AI 技术，也不是 AI 技术新闻
+  const profileGenreHits = matchKeywords(title, PROFILE_GENRE);
+  if (profileGenreHits.length >= 1) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: profileGenreHits,
+        threshold: AI_THRESHOLD,
+        rejectedBy: 'profile_genre',
       },
     };
   }
