@@ -1,8 +1,5 @@
 import Link from 'next/link';
 import { ArrowRight, Lightbulb, Cpu, LineChart, Sparkles, Zap, Target, Briefcase, MessageSquare, Users, Crown, Newspaper, Code2, FileText, Image as ImageIcon, Wrench, LayoutGrid } from 'lucide-react';
-import { db } from '@/lib/db/client';
-import { articles, resources } from '@/lib/db/schema';
-import { desc, sql } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
 
@@ -36,19 +33,7 @@ const categoryConfig: Record<string, { icon: React.ElementType; color: string; g
   },
 };
 
-async function getHomeData() {
-  // 获取统计数据
-  const stats = await db.select({
-    total: sql<number>`cast(count(*) as int)`,
-  }).from(articles);
-
-  return {
-    totalArticles: stats[0]?.total || 0,
-  };
-}
-
-export default async function HomePage() {
-  const { totalArticles } = await getHomeData();
+export default function HomePage() {
 
   return (
     <div className="min-h-screen">
