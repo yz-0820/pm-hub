@@ -438,9 +438,9 @@ export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResu
   // 如果是明显的产品发布/促销新闻，不收录
   // 产品发布的典型特征：发布/发售 + 售价/规格
   // 促销的典型特征：促 + 售价
-  const productReleaseSignals = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '促'];
-  const productPriceSignals = ['元', '售价', '首发价', '起价', '限时价', '优惠价'];
-  const productSpecSignals = ['配置', '参数', '规格', '处理器', '内存', '屏幕', '电池', '英寸', '刷新率'];
+  const productReleaseSignals = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '促', '展示', '公布', '曝光', '亮相'];
+  const productPriceSignals = ['元', '售价', '首发价', '起价', '限时价', '优惠价', '美元', '定价'];
+  const productSpecSignals = ['配置', '参数', '规格', '处理器', '内存', '屏幕', '电池', '英寸', '刷新率', '芯片', '核心'];
 
   const hasProductRelease = productReleaseSignals.some(s => title.includes(s));
   const hasProductPrice = productPriceSignals.some(s => title.includes(s));
@@ -450,9 +450,11 @@ export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResu
   // 1. 发布信号 + (价格信号 或 多个规格信号)
   // 2. 或 促销("促") + 价格信号
   // 则认为是产品发布/促销新闻
+  // 但如果是顶尖品牌的产品新闻，允许通过
   const isProductRelease = (hasProductRelease && (hasProductPrice || specCount >= 2)) ||
                            (title.includes('促') && hasProductPrice);
-  if (isProductRelease) {
+  if (isProductRelease && !isTopTierProductNews(title, body)) {
+    // 非顶尖品牌的产品发布/促销新闻 → 拒绝
     return {
       passed: false,
       score: 0,
