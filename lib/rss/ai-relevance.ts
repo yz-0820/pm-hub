@@ -278,7 +278,7 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
   );
 
   // 只有芯片供应商没有产品品牌 → 视为未知品牌
-  const isKnownBrand = hasTopTierBrand || (hasChipSupplier && hasTopTierBrand);
+  const isKnownBrand = hasTopTierBrand;
 
   // 如果是产品发布，且不是顶尖公司的产品，则拒绝
   if (isProductRelease && !isKnownBrand) {

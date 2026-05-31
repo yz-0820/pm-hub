@@ -11,11 +11,35 @@ import { stripHtml } from '@/lib/utils';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
+import type { Metadata } from 'next';
 
 export const revalidate = 0;
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticle(slug);
+  if (!article) return { title: '文章未找到' };
+
+  const description = article.summary
+    ? stripHtml(article.summary).substring(0, 160)
+    : `${article.sourceName} - ${categoryLabels[article.category] || article.category}`;
+
+  return {
+    title: article.title,
+    description,
+    openGraph: {
+      title: article.title,
+      description,
+      type: 'article',
+      publishedTime: article.publishedAt.toISOString(),
+      authors: article.author ? [article.author] : undefined,
+      images: article.imageUrl ? [{ url: article.imageUrl }] : undefined,
+    },
+  };
 }
 
 async function getArticle(slug: string) {

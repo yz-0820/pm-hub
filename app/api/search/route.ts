@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { articlesIndex } from '@/lib/search/client';
 import { db } from '@/lib/db/client';
-import { articles, careerContents } from '@/lib/db/schema';
-import { categoryLabels } from '@/config/rss';
-import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
-import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
-import { and, desc, eq, gte, ilike, inArray, ne, notIlike, or, sql } from 'drizzle-orm';
+import { careerContents } from '@/lib/db/schema';
+import { eq, desc, ilike, or, notIlike, sql } from 'drizzle-orm';
 
 type SearchHit =
   | {
@@ -40,34 +38,58 @@ export async function GET(request: NextRequest) {
     const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(10, rawLimit) : 10;
 
     if (!query) {
-      return NextResponse.json({
-        hits: [],
-        totalHits: 0,
-        page: 1,
-        totalPages: 0,
-      });
+      return NextResponse.json({ hits: [], totalHits: 0, page: 1, totalPages: 0 });
     }
 
     const offset = (page - 1) * limit;
-    const fetchSize = offset + limit;
 
+    // 优先使用 MeiliSearch
+    try {
+      const meiliResult = await articlesIndex.search(query, {
+        limit,
+        offset,
+        attributesToRetrieve: ['id', 'title', 'summary', 'category', 'sourceName', 'publishedAt', 'imageUrl'],
+      });
+
+      if (meiliResult.estimatedTotalHits > 0) {
+        const hits: SearchHit[] = meiliResult.hits.map((doc: Record<string, unknown>) => ({
+          kind: 'article' as const,
+          id: doc.id as number,
+          title: doc.title as string,
+          summary: (doc.summary as string) || '',
+          category: (doc.category as string) || 'tech',
+          sourceName: (doc.sourceName as string) || '',
+          publishedAt: new Date((doc.publishedAt as number) * 1000).toISOString(),
+          originalUrl: '',
+          imageUrl: (doc.imageUrl as string) || null,
+        }));
+
+        // 补充 originalUrl
+        if (hits.length > 0) {
+          const ids = hits.map(h => h.id);
+          const rows = await db.query.articles.findMany({
+            where: (articles, { inArray }) => inArray(articles.id, ids),
+          });
+          const urlMap = new Map(rows.map(r => [r.id, r.originalUrl]));
+          for (const hit of hits) {
+            hit.originalUrl = urlMap.get(hit.id) || '';
+          }
+        }
+
+        return NextResponse.json({
+          hits,
+          totalHits: meiliResult.estimatedTotalHits,
+          page,
+          totalPages: Math.ceil(meiliResult.estimatedTotalHits / limit),
+        });
+      }
+    } catch {
+      // MeiliSearch 不可用，fallback 到数据库搜索
+      console.log('MeiliSearch unavailable, falling back to database search');
+    }
+
+    // Fallback: 数据库搜索（仅搜索 career 内容）
     const pattern = `%${query}%`;
-
-    const allowedCategories = Object.keys(categoryLabels);
-    const articleWhere = and(
-      inArray(articles.category, allowedCategories),
-      or(
-        ilike(articles.title, pattern),
-        ilike(articles.summary, pattern),
-        ilike(articles.content, pattern),
-        ilike(articles.sourceName, pattern)
-      ),
-      and(
-        or(ne(articles.category, 'tech'), gte(articles.relevanceScore, TECH_THRESHOLD)),
-        or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD))
-      )
-    );
-
     const careerWhere = and(
       eq(careerContents.status, 'active'),
       or(
@@ -82,69 +104,39 @@ export async function GET(request: NextRequest) {
       notIlike(careerContents.originalUrl, '%127.0.0.1%')
     );
 
-    const [articleRows, careerRows, articleCountRes, careerCountRes] = await Promise.all([
-      db.query.articles.findMany({
-        where: articleWhere,
-        orderBy: [desc(articles.publishedAt)],
-        limit: fetchSize,
-        offset: 0,
-      }),
+    const [careerRows, careerCountRes] = await Promise.all([
       db.query.careerContents.findMany({
         where: careerWhere,
         orderBy: [desc(careerContents.publishedAt)],
-        limit: fetchSize,
-        offset: 0,
+        limit,
+        offset,
       }),
-      db.select({ count: sql<number>`cast(count(*) as int)` }).from(articles).where(articleWhere),
       db.select({ count: sql<number>`cast(count(*) as int)` }).from(careerContents).where(careerWhere),
     ]);
 
-    const hits: SearchHit[] = [
-      ...articleRows.map((a) => ({
-        kind: 'article' as const,
-        id: a.id,
-        title: a.title,
-        summary: a.summary,
-        category: a.category,
-        sourceName: a.sourceName,
-        publishedAt: a.publishedAt.toISOString(),
-        originalUrl: a.originalUrl,
-        imageUrl: a.imageUrl,
-      })),
-      ...careerRows.map((c) => ({
-        kind: 'career' as const,
-        id: c.id,
-        title: c.title,
-        summary: c.description || '',
-        category: c.category,
-        sourceName: c.sourceName,
-        publishedAt: c.publishedAt.toISOString(),
-        originalUrl: c.originalUrl,
-        imageUrl: c.coverImage || null,
-        contentType: c.contentType,
-      })),
-    ];
+    const hits: SearchHit[] = careerRows.map((c) => ({
+      kind: 'career' as const,
+      id: c.id,
+      title: c.title,
+      summary: c.description || '',
+      category: c.category,
+      sourceName: c.sourceName,
+      publishedAt: c.publishedAt.toISOString(),
+      originalUrl: c.originalUrl,
+      imageUrl: c.coverImage || null,
+      contentType: c.contentType,
+    }));
 
-    hits.sort((x, y) => {
-      const tx = Date.parse(x.publishedAt) || 0;
-      const ty = Date.parse(y.publishedAt) || 0;
-      return ty - tx;
-    });
-
-    const totalHits = (articleCountRes[0]?.count || 0) + (careerCountRes[0]?.count || 0);
-    const pageHits = hits.slice(offset, offset + limit);
+    const totalHits = careerCountRes[0]?.count || 0;
 
     return NextResponse.json({
-      hits: pageHits,
+      hits,
       totalHits,
       page,
       totalPages: Math.ceil(totalHits / limit),
     });
   } catch (error) {
     console.error('Search API error:', error);
-    return NextResponse.json(
-      { error: 'Search failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
   }
 }

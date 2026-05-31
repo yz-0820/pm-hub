@@ -204,7 +204,7 @@ export const rssSources: RSSSource[] = [
     category: 'finance',
     language: 'zh',
     weight: 8,
-    enabled: true,
+    enabled: false,
   },
   // 注：36氪统一使用 tech 分类，金融相关内容通过智能分类识别
 
