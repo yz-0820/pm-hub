@@ -4,6 +4,7 @@ import { validateImageUrl } from './image-validator';
 import { evaluateTechRelevance } from './tech-relevance';
 import { evaluateFinanceRelevance } from './finance-relevance';
 import { evaluateAIRelevance } from './ai-relevance';
+import { detectPromoDeal } from './promo-deal';
 import { db } from '@/lib/db/client';
 import { articles, rssSourceStatus } from '@/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -79,6 +80,17 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           // 时间筛选：拒绝早于2026年1月1日的文章
           if (!isPublishDateValid(article.pubDate)) {
             console.log(`Skipped (old date: ${article.pubDate?.toISOString()}): "${article.title}"`);
+            continue;
+          }
+
+          // ========== 统一促销导购预检（最高优先级，所有来源生效） ==========
+          // 在任何分类评估之前，先检查是否为促销导购文章
+          const promoPreCheck = detectPromoDeal(
+            article.title || '',
+            `${article.summary || ''} ${article.content || ''}`
+          );
+          if (promoPreCheck.isPromo) {
+            console.log(`Skipped (promo/deal - universal block): "${article.title}"`);
             continue;
           }
 
