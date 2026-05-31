@@ -111,6 +111,53 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             continue;
           }
 
+          // ========== 统一非顶尖品牌产品发布预检（第三优先级，所有来源生效） ==========
+          // 产品发布新闻（带价格/规格）如果不是顶尖品牌，直接拒绝
+          const PRODUCT_RELEASE_SIGNALS = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '首销', '展示', '公布', '曝光', '开启预约', '开启预售'];
+          const PRODUCT_PRICE_SIGNALS = ['元', '售价', '首发价', '起价', '限时价', '优惠价', '美元', '定价', '到手价'];
+          const PRODUCT_SPEC_SIGNALS = ['配置', '参数', '规格', '处理器', '内存', '屏幕', '电池', '英寸', '刷新率', '芯片', '核心', 'mAh', 'GB', 'TB'];
+          const TOP_TIER_BRANDS_FETCHER = [
+            '苹果', 'apple', 'iphone', 'ipad', 'mac', 'vision pro',
+            '谷歌', 'google', 'pixel',
+            '微软', 'microsoft', 'surface', 'xbox',
+            '三星', 'samsung', 'galaxy',
+            '索尼', 'sony', 'playstation', 'ps5',
+            'meta', 'quest',
+            '亚马逊', 'amazon',
+            '英伟达', 'nvidia', 'rtx', 'geforce',
+            'amd', '锐龙', 'ryzen', 'radeon',
+            '特斯拉', 'tesla',
+            '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
+            '小米', 'xiaomi', '红米', 'redmi', '澎湃', 'su7',
+            'oppo', '一加', 'oneplus', '真我', 'realme',
+            'vivo', 'iqoo',
+            '荣耀', 'honor',
+            '联想', 'lenovo', 'thinkpad', '拯救者', 'legion',
+            '华硕', 'asus', 'rog', '玩家国度',
+            '戴尔', 'dell', '外星人', 'alienware',
+            '惠普', 'hp',
+            '大疆', 'dji', 'mavic', 'pocket', 'osmo',
+            '比亚迪', 'byd', '仰望', '方程豹', '腾势',
+            '蔚来', 'nio', '小鹏', 'xpeng', '理想', 'li auto',
+            '问界', 'aito', '赛力斯', 'seres',
+            '任天堂', 'nintendo', 'switch',
+            'steam', 'valve',
+            '罗技', 'logitech',
+            '雷蛇', 'razer',
+          ];
+          const titleForProductCheck = article.title || '';
+          const hasReleaseSignal = PRODUCT_RELEASE_SIGNALS.some(s => titleForProductCheck.includes(s));
+          const hasPriceSignal = PRODUCT_PRICE_SIGNALS.some(s => titleForProductCheck.includes(s));
+          const specHitCount = PRODUCT_SPEC_SIGNALS.filter(s => titleForProductCheck.includes(s)).length;
+          const isProductRelease = hasReleaseSignal && (hasPriceSignal || specHitCount >= 2);
+          if (isProductRelease) {
+            const isTopTier = TOP_TIER_BRANDS_FETCHER.some(b => fullText.includes(b.toLowerCase()));
+            if (!isTopTier) {
+              console.log(`Skipped (non-top-tier product release - universal block): "${article.title}"`);
+              continue;
+            }
+          }
+
           let relevanceScore = 0;
           let relevanceMeta: string | null = null;
           
