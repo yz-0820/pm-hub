@@ -305,12 +305,68 @@ const PRODUCT_NEWS_KEYWORDS = [
   '英寸', '分辨率', '刷新率', '色域', '亮度',
 ];
 
-function isProductNews(title: string, body: string): boolean {
+// 顶尖科技公司/品牌白名单 - 只有这些公司的产品新闻才允许通过
+const TOP_TIER_BRANDS = [
+  // 国际科技巨头
+  '苹果', 'apple', 'iphone', 'ipad', 'mac', 'vision pro',
+  '谷歌', 'google', 'pixel',
+  '微软', 'microsoft', 'surface', 'xbox',
+  '三星', 'samsung', 'galaxy',
+  '索尼', 'sony', 'playstation', 'ps5',
+  'meta', 'quest',
+  '亚马逊', 'amazon',
+  '英伟达', 'nvidia', 'rtx', 'geforce',
+  'amd', '锐龙', 'ryzen', 'radeon',
+  '英特尔', 'intel', '酷睿', 'core',
+  '高通', 'qualcomm', '骁龙', 'snapdragon',
+  '特斯拉', 'tesla',
+  // 中国科技巨头
+  '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
+  '小米', 'xiaomi', '红米', 'redmi', '澎湃', 'su7',
+  'oppo', '一加', 'oneplus', '真我', 'realme',
+  'vivo', 'iqoo',
+  '荣耀', 'honor',
+  '魅族', 'meizu',
+  '联想', 'lenovo', 'thinkpad', '拯救者', 'legion',
+  '华硕', 'asus', 'rog', '玩家国度',
+  '戴尔', 'dell', '外星人', 'alienware',
+  '惠普', 'hp',
+  '大疆', 'dji', 'mavic', 'pocket', 'osmo',
+  '比亚迪', 'byd', '仰望', '方程豹', '腾势',
+    '蔚来', 'nio', '小鹏', 'xpeng', '理想', 'li auto',
+    '问界', 'aito', '赛力斯', 'seres',
+  // 其他知名品牌
+  '任天堂', 'nintendo', 'switch',
+  'steam', 'valve',
+  '罗技', 'logitech',
+  '雷蛇', 'razer',
+];
+
+/**
+ * 检查是否为顶尖公司的产品新闻
+ * 如果不是顶尖公司的产品，即使是正常产品新闻也应该被拒绝
+ */
+function isTopTierProductNews(title: string, body: string): boolean {
   const fullText = `${title} ${body}`.toLowerCase();
+
+  // 检查是否包含顶尖品牌
+  const hasTopTierBrand = TOP_TIER_BRANDS.some(brand =>
+    fullText.includes(brand.toLowerCase())
+  );
+
+  if (!hasTopTierBrand) {
+    return false;
+  }
+
   // 检查是否包含产品新闻特征词
   const productHits = PRODUCT_NEWS_KEYWORDS.filter(k => fullText.includes(k.toLowerCase()));
   // 如果命中至少 3 个产品新闻关键词，认为是正常产品新闻
   return productHits.length >= 3;
+}
+
+function isProductNews(title: string, body: string): boolean {
+  // 现在只接受顶尖公司的产品新闻
+  return isTopTierProductNews(title, body);
 }
 
 function detectAdvertorial(fullText: string, title: string = '', body: string = ''): string[] {

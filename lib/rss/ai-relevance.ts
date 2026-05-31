@@ -194,7 +194,48 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
   // 则认为是产品发布/促销新闻
   const isProductRelease = (hasProductRelease && (hasProductPrice || specCount >= 2)) ||
                            (title.includes('促') && hasProductPrice);
-  if (isProductRelease) {
+
+  // 只有非顶尖公司的产品发布才拒绝
+  // 顶尖公司白名单（与 tech-relevance.ts 保持一致）
+  const TOP_TIER_BRANDS = [
+    '苹果', 'apple', 'iphone', 'ipad', 'mac', 'vision pro',
+    '谷歌', 'google', 'pixel',
+    '微软', 'microsoft', 'surface', 'xbox',
+    '三星', 'samsung', 'galaxy',
+    '索尼', 'sony', 'playstation', 'ps5',
+    'meta', 'quest',
+    '亚马逊', 'amazon',
+    '英伟达', 'nvidia', 'rtx', 'geforce',
+    'amd', '锐龙', 'ryzen', 'radeon',
+    '英特尔', 'intel', '酷睿', 'core',
+    '高通', 'qualcomm', '骁龙', 'snapdragon',
+    '特斯拉', 'tesla',
+    '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
+    '小米', 'xiaomi', '红米', 'redmi', '澎湃', 'su7',
+    'oppo', '一加', 'oneplus', '真我', 'realme',
+    'vivo', 'iqoo',
+    '荣耀', 'honor',
+    '魅族', 'meizu',
+    '联想', 'lenovo', 'thinkpad', '拯救者', 'legion',
+    '华硕', 'asus', 'rog', '玩家国度',
+    '戴尔', 'dell', '外星人', 'alienware',
+    '惠普', 'hp',
+    '大疆', 'dji', 'mavic', 'pocket', 'osmo',
+    '比亚迪', 'byd', '仰望', '方程豹', '腾势',
+    '蔚来', 'nio', '小鹏', 'xpeng', '理想', 'li auto',
+    '问界', 'aito', '赛力斯', 'seres',
+    '任天堂', 'nintendo', 'switch',
+    'steam', 'valve',
+    '罗技', 'logitech',
+    '雷蛇', 'razer',
+  ];
+
+  const hasTopTierBrand = TOP_TIER_BRANDS.some(brand =>
+    full.toLowerCase().includes(brand.toLowerCase())
+  );
+
+  // 如果是产品发布，且不是顶尖公司的产品，则拒绝
+  if (isProductRelease && !hasTopTierBrand) {
     return {
       passed: false,
       score: 0,
@@ -202,7 +243,7 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
         score: 0,
         positiveHits: [],
         titleHits: [],
-        negativeHits: ['product_release'],
+        negativeHits: ['product_release_unknown_brand'],
         threshold: AI_THRESHOLD,
       },
     };
