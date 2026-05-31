@@ -97,6 +97,14 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             const financeR = evaluateFinanceRelevance(article);
             const techR = evaluateTechRelevance(article);
 
+            // 最高优先级：促销导购检测 - 任何分类命中都跳过
+            if (aiR.meta.rejectedBy?.startsWith('promo_deal') || 
+                financeR.meta.rejectedBy?.startsWith('promo_deal') || 
+                techR.meta.rejectedBy === 'promo_deal') {
+              console.log(`Skipped (promo/deal article): "${article.title}"`);
+              continue;
+            }
+
             // 优先检查：强金融信号（分数 >= 70 表示命中强信号词）
             if (financeR.passed && financeR.score >= 70) {
               // 强金融信号：归类到 finance

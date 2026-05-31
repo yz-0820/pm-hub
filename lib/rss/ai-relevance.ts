@@ -1,4 +1,5 @@
 import type { ParsedArticle } from '@/types';
+import { detectPromoDeal } from './promo-deal';
 
 type AIRelevanceResult = {
   passed: boolean;
@@ -10,6 +11,7 @@ type AIRelevanceResult = {
     negativeHits: string[];
     threshold: number;
     financeConflict?: boolean;  // 金融冲突标记
+    rejectedBy?: string;  // 拒绝原因
   };
 };
 
@@ -135,6 +137,24 @@ function matchKeywords(text: string, keywords: string[]): string[] {
 export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
   const { title, body } = getText(article);
   const full = `${title}\n${body}`.trim();
+
+  // ========== 最高优先级：促销导购检测 ==========
+  // 促销导购文章无论是否包含 AI 关键词，都应该被拒绝
+  const promoCheck = detectPromoDeal(title, body);
+  if (promoCheck.isPromo) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: [],
+        threshold: AI_THRESHOLD,
+        rejectedBy: promoCheck.reason,
+      },
+    };
+  }
 
   // ========== 优先检查：强金融信号 ==========
   // 如果标题中包含强金融信号词，即使有 AI 关键词也应降低评分或排除

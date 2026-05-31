@@ -1,4 +1,5 @@
 import type { ParsedArticle } from '@/types';
+import { detectPromoDeal } from './promo-deal';
 
 type FinanceRelevanceResult = {
   passed: boolean;
@@ -364,6 +365,24 @@ function detectAdvertorial(fullText: string): string[] {
 export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevanceResult {
   const { title, body } = getText(article);
   const full = `${title}\n${body}`.trim();
+
+  // ========== 最高优先级：促销导购检测 ==========
+  const promoCheck = detectPromoDeal(title, body);
+  if (promoCheck.isPromo) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: [],
+        adHits: [],
+        threshold: FINANCE_THRESHOLD,
+        rejectedBy: promoCheck.reason,
+      },
+    };
+  }
 
   const adHits = detectAdvertorial(full);
   if (adHits.length > 0) {
