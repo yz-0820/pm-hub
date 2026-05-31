@@ -94,6 +94,23 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             continue;
           }
 
+          // ========== 统一游戏/娱乐预检（第二优先级，所有来源生效） ==========
+          // 游戏/娱乐新闻即使提及 AI，也不是 AI 技术新闻
+          const fullText = `${article.title || ''} ${article.summary || ''} ${article.content || ''}`.toLowerCase();
+          const GAMING_KEYWORDS = [
+            'steam', 'epic', 'playstation', 'xbox', 'switch', '任天堂',
+            '使命召唤', 'cod', 'call of duty', '黑色行动', '现代战争',
+            '原神', '王者荣耀', '和平精英', '英雄联盟', 'lol',
+            '游戏发售', '游戏发布', '游戏上线', '游戏更新', 'dlc',
+            '电竞', '职业联赛', '游戏比赛',
+            'netflix', '迪士尼', '漫威', 'dc',
+          ];
+          const gamingHits = GAMING_KEYWORDS.filter(k => fullText.includes(k.toLowerCase()));
+          if (gamingHits.length >= 2) {
+            console.log(`Skipped (gaming/entertainment - universal block): "${article.title}"`);
+            continue;
+          }
+
           let relevanceScore = 0;
           let relevanceMeta: string | null = null;
           
