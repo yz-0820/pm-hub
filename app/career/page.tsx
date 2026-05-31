@@ -66,31 +66,35 @@ async function getCareerData(
 
   const whereClause = and(...conditions);
 
-  // 先按标题去重：去除空格后分组，取最小id，按发布时间排序
-  const dedupResults = await db
-    .select({
-      id: sql<number>`MIN(${careerContents.id})`.as('id'),
-    })
-    .from(careerContents)
-    .where(whereClause)
-    .groupBy(sql`REPLACE(${careerContents.title}, ' ', '')`)
-    .orderBy(desc(sql`MAX(${careerContents.publishedAt})`));
+  // 优化：使用窗口函数去重，避免全表扫描
+  // 按标题去重，保留最新的一条
+  const dedupedContents = await db.execute(sql`
+    WITH ranked AS (
+      SELECT *,
+        ROW_NUMBER() OVER (
+          PARTITION BY REPLACE(title, ' ', '') 
+          ORDER BY published_at DESC
+        ) as rn
+      FROM ${careerContents}
+      WHERE ${whereClause}
+    )
+    SELECT * FROM ranked 
+    WHERE rn = 1
+    ORDER BY published_at DESC
+    LIMIT ${CONTENTS_PER_PAGE}
+    OFFSET ${offset}
+  `);
 
-  const totalCount = dedupResults.length;
+  const contents = dedupedContents as unknown as typeof careerContents.$inferSelect[];
+
+  // 获取总数（使用 COUNT DISTINCT 优化）
+  const countResult = await db.execute(sql`
+    SELECT COUNT(DISTINCT REPLACE(title, ' ', '')) as count
+    FROM ${careerContents}
+    WHERE ${whereClause}
+  `);
+  const totalCount = Number((countResult[0] as { count: string }).count) || 0;
   const totalPages = Math.ceil(totalCount / CONTENTS_PER_PAGE);
-
-  // 分页取 ID
-  const paginatedIds = dedupResults.slice(offset, offset + CONTENTS_PER_PAGE).map((r) => r.id);
-
-  // 根据 ID 获取完整数据
-  const contents =
-    paginatedIds.length > 0
-      ? await db
-          .select()
-          .from(careerContents)
-          .where(inArray(careerContents.id, paginatedIds))
-          .orderBy(desc(careerContents.publishedAt))
-      : [];
 
   const latestPublishedResult = await db
     .select({ latest: sql<Date | null>`max(${careerContents.publishedAt})` })
