@@ -11,7 +11,7 @@ type TechRelevanceResult = {
     positiveHits: Record<string, string[]>;
     negativeHits: string[];
     adHits: string[];
-    rejectedBy: 'negative' | 'ad' | 'finance' | 'product_release' | null;
+    rejectedBy: 'negative' | 'ad' | 'finance' | 'product_release' | 'promo_deal' | null;
     financeSignal?: string[];
     threshold: number;
   };

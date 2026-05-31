@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { articlesIndex } from '@/lib/search/client';
 import { db } from '@/lib/db/client';
 import { careerContents } from '@/lib/db/schema';
-import { eq, desc, ilike, or, notIlike, sql } from 'drizzle-orm';
+import { eq, desc, ilike, or, and, not, notIlike, sql } from 'drizzle-orm';
 
 type SearchHit =
   | {
