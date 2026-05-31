@@ -20,8 +20,6 @@ const TOP_TIER_BRANDS = [
   '亚马逊', 'amazon',
   '英伟达', 'nvidia', 'rtx', 'geforce',
   'amd', '锐龙', 'ryzen', 'radeon',
-  '英特尔', 'intel', '酷睿', 'core',
-  '高通', 'qualcomm', '骁龙', 'snapdragon',
   '特斯拉', 'tesla',
   '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
   '小米', 'xiaomi', '红米', 'redmi', '澎湃', 'su7',
@@ -42,6 +40,13 @@ const TOP_TIER_BRANDS = [
   '雷蛇', 'razer',
 ];
 
+// 芯片/组件供应商 - 不能单独作为品牌通过的依据
+const CHIP_SUPPLIERS = [
+  '英特尔', 'intel', '酷睿', 'core',
+  '高通', 'qualcomm', '骁龙', 'snapdragon',
+  '天玑', 'mediatek',
+];
+
 // 产品发布信号
 const productReleaseSignals = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '首销'];
 const productPriceSignals = ['元', '售价', '首发价', '起价', '限时价', '优惠价', '定价'];
@@ -55,8 +60,15 @@ function isUnknownBrandProduct(title: string, body: string): boolean {
     fullText.includes(brand.toLowerCase())
   );
 
-  // 如果是顶尖品牌，不认为是未知品牌产品
-  if (hasTopTierBrand) {
+  // 检查是否包含芯片供应商
+  const hasChipSupplier = CHIP_SUPPLIERS.some(chip =>
+    fullText.includes(chip.toLowerCase())
+  );
+
+  // 只有芯片供应商没有产品品牌 → 视为未知品牌
+  if (!hasTopTierBrand && hasChipSupplier) {
+    // 继续检查是否为产品发布
+  } else if (hasTopTierBrand) {
     return false;
   }
 

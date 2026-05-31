@@ -241,8 +241,6 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
     '亚马逊', 'amazon',
     '英伟达', 'nvidia', 'rtx', 'geforce',
     'amd', '锐龙', 'ryzen', 'radeon',
-    '英特尔', 'intel', '酷睿', 'core',
-    '高通', 'qualcomm', '骁龙', 'snapdragon',
     '特斯拉', 'tesla',
     '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
     '小米', 'xiaomi', '红米', 'redmi', '澎湃', 'su7',
@@ -264,12 +262,26 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
     '雷蛇', 'razer',
   ];
 
+  // 芯片/组件供应商 - 不能单独作为品牌通过的依据
+  const CHIP_SUPPLIERS = [
+    '英特尔', 'intel', '酷睿', 'core',
+    '高通', 'qualcomm', '骁龙', 'snapdragon',
+    '天玑', 'mediatek',
+  ];
+
   const hasTopTierBrand = TOP_TIER_BRANDS.some(brand =>
     full.toLowerCase().includes(brand.toLowerCase())
   );
 
+  const hasChipSupplier = CHIP_SUPPLIERS.some(chip =>
+    full.toLowerCase().includes(chip.toLowerCase())
+  );
+
+  // 只有芯片供应商没有产品品牌 → 视为未知品牌
+  const isKnownBrand = hasTopTierBrand || (hasChipSupplier && hasTopTierBrand);
+
   // 如果是产品发布，且不是顶尖公司的产品，则拒绝
-  if (isProductRelease && !hasTopTierBrand) {
+  if (isProductRelease && !isKnownBrand) {
     return {
       passed: false,
       score: 0,

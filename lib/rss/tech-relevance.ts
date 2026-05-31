@@ -317,8 +317,6 @@ const TOP_TIER_BRANDS = [
   '亚马逊', 'amazon',
   '英伟达', 'nvidia', 'rtx', 'geforce',
   'amd', '锐龙', 'ryzen', 'radeon',
-  '英特尔', 'intel', '酷睿', 'core',
-  '高通', 'qualcomm', '骁龙', 'snapdragon',
   '特斯拉', 'tesla',
   // 中国科技巨头
   '华为', 'huawei', '鸿蒙', 'harmonyos', 'mate', 'pura',
@@ -342,6 +340,15 @@ const TOP_TIER_BRANDS = [
   '雷蛇', 'razer',
 ];
 
+// 芯片/组件供应商 - 这些不能单独作为品牌通过的依据
+// 只有当文章同时匹配产品品牌时，芯片供应商才有效
+const CHIP_SUPPLIERS = [
+  '英特尔', 'intel', '酷睿', 'core',
+  '高通', 'qualcomm', '骁龙', 'snapdragon',
+  '天玑', 'mediatek',
+  'imx', '索尼传感器',
+];
+
 /**
  * 检查是否为顶尖公司的产品新闻
  * 如果不是顶尖公司的产品，即使是正常产品新闻也应该被拒绝
@@ -349,10 +356,20 @@ const TOP_TIER_BRANDS = [
 function isTopTierProductNews(title: string, body: string): boolean {
   const fullText = `${title} ${body}`.toLowerCase();
 
-  // 检查是否包含顶尖品牌
+  // 检查是否包含顶尖产品品牌（排除芯片供应商）
   const hasTopTierBrand = TOP_TIER_BRANDS.some(brand =>
     fullText.includes(brand.toLowerCase())
   );
+
+  // 检查是否包含芯片供应商
+  const hasChipSupplier = CHIP_SUPPLIERS.some(chip =>
+    fullText.includes(chip.toLowerCase())
+  );
+
+  // 只有芯片供应商没有产品品牌 → 不通过
+  if (!hasTopTierBrand && hasChipSupplier) {
+    return false;
+  }
 
   if (!hasTopTierBrand) {
     return false;
