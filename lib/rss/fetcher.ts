@@ -167,8 +167,22 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             } else {
               // 都不相关：
               // - 如果 AI 有一定相关性（分数 >= 15），可以考虑保留到 AI
+              // - 但如果是非顶尖品牌的产品发布，即使 AI 分数够也拒绝
               // - 否则保持源分类（tech），但不应该是无意义的 fallback
               if (aiR.score >= 15 && !aiR.meta.financeConflict) {
+                // 检查是否为非顶尖品牌的产品发布
+                const titleForCheck = article.title || '';
+                const bodyForCheck = `${article.summary || ''} ${article.content || ''}`;
+                const productReleaseSignals = ['发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '首销', '开卖'];
+                const productPriceSignals = ['元', '售价', '首发价', '起价', '定价'];
+                const hasRelease = productReleaseSignals.some(s => titleForCheck.includes(s));
+                const hasPrice = productPriceSignals.some(s => titleForCheck.includes(s));
+
+                if (hasRelease && hasPrice) {
+                  console.log(`Skipped (fallback blocked - product release with price): "${article.title}"`);
+                  continue;
+                }
+
                 finalCategory = 'ai';
                 relevanceScore = Math.max(aiR.score, 20);
                 relevanceMeta = JSON.stringify({ ...aiR.meta, autoCategorized: true, originalCategory: source.category, fallback: true });
