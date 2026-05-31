@@ -112,6 +112,22 @@ const NON_AI_KEYWORDS = [
   '彩票', '博彩', '赌博',
 ];
 
+// 游戏/娱乐行业关键词 - 这些文章即使提及 AI 也不是 AI 技术新闻
+const GAMING_ENTERTAINMENT_KEYWORDS = [
+  // 游戏相关
+  '游戏', '手游', '端游', '网游', '主机游戏', '单机游戏',
+  'steam', 'epic', 'playstation', 'xbox', 'switch', '任天堂',
+  '使命召唤', 'cod', 'call of duty', '黑色行动', '现代战争',
+  '原神', '王者荣耀', '和平精英', '英雄联盟', 'lol',
+  '游戏发售', '游戏发布', '游戏上线', '游戏更新', 'dlc',
+  '玩家', '游戏角色', '游戏剧情', '游戏画面', '游戏引擎',
+  '电竞', '职业联赛', '游戏比赛',
+  // 影视娱乐
+  '电影', '电视剧', '网剧', '综艺', '动画', '动漫',
+  '票房', '上映', '首映', '导演', '演员', '主演',
+  'netflix', '迪士尼', '漫威', 'dc',
+];
+
 function normalizeText(value: unknown): string {
   if (typeof value !== 'string') return '';
   return value.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -152,6 +168,24 @@ export function evaluateAIRelevance(article: ParsedArticle): AIRelevanceResult {
         negativeHits: [],
         threshold: AI_THRESHOLD,
         rejectedBy: promoCheck.reason,
+      },
+    };
+  }
+
+  // ========== 高优先级：游戏/娱乐行业检测 ==========
+  // 游戏/娱乐新闻即使提及 AI，也不是 AI 技术新闻
+  const gamingHits = matchKeywords(full, GAMING_ENTERTAINMENT_KEYWORDS);
+  if (gamingHits.length >= 2) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: gamingHits,
+        threshold: AI_THRESHOLD,
+        rejectedBy: 'gaming_entertainment',
       },
     };
   }

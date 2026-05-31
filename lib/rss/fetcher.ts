@@ -105,6 +105,12 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
               continue;
             }
 
+            // 高优先级：游戏/娱乐行业检测 - 不是 AI 技术新闻
+            if (aiR.meta.rejectedBy === 'gaming_entertainment') {
+              console.log(`Skipped (gaming/entertainment news, not AI tech): "${article.title}"`);
+              continue;
+            }
+
             // 优先检查：强金融信号（分数 >= 70 表示命中强信号词）
             if (financeR.passed && financeR.score >= 70) {
               // 强金融信号：归类到 finance
