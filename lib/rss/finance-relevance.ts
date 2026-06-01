@@ -237,28 +237,32 @@ const FINANCE_KEYWORDS = [
 ];
 
 // 明显的非金融信号 - 匹配这些关键词的文章不应归类为金融
- const NON_FINANCE_KEYWORDS = [
-   // 产品发布与科技
-   '新品', '开售', '首发', '首销',
-   '评测', '体验', '开箱',
-   '游戏本', '芯片', '处理器',
-   '骁龙', '天玑',
-   // AI
-   '人工智能', '大模型', '算法',
-   '机器人', '自动驾驶', 'deepseek',
-   // 汽车
-   '新车', '充电', '续航',
-   '试驾', '测试车', '车型',
-   // 产品发布信号（非金融）
-   '官图发布', '正式发布', '产品发布',
-   '预售', '起售价', '定价',
-   // 招聘/裁员
-   '招聘', '裁员',
-   // 监管
-   '市场监管', '罚款', '违法',
-   // 营销/广告
-   '联名', '代言',
- ];
+const NON_FINANCE_KEYWORDS = [
+  // 产品发布与科技
+  '新品', '开售', '首发', '首销',
+  '评测', '体验', '开箱',
+  '游戏本', '芯片', '处理器',
+  '骁龙', '天玑',
+  // AI
+  '人工智能', '大模型', '算法',
+  '机器人', '自动驾驶', 'deepseek',
+  // 汽车
+  '新车', '充电', '续航',
+  '试驾', '测试车', '车型',
+  // 产品发布信号（非金融）
+  '官图发布', '正式发布', '产品发布',
+  '预售', '起售价', '定价',
+  // 招聘/裁员
+  '招聘', '裁员',
+  // 监管
+  '市场监管', '罚款', '违法',
+  // 营销/广告
+  '联名', '代言',
+  // 科技大会/演讲/行业活动（CEO演讲、技术大会等不是金融新闻）
+  '大会', '峰会', '论坛', '演讲', ' keynote',
+  'gtc', 'GTC', '开发者大会', '技术大会',
+  '黄仁勋', '马斯克', '雷军', '李彦宏', '马化腾',
+];
 
 
 // 强信号非金融关键词 - 匹配 1 个就排除（这些词几乎不可能出现在纯金融文章中）
@@ -394,9 +398,48 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   }
 
   // ========== 优先检查：强金融信号 ==========
-  // 如果标题中包含强金融信号词，直接判定为金融内容，忽略其他信号
+  // 如果标题中包含强金融信号词，先检查是否有非金融信号（如科技大会、CEO演讲等）
   const strongFinanceHits = matchKeywords(title, STRONG_FINANCE_SIGNALS_TITLE);
   if (strongFinanceHits.length >= 1) {
+    // 检查非金融信号：科技大会、CEO演讲、行业活动等
+    const nonFinanceHits = matchKeywords(full, NON_FINANCE_KEYWORDS);
+    const strongNonFinanceHits = matchKeywords(full, STRONG_NON_FINANCE_KEYWORDS);
+    
+    // 如果包含科技大会/演讲/CEO等信号，且包含AI/科技关键词，则不是金融新闻
+    const hasTechEventSignal = nonFinanceHits.some(h => 
+      ['大会', '峰会', '论坛', '演讲', 'gtc', 'GTC', '开发者大会', '技术大会'].includes(h)
+    );
+    const hasCEOSignal = nonFinanceHits.some(h =>
+      ['黄仁勋', '马斯克', '雷军', '李彦宏', '马化腾'].includes(h)
+    );
+    const hasAITechSignal = matchKeywords(full, ['人工智能', 'AI', '大模型', '算力', '英伟达', 'nvidia']).length > 0;
+    
+    // 科技大会/CEO演讲 + AI技术内容 = 不是金融新闻
+    if ((hasTechEventSignal || hasCEOSignal) && hasAITechSignal) {
+      return {
+        passed: false,
+        score: 0,
+        meta: {
+          score: 0,
+          positiveHits: strongFinanceHits,
+          titleHits: strongFinanceHits,
+          negativeHits: [...nonFinanceHits, 'tech_event_not_finance'],
+          adHits: [],
+          threshold: FINANCE_THRESHOLD,
+          rejectedBy: 'tech_event_not_finance',
+        },
+      };
+    }
+    
+    // 强非金融信号：直接排除
+    if (strongNonFinanceHits.length >= 1) {
+      return {
+        passed: false,
+        score: 0,
+        meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: [...strongNonFinanceHits, ...nonFinanceHits], adHits: [], threshold: FINANCE_THRESHOLD },
+      };
+    }
+
     // ========== 质量门槛检查：过滤低质量的一句式公告 ==========
     const qualityCheck = detectLowQualityAnnouncement(title, body);
     if (qualityCheck.rejected) {
