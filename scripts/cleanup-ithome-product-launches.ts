@@ -5,6 +5,9 @@
  * 执行：npx tsx scripts/cleanup-ithome-product-launches.ts
  */
 
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+
 import { db } from '@/lib/db/client';
 import { articles } from '@/lib/db/schema';
 import { eq, like } from 'drizzle-orm';

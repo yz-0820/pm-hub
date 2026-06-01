@@ -8,6 +8,9 @@ const PRODUCT_LAUNCH_SIGNALS = [
   '发布', '发售', '开售', '上市', '推出', '亮相', '开卖', '首销',
   '展示', '公布', '曝光', '开启预约', '开启预售', '正式发布',
   '正式发售', '正式开售', '正式上市', '新品发布', '新品上市',
+  // 新增：众筹、新增版本/配色、预售等
+  '众筹', '开启众筹', '新增', '配色', '版本', '预售', '预定', '预订',
+  '首发', '正式首发', '全球首发', '国内首发',
 ];
 
 // 产品价格信号 - 表明文章包含价格信息
@@ -31,6 +34,10 @@ const STRONG_PRODUCT_LAUNCH_SIGNALS = [
   '首销', '首发价', '国行开售', '国行发售', '国行上市',
   '开启预约', '开启预售', '预约开启', '预售开启',
   '降价', '直降', '跌破', '元现货', '元开售', '元发售',
+  // 新增：众筹相关
+  '开启众筹', '众筹开启', '众筹价', '众筹中',
+  // 新增：新增版本/配色（带价格）
+  '新增.*配色', '新增.*版本', '新配色.*元', '新版本.*元',
 ];
 
 /**
@@ -54,7 +61,17 @@ export function detectProductLaunch(
   const fullText = `${title} ${body}`.toLowerCase();
   const lowerTitle = title.toLowerCase();
 
-  // ========== 最高优先级：强产品发售信号 ==========
+  // ========== 最高优先级：价格开头模式 ==========
+  // 标题以 "数字+元" 开头（如 "1799元，小米..."），直接判定为产品发售
+  const priceStartPattern = /^\d+[\d,]*\s*元[，,、\s]/;
+  if (priceStartPattern.test(title)) {
+    return {
+      isProductLaunch: true,
+      reason: `price_start_pattern: ${title.match(/^\d+[\d,]*\s*元/)?.[0]}`,
+    };
+  }
+
+  // ========== 高优先级：强产品发售信号 ==========
   // 标题中出现强信号词，直接判定为产品发售
   const strongSignalHits = STRONG_PRODUCT_LAUNCH_SIGNALS.filter(keyword =>
     lowerTitle.includes(keyword.toLowerCase())
