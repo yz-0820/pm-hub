@@ -9,6 +9,7 @@ import { categoryLabels } from '@/config/rss';
 import Link from 'next/link';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
+import { PM_THRESHOLD } from '@/lib/rss/pm-relevance';
 import { Clock, Rss } from 'lucide-react';
 
 export const revalidate = 0;
@@ -47,12 +48,15 @@ async function getArticles(page: number, category?: string) {
       ? and(eq(articles.category, category), gte(articles.relevanceScore, TECH_THRESHOLD))
       : category === 'finance'
         ? and(eq(articles.category, category), gte(articles.relevanceScore, FINANCE_THRESHOLD))
-        : eq(articles.category, category)
+        : category === 'product-management'
+          ? and(eq(articles.category, category), gte(articles.relevanceScore, PM_THRESHOLD))
+          : eq(articles.category, category)
     : and(
         inArray(articles.category, allowedCategories),
         and(
           or(ne(articles.category, 'tech'), gte(articles.relevanceScore, TECH_THRESHOLD)),
-          or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD))
+          or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD)),
+          or(ne(articles.category, 'product-management'), gte(articles.relevanceScore, PM_THRESHOLD))
         )
       );
 

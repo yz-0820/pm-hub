@@ -7,7 +7,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { contentSources, getEnabledSources, getDefaultCover, isDefaultCoverImage } from '@/config/content-sources';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable, contentFetchLogs } from '@/lib/db/schema';
-import { eq, notInArray } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, notInArray, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 import { normalizeAll } from './platforms/normalizer';
 import { assessQuality, evaluateBestCategoryMatch, hasCareerRelevance } from './quality';
@@ -150,6 +150,130 @@ function getSiteUrl(): string {
 function resolveContentSourceUrl(url: string): string {
   if (!url.startsWith('/')) return url;
   return new URL(url, getSiteUrl()).toString();
+}
+
+function getShanghaiDayRange(now = new Date()): { start: Date; end: Date } {
+  const shanghai = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  const startUtcMs = Date.UTC(
+    shanghai.getUTCFullYear(),
+    shanghai.getUTCMonth(),
+    shanghai.getUTCDate(),
+    -8,
+    0,
+    0,
+    0
+  );
+
+  return {
+    start: new Date(startUtcMs),
+    end: new Date(startUtcMs + 24 * 60 * 60 * 1000),
+  };
+}
+
+function hasUnsafePromotionReason(reasons?: string | null): boolean {
+  if (!reasons) return false;
+  return [
+    '无职场关联',
+    '非职业发展主题',
+    '商业/融资',
+    '疑似财经',
+    '投资内容',
+    '大量疑似广告',
+    '非中文内容',
+    '产品技能课程',
+  ].some((reason) => reasons.includes(reason));
+}
+
+function calculatePromotionScore(content: typeof careerContents.$inferSelect, dayStart: Date): number {
+  const quality = content.qualityScore || 0;
+  const match = content.matchScore || 0;
+  const sourceBonus = content.sourceId.startsWith('woshipm') ? 8 : 0;
+  const categoryBonus = content.category !== 'all' ? 4 : 0;
+  const recencyMs = Math.max(0, content.publishedAt.getTime() - dayStart.getTime());
+  const recencyBonus = Math.min(8, recencyMs / (3 * 60 * 60 * 1000));
+  return quality * 0.45 + match * 0.45 + sourceBonus + categoryBonus + recencyBonus;
+}
+
+async function promoteDailyCareerFallback(): Promise<typeof careerContents.$inferSelect | null> {
+  const { start, end } = getShanghaiDayRange();
+
+  const activeToday = await db.query.careerContents.findFirst({
+    where: and(
+      eq(careerContents.status, 'active'),
+      gte(careerContents.publishedAt, start),
+      lt(careerContents.publishedAt, end),
+      sql`${careerContents.originalUrl} not like ${'%example.com/%'}`,
+      sql`${careerContents.originalUrl} not like ${'%rsshub.app/%'}`,
+      sql`${careerContents.originalUrl} not like ${'%localhost%'}`,
+      sql`${careerContents.originalUrl} not like ${'%127.0.0.1%'}`
+    ),
+    orderBy: [desc(careerContents.publishedAt)],
+  });
+
+  if (activeToday) return null;
+
+  const candidates = await db.query.careerContents.findMany({
+    where: and(
+      eq(careerContents.status, 'pending'),
+      gte(careerContents.publishedAt, start),
+      lt(careerContents.publishedAt, end),
+      gte(careerContents.qualityScore, 70),
+      gte(careerContents.matchScore, 75),
+      eq(careerContents.matchCoreMatched, true)
+    ),
+    orderBy: [desc(careerContents.qualityScore), desc(careerContents.matchScore), desc(careerContents.publishedAt)],
+    limit: 25,
+  });
+
+  const candidate = candidates
+    .filter((content) => !hasUnsafePromotionReason(content.qualityReasons))
+    .sort((a, b) => calculatePromotionScore(b, start) - calculatePromotionScore(a, start))[0];
+
+  if (!candidate) return null;
+
+  const normalized: NormalizedContent = {
+    sourceId: candidate.sourceId,
+    sourceName: candidate.sourceName,
+    platform: candidate.platform,
+    originalId: candidate.originalId || String(candidate.id),
+    originalUrl: candidate.originalUrl,
+    title: candidate.title,
+    description: candidate.description || '',
+    content: candidate.content || '',
+    author: candidate.author || candidate.sourceName,
+    authorId: candidate.authorId || '',
+    authorAvatar: candidate.authorAvatar || '',
+    contentType: candidate.contentType as NormalizedContent['contentType'],
+    category: 'all',
+    tags: candidate.tags ? JSON.parse(candidate.tags) : [],
+    coverImage: candidate.coverImage || '',
+    videoUrl: candidate.videoUrl || '',
+    videoDuration: candidate.videoDuration || 0,
+    images: candidate.images ? JSON.parse(candidate.images) : [],
+    viewCount: candidate.viewCount,
+    likeCount: candidate.likeCount,
+    commentCount: candidate.commentCount,
+    shareCount: candidate.shareCount,
+    publishedAt: candidate.publishedAt,
+  };
+  const bestMatch = evaluateBestCategoryMatch(normalized);
+  const promotedCategory = bestMatch.category === 'all' ? 'productivity' : bestMatch.category;
+
+  await db.update(careerContents)
+    .set({
+      status: 'active',
+      category: promotedCategory,
+      priority: Math.max(candidate.priority, 1),
+      matchScore: Math.max(candidate.matchScore, bestMatch.matchScore),
+      matchKeywords: bestMatch.keywords.length > 0 ? JSON.stringify(bestMatch.keywords) : candidate.matchKeywords,
+      matchCoreMatched: bestMatch.coreMatched || candidate.matchCoreMatched,
+      matchCoreMissing: bestMatch.coreMissing.length > 0 ? JSON.stringify(bestMatch.coreMissing) : candidate.matchCoreMissing,
+      updatedAt: new Date(),
+    })
+    .where(eq(careerContents.id, candidate.id));
+
+  console.log(`[Daily fallback] Promoted career content #${candidate.id}: ${candidate.title}`);
+  return { ...candidate, status: 'active', category: promotedCategory };
 }
 
 // 带重试的fetch
@@ -781,6 +905,18 @@ export async function fetchAllCareerContents(): Promise<FetchResult[]> {
     
     // 添加延迟，避免请求过于频繁
     await delay(1000);
+  }
+
+  const promoted = await promoteDailyCareerFallback();
+  if (promoted) {
+    results.push({
+      sourceId: 'daily-career-fallback',
+      sourceName: '每日精选兜底',
+      fetched: 0,
+      newContents: 0,
+      updatedContents: 1,
+      errors: [],
+    });
   }
   
   console.log('Fetch completed:', results);

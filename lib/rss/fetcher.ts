@@ -4,6 +4,7 @@ import { validateImageUrl } from './image-validator';
 import { evaluateTechRelevance, TECH_THRESHOLD } from './tech-relevance';
 import { evaluateFinanceRelevance, FINANCE_THRESHOLD } from './finance-relevance';
 import { evaluateAIRelevance, AI_THRESHOLD } from './ai-relevance';
+import { evaluatePMRelevance, PM_THRESHOLD } from './pm-relevance';
 import { detectPromoDeal } from './promo-deal';
 import { detectITHomeProductLaunch } from './product-launch';
 import { db } from '@/lib/db/client';
@@ -78,6 +79,9 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             continue;
           }
 
+          let relevanceScore = 0;
+          let relevanceMeta: string | null = null;
+
           // 时间筛选：拒绝早于2026年1月1日的文章
           if (!isPublishDateValid(article.pubDate)) {
             console.log(`Skipped (old date: ${article.pubDate?.toISOString()}): "${article.title}"`);
@@ -121,6 +125,14 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             );
             if (productLaunchCheck.isProductLaunch) {
               console.log(`Skipped (IT之家 product launch: ${productLaunchCheck.reason}): "${article.title}"`);
+              continue;
+            }
+          } else if (source.category === 'product-management') {
+            const r = evaluatePMRelevance(article);
+            relevanceScore = r.score;
+            relevanceMeta = JSON.stringify(r.meta);
+            if (!r.passed) {
+              console.log(`Skipped (low PM relevance ${r.score}): "${article.title}"`);
               continue;
             }
           }
@@ -172,9 +184,6 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             }
           }
 
-          let relevanceScore = 0;
-          let relevanceMeta: string | null = null;
-          
           // 智能分类：根据内容判断最终分类
           let finalCategory = source.category;
           
