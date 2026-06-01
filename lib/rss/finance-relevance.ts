@@ -110,6 +110,38 @@ function detectLowQualityAnnouncement(title: string, body: string): { rejected: 
   return { rejected: false, reason: '' };
 }
 
+// 不知名公司 IPO/上市申请检测
+// 特征：标题包含"向XX交易所提交上市申请"、"递表"、"招股书"等，但公司不在知名列表中
+const IPO_APPLICATION_SIGNALS = [
+  '提交上市申请', '递交上市申请', '提交上市申请书', '递交上市申请书',
+  '向港交所提交', '向上交所提交', '向深交所提交', '向纳斯达克提交', '向纽交所提交',
+  '递表', '递表港交所', '递表上市',
+  '招股书', '招股说明书',
+  '申请上市', '申请IPO', '申请港股',
+  '冲刺上市', '冲击上市', '谋求上市', '筹备上市', '计划上市',
+  '获准上市', '通过上市聆讯',
+];
+
+function detectUnknownCompanyIPO(title: string, body: string): { rejected: boolean; reason: string } {
+  // 检查是否包含 IPO 申请信号
+  const hasIPOSignal = IPO_APPLICATION_SIGNALS.some(k => title.includes(k));
+  if (!hasIPOSignal) {
+    return { rejected: false, reason: '' };
+  }
+
+  // 检查标题中提到的公司是否在知名列表中
+  const isWellKnown = WELL_KNOWN_COMPANIES.some(c =>
+    title.includes(c) || body.includes(c)
+  );
+
+  // 不知名公司 + IPO 申请信号 → 拒绝
+  if (!isWellKnown) {
+    return { rejected: true, reason: 'unknown_company_ipo_application' };
+  }
+
+  return { rejected: false, reason: '' };
+}
+
 // 强金融信号词 - 标题中出现这些词，几乎可以确定是金融内容
 // 这些词的检测优先级最高，只要命中就直接通过
 // 注意：只包含最明确的金融术语，避免与科技/AI文章混淆
@@ -461,6 +493,24 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   const adHits = detectAdvertorial(full);
   if (adHits.length > 0) {
     return { passed: false, score: 0, meta: { score: 0, positiveHits: [], titleHits: [], negativeHits: [], adHits, threshold: FINANCE_THRESHOLD } };
+  }
+
+  // ========== 优先检查：不知名公司 IPO/上市申请 ==========
+  const ipoCheck = detectUnknownCompanyIPO(title, body);
+  if (ipoCheck.rejected) {
+    return {
+      passed: false,
+      score: 0,
+      meta: {
+        score: 0,
+        positiveHits: [],
+        titleHits: [],
+        negativeHits: [],
+        adHits: [],
+        threshold: FINANCE_THRESHOLD,
+        rejectedBy: ipoCheck.reason,
+      },
+    };
   }
 
   // ========== 优先检查：强金融信号 ==========
