@@ -6,7 +6,25 @@ export interface RSSSource {
   language: 'zh' | 'en';
   weight: number;
   enabled: boolean;
+  includeKeywords?: string[];
 }
+
+const US_STOCK_INCLUDE_KEYWORDS = [
+  '美股',
+  '中概股',
+  '纳斯达克',
+  '纳指',
+  '道琼斯',
+  '道指',
+  '标普',
+  '标普500',
+  'S&P 500',
+  '盘前',
+  '盘后',
+  '财报',
+  '美联储',
+  '美债收益率',
+];
 
 export const rssSources: RSSSource[] = [
   // ===== 中文源 - 产品经理 =====
@@ -169,6 +187,26 @@ export const rssSources: RSSSource[] = [
     language: 'zh',
     weight: 9,
     enabled: true,
+  },
+  {
+    id: 'sina-usstock',
+    name: '新浪财经美股',
+    url: 'https://rsshub.app/sina/finance/stock/usstock',
+    category: 'finance',
+    language: 'zh',
+    weight: 9,
+    enabled: true,
+    includeKeywords: US_STOCK_INCLUDE_KEYWORDS,
+  },
+  {
+    id: 'wallstreetcn-global',
+    name: '华尔街见闻全球市场',
+    url: 'https://rsshub.app/wallstreetcn/global',
+    category: 'finance',
+    language: 'zh',
+    weight: 8,
+    enabled: true,
+    includeKeywords: US_STOCK_INCLUDE_KEYWORDS,
   },
   {
     id: 'wallstreetcn',

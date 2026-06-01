@@ -26,6 +26,8 @@ const WELL_KNOWN_COMPANIES = [
   '腾讯', '阿里', '阿里巴巴', '百度', '字节跳动', '字节', '京东', '美团', '拼多多', '网易',
   '小米', '华为', '苹果', '微软', '谷歌', '亚马逊', 'meta', '英伟达', 'nvidia', '特斯拉',
   '三星', '台积电', 'intel', 'amd', '高通', 'openai', '特斯拉',
+  'apple', 'microsoft', 'alphabet', 'google', 'amazon', 'tesla', 'netflix', 'broadcom', '博通',
+  '礼来', '英特尔', '甲骨文', 'salesforce', 'oracle', 'palantir', 'coinbase',
   // 金融巨头
   '工商银行', '建设银行', '农业银行', '中国银行', '招商银行', '交通银行',
   '中信证券', '中金公司', '华泰证券', '国泰君安',
@@ -118,7 +120,8 @@ const STRONG_FINANCE_SIGNALS_TITLE = [
 
   // === 指数信号（最明确）===
   '创业板指', '创业板', '科创50', '科创板', '上证指数', '深证成指', '沪深300', '沪指', '深指',
-  '恒生指数', '纳斯达克', '道琼斯',
+  '恒生指数', '纳斯达克', '纳指', '道琼斯', '道指',
+  '标普500', '标普 500', '标普指数', 'S&P 500', 'S&P500', '美股三大指数',
 
   // === 市场/股票类型信号（最明确）===
   'A股', '港股', '美股', '中概股', '概念股', 'ST股',
@@ -132,6 +135,7 @@ const STRONG_FINANCE_SIGNALS_TITLE = [
   // === 交易行为信号（最明确）===
   '拉升', '跳水', '砸盘', '护盘',
   '全线上涨', '全线下跌', '全线飘红', '全线飘绿',
+  '盘前涨', '盘前跌', '盘后涨', '盘后跌', '盘前', '盘后',
 
   // === 公司/股票财务信号（最明确）===
   '股价', '每股', '市值', '市值蒸发', '市值缩水',
@@ -153,6 +157,13 @@ const STRONG_FINANCE_SIGNALS_TITLE = [
   // === 牛熊市场信号（最明确）===
   '牛市', '熊市', '牛市来了', '熊市来了',
   '震荡', '反弹', '回调', '筑底', '探底',
+
+  // === 券商研报信号（明确）===
+  '研报', '研究报告', '研报指出', '研报称', '研报显示',
+  '券商', '投行', '投资银行',
+
+  // === 美股宏观信号（明确）===
+  '美债收益率', '美联储', '议息会议',
 ];
 
 // 扩展金融关键词 - 包含强信号词和其他金融术语
@@ -168,6 +179,23 @@ const FINANCE_KEYWORDS = [
   'a股',
   '美股',
   '港股',
+  '中概股',
+  '纳斯达克',
+  '纳指',
+  '道琼斯',
+  '道指',
+  '标普',
+  '标普500',
+  '标普 500',
+  's&p 500',
+  's&p500',
+  'spx',
+  'nasdaq',
+  'dow jones',
+  '盘前',
+  '盘后',
+  '美债收益率',
+  '美债',
   '上证',
   '深证',
   '创业板',
@@ -228,6 +256,42 @@ const FINANCE_KEYWORDS = [
   '期货价格',
   '股票市场',
   '资本市场',
+
+  // === 美股公司/代码信号：需与财报、股价、指数等其他金融词共同出现才通过 ===
+  '英伟达',
+  'nvidia',
+  'nvda',
+  '特斯拉',
+  'tesla',
+  'tsla',
+  '苹果',
+  'apple',
+  'aapl',
+  '微软',
+  'microsoft',
+  'msft',
+  '谷歌',
+  'alphabet',
+  'google',
+  'googl',
+  '亚马逊',
+  'amazon',
+  'amzn',
+  'meta',
+  '奈飞',
+  'netflix',
+  'nflx',
+  '台积电',
+  'tsm',
+  '博通',
+  'broadcom',
+  'avgo',
+  '礼来',
+  'lly',
+  '英特尔',
+  'intel',
+  'intc',
+  'amd',
 
   // === 新增：科技金融交叉领域的股票信号 ===
   'AI概念股', '大模型概念股', '科技股', '互联网股',
@@ -503,11 +567,20 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   const uniq = Array.from(new Set([...titleHits, ...bodyHits]));
 
   const productHints = matchKeywords(full, PRODUCT_NEWS_HINTS);
-  const hasFinanceSignal = uniq.length >= 2 && (titleHits.length >= 1 || bodyHits.length >= 3);
   const hasProductNews = productHints.length >= 2;
 
+  // 检查是否为券商研报（优先于产品新闻检测）
+  const brokerReportHits = matchKeywords(full, ['研报', '研究报告', '研报指出', '研报称', '券商', '投行']);
+  const isBrokerReport = brokerReportHits.length >= 1;
+
+  // 券商研报降低门槛：只要命中1个金融关键词即可
+  const hasFinanceSignal = isBrokerReport 
+    ? uniq.length >= 1 
+    : uniq.length >= 2 && (titleHits.length >= 1 || bodyHits.length >= 3);
+
   // 产品/科技类新闻，即使匹配了部分金融关键词，也不应归为金融
-  if (hasProductNews) {
+  // 但券商研报例外，即使涉及科技内容也应归为金融
+  if (hasProductNews && !isBrokerReport) {
     // 除非标题中有非常明确的金融信号
     if (titleHits.length < 2) {
       return {
@@ -526,7 +599,8 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   }
 
   // 如果不是标题明确指向金融的文章，但正文匹配了宽泛关键词，也需要更严格
-  if (!titleHits.length && bodyHits.length > 0) {
+  // 但券商研报例外：允许只有正文命中
+  if (!titleHits.length && bodyHits.length > 0 && !isBrokerReport) {
     // 仅在正文中出现关键词而标题没有 - 需要更高的正文匹配数
     if (bodyHits.length < 5) {
       return {
@@ -538,8 +612,15 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   }
 
   // 分数计算：标题匹配权重更高
-  const titleScore = titleHits.length * 26;
-  const bodyScore = Math.min(bodyHits.length * 12, 50);
+  // 券商研报特殊处理：只要有研报关键词，直接给及格分
+  let titleScore = titleHits.length * 26;
+  let bodyScore = Math.min(bodyHits.length * 12, 50);
+  
+  if (isBrokerReport && titleScore + bodyScore < FINANCE_THRESHOLD) {
+    // 券商研报保底分数（确保达到阈值）
+    bodyScore = Math.max(bodyScore, FINANCE_THRESHOLD);
+  }
+  
   const score = Math.max(0, Math.min(100, Math.round(titleScore + bodyScore)));
   const passed = score >= FINANCE_THRESHOLD && hasFinanceSignal;
 
@@ -576,4 +657,3 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
     },
   };
 }
-

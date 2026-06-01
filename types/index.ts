@@ -28,6 +28,7 @@ export interface RSSSource {
   language: 'zh' | 'en';
   weight: number;
   enabled: boolean;
+  includeKeywords?: string[];
 }
 
 export interface ParsedArticle {

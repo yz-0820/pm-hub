@@ -38,6 +38,24 @@ function isPublishDateValid(pubDate: Date | undefined): boolean {
   return pubDate >= MIN_PUBLISH_DATE;
 }
 
+function normalizeForKeywordMatch(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function articleMatchesIncludeKeywords(article: ParsedArticle, includeKeywords?: string[]): boolean {
+  if (!includeKeywords || includeKeywords.length === 0) return true;
+
+  const text = normalizeForKeywordMatch(
+    `${article.title || ''} ${article.summary || ''} ${article.content || ''}`
+  );
+
+  return includeKeywords.some((keyword) => {
+    const normalizedKeyword = normalizeForKeywordMatch(keyword);
+    return normalizedKeyword.length > 0 && text.includes(normalizedKeyword);
+  });
+}
+
 // 生成唯一的 slug，避免不同源的同名文章冲突
 function generateUniqueSlug(title: string, sourceId: string): string {
   const baseSlug = generateSlug(title);
@@ -96,6 +114,11 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           );
           if (promoPreCheck.isPromo) {
             console.log(`Skipped (promo/deal - universal block): "${article.title}"`);
+            continue;
+          }
+
+          if (!articleMatchesIncludeKeywords(article, source.includeKeywords)) {
+            console.log(`Skipped (source keyword prefilter): "${article.title}"`);
             continue;
           }
 
