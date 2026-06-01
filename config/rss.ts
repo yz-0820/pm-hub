@@ -9,6 +9,8 @@ export interface RSSSource {
   includeKeywords?: string[];
 }
 
+const RSSHUB_BASE_URL = (process.env.RSSHUB_BASE_URL || 'https://rss.terrychan.me').replace(/\/$/, '');
+
 const US_STOCK_INCLUDE_KEYWORDS = [
   '美股',
   '中概股',
@@ -24,6 +26,28 @@ const US_STOCK_INCLUDE_KEYWORDS = [
   '财报',
   '美联储',
   '美债收益率',
+  '英伟达',
+  'NVDA',
+  '特斯拉',
+  'TSLA',
+  '苹果',
+  'AAPL',
+  '微软',
+  'MSFT',
+  '谷歌',
+  'GOOGL',
+  '亚马逊',
+  'AMZN',
+  'Meta',
+  'META',
+  '奈飞',
+  'NFLX',
+  '台积电',
+  'TSM',
+  '博通',
+  'AVGO',
+  '礼来',
+  'LLY',
 ];
 
 export const rssSources: RSSSource[] = [
@@ -191,7 +215,7 @@ export const rssSources: RSSSource[] = [
   {
     id: 'sina-usstock',
     name: '新浪财经美股',
-    url: 'https://rsshub.app/sina/finance/stock/usstock',
+    url: `${RSSHUB_BASE_URL}/sina/finance/stock/usstock`,
     category: 'finance',
     language: 'zh',
     weight: 9,
@@ -200,8 +224,8 @@ export const rssSources: RSSSource[] = [
   },
   {
     id: 'wallstreetcn-global',
-    name: '华尔街见闻全球市场',
-    url: 'https://rsshub.app/wallstreetcn/global',
+    name: '华尔街见闻美股快讯',
+    url: `${RSSHUB_BASE_URL}/wallstreetcn/live/us-stock/2`,
     category: 'finance',
     language: 'zh',
     weight: 8,

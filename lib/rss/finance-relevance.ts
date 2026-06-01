@@ -166,6 +166,43 @@ const STRONG_FINANCE_SIGNALS_TITLE = [
   '美债收益率', '美联储', '议息会议',
 ];
 
+const US_STOCK_COMPANY_KEYWORDS = [
+  '英伟达',
+  'nvidia',
+  'nvda',
+  '特斯拉',
+  'tesla',
+  'tsla',
+  '苹果',
+  'apple',
+  'aapl',
+  '微软',
+  'microsoft',
+  'msft',
+  '谷歌',
+  'alphabet',
+  'google',
+  'googl',
+  '亚马逊',
+  'amazon',
+  'amzn',
+  'meta',
+  '奈飞',
+  'netflix',
+  'nflx',
+  '台积电',
+  'tsm',
+  '博通',
+  'broadcom',
+  'avgo',
+  '礼来',
+  'lly',
+  '英特尔',
+  'intel',
+  'intc',
+  'amd',
+];
+
 // 扩展金融关键词 - 包含强信号词和其他金融术语
 const FINANCE_KEYWORDS = [
   // === 强金融信号词（标题权重更高）===
@@ -227,8 +264,6 @@ const FINANCE_KEYWORDS = [
   '回购',
   '分红',
   '市盈率',
-  'pe',
-  'pb',
   '债务',
   '违约',
   '重组',
@@ -258,40 +293,7 @@ const FINANCE_KEYWORDS = [
   '资本市场',
 
   // === 美股公司/代码信号：需与财报、股价、指数等其他金融词共同出现才通过 ===
-  '英伟达',
-  'nvidia',
-  'nvda',
-  '特斯拉',
-  'tesla',
-  'tsla',
-  '苹果',
-  'apple',
-  'aapl',
-  '微软',
-  'microsoft',
-  'msft',
-  '谷歌',
-  'alphabet',
-  'google',
-  'googl',
-  '亚马逊',
-  'amazon',
-  'amzn',
-  'meta',
-  '奈飞',
-  'netflix',
-  'nflx',
-  '台积电',
-  'tsm',
-  '博通',
-  'broadcom',
-  'avgo',
-  '礼来',
-  'lly',
-  '英特尔',
-  'intel',
-  'intc',
-  'amd',
+  ...US_STOCK_COMPANY_KEYWORDS,
 
   // === 新增：科技金融交叉领域的股票信号 ===
   'AI概念股', '大模型概念股', '科技股', '互联网股',
@@ -565,6 +567,7 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   const titleHits = matchKeywords(title, FINANCE_KEYWORDS);
   const bodyHits = matchKeywords(full, FINANCE_KEYWORDS);
   const uniq = Array.from(new Set([...titleHits, ...bodyHits]));
+  const nonCompanyFinanceHits = uniq.filter((hit) => !US_STOCK_COMPANY_KEYWORDS.includes(hit));
 
   const productHints = matchKeywords(full, PRODUCT_NEWS_HINTS);
   const hasProductNews = productHints.length >= 2;
@@ -576,7 +579,7 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
   // 券商研报降低门槛：只要命中1个金融关键词即可
   const hasFinanceSignal = isBrokerReport 
     ? uniq.length >= 1 
-    : uniq.length >= 2 && (titleHits.length >= 1 || bodyHits.length >= 3);
+    : nonCompanyFinanceHits.length >= 1 && uniq.length >= 2 && (titleHits.length >= 1 || bodyHits.length >= 3);
 
   // 产品/科技类新闻，即使匹配了部分金融关键词，也不应归为金融
   // 但券商研报例外，即使涉及科技内容也应归为金融

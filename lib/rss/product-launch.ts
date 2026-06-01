@@ -38,6 +38,10 @@ const STRONG_PRODUCT_LAUNCH_SIGNALS = [
   '开启众筹', '众筹开启', '众筹价', '众筹中',
   // 新增：新增版本/配色（带价格）
   '新增.*配色', '新增.*版本', '新配色.*元', '新版本.*元',
+  // 新增：产品发布（品牌+产品+发布）
+  '华为.*发布', '小米.*发布', '苹果.*发布', '三星.*发布', 'oppo.*发布', 'vivo.*发布',
+  '荣耀.*发布', '一加.*发布', '魅族.*发布', '努比亚.*发布', '红魔.*发布',
+  '新品发布会', '全场景.*发布',
 ];
 
 /**
@@ -81,6 +85,25 @@ export function detectProductLaunch(
     return {
       isProductLaunch: true,
       reason: `strong_product_launch_signal: ${strongSignalHits.join(', ')}`,
+    };
+  }
+
+  // ========== 品牌产品发布模式 ==========
+  // 检测 "品牌 + 产品 + 发布" 模式（如 "华为WATCH GT Runner 2...发布"）
+  const brandProductPattern = /(华为|小米|苹果|三星|oppo|vivo|荣耀|一加|魅族|努比亚|红魔).*(watch|手表|手机|耳机|平板|笔记本|电视|手环|眼镜|汽车|发布会).*(发布|发售|上市|推出)/i;
+  if (brandProductPattern.test(title)) {
+    return {
+      isProductLaunch: true,
+      reason: 'brand_product_launch_pattern',
+    };
+  }
+  
+  // 简化模式：品牌 + 发布（更宽松）
+  const simpleBrandPattern = /(华为|小米|苹果|三星|oppo|vivo|荣耀|一加|魅族|努比亚|红魔).{0,30}(发布|发售|上市|推出)/i;
+  if (simpleBrandPattern.test(title)) {
+    return {
+      isProductLaunch: true,
+      reason: 'simple_brand_launch_pattern',
     };
   }
 

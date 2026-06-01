@@ -4,20 +4,18 @@
 
 import { detectProductLaunch } from '@/lib/rss/product-launch';
 
-const testCases = [
-  '狼蛛推出 SC580EVO 三模鼠标：双 8KHz 回报率，109 元起',
-  '(更新：修正为 5 死 2 伤) 韩国韩华航空航天工厂发生爆炸，致 6 死 1 伤',
-  '2026 款宏碁非凡 Go 锐龙版 16 英寸笔记本发售：锐龙 AI 7 H 350 + 16G + 1T 售 8499 元',
-];
+const article = {
+  title: '以科技与基普乔格共同赋能跑者，华为WATCH GT Runner 2赛道传奇款发布',
+  content: '<p>虽然全球智能穿戴行业集中激烈，但华为穿戴始终占据引领者地位。全球累计出货量突破2亿台，且常年稳居国内腕戴设备市场出货量第一，是全球为数不多在专业穿戴赛道实现规模化、高端化、专业化同步发展的品牌。</p><p>伴随着华为NOVA 16系列及全场景新品发布会的如期举行，华为携手两届奥运会马拉松冠军、华为WATCH GT Runner全球代言人基普乔格深度共创的华为WATCH GT Runner 2赛道传奇款正式发布。</p>',
+};
 
 console.log('产品发售检测调试\n');
-console.log('='.repeat(60));
+console.log('='.repeat(80));
+console.log(`标题: ${article.title}\n`);
 
-for (const title of testCases) {
-  const result = detectProductLaunch(title, '');
-  console.log(`\n标题: ${title}`);
-  console.log(`结果: ${result.isProductLaunch ? '❌ 产品发售' : '✅ 非产品发售'}`);
-  if (result.reason) {
-    console.log(`原因: ${result.reason}`);
-  }
+const result = detectProductLaunch(article.title, article.content);
+console.log('检测结果:');
+console.log(`  isProductLaunch: ${result.isProductLaunch}`);
+if (result.reason) {
+  console.log(`  原因: ${result.reason}`);
 }
