@@ -16,7 +16,7 @@ type FinanceRelevanceResult = {
   };
 };
 
-export const FINANCE_THRESHOLD = 95;
+export const FINANCE_THRESHOLD = 60;
 
 // ========== 低质量金融新闻过滤 ==========
 
