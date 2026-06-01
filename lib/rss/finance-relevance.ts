@@ -666,7 +666,7 @@ export function evaluateFinanceRelevance(article: ParsedArticle): FinanceRelevan
 
   // 分数计算：标题匹配权重更高
   // 券商研报特殊处理：只要有研报关键词，直接给及格分
-  let titleScore = titleHits.length * 26;
+  const titleScore = titleHits.length * 26;
   let bodyScore = Math.min(bodyHits.length * 12, 50);
   
   if (isBrokerReport && titleScore + bodyScore < FINANCE_THRESHOLD) {

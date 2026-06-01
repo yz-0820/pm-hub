@@ -18,7 +18,7 @@ interface QuestionResult {
   domain: string;
   category: string;
   stem: string;
-  userAnswer: 'A' | 'B' | 'C' | 'D';
+  userAnswer: 'A' | 'B' | 'C' | 'D' | null;
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   isCorrect: boolean;
   explanation: string;
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const questionIds: number[] = JSON.parse(session.questionIds || '[]');
-    let existingAnswers: AnswerRecord[] = JSON.parse(session.answers || '[]');
+    const existingAnswers: AnswerRecord[] = JSON.parse(session.answers || '[]');
 
     // 如果有补充提交的答案，合并到现有答案中
     if (parsed.data.answers && parsed.data.answers.length > 0) {
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         domain: question.domain,
         category: question.category,
         stem: question.stem,
-        userAnswer: userAnswer || ('未作答' as any),
+        userAnswer,
         correctAnswer,
         isCorrect,
         explanation: question.explanation,

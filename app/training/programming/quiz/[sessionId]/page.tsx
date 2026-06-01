@@ -15,20 +15,52 @@ import { QuizCard, QuizQuestion } from '@/components/training/programming/quiz-c
 import { DomainType } from '@/components/training/programming/domain-selector';
 import { cn } from '@/lib/utils';
 
+interface SessionQuestionPayload {
+  id: number;
+  domain: QuizQuestion['domain'];
+  stem: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  correctOption: string;
+  explanation: string;
+  links: string | null;
+}
+
 // 解析 links 字段：支持字符串URL和JSON数组两种格式
-function parseLinks(links: string | null | undefined): string[] {
+function parseLinks(links: string | null | undefined): NonNullable<QuizQuestion['relatedLinks']> {
   if (!links) return [];
   if (typeof links === 'string') {
     if (!links.trim()) return [];
     if (links.trim().startsWith('http')) {
-      return [links.trim()];
+      const url = links.trim();
+      return [{ title: url, url }];
     }
     try {
       const parsed = JSON.parse(links);
-      if (Array.isArray(parsed)) return parsed;
-      if (typeof parsed === 'string') return [parsed];
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((item) => {
+            if (typeof item === 'string') return { title: item, url: item };
+            if (
+              item &&
+              typeof item === 'object' &&
+              'url' in item &&
+              typeof item.url === 'string'
+            ) {
+              return {
+                title: 'title' in item && typeof item.title === 'string' ? item.title : item.url,
+                url: item.url,
+              };
+            }
+            return null;
+          })
+          .filter((item): item is NonNullable<QuizQuestion['relatedLinks']>[number] => item !== null);
+      }
+      if (typeof parsed === 'string') return [{ title: parsed, url: parsed }];
     } catch {
-      return [links];
+      return [{ title: links, url: links }];
     }
   }
   return [];
@@ -49,7 +81,7 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState<Record<string, boolean>>({});
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
-  const [startTime] = useState(Date.now());
+  const [startTime] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 初始化：从 API 获取会话和题目
@@ -61,11 +93,10 @@ export default function QuizPage() {
         const data = await response.json();
 
         if (data.success && data.data.session) {
-          const session = data.data.session;
-          const sessionQuestions = data.data.questions || [];
+          const sessionQuestions = (data.data.questions || []) as SessionQuestionPayload[];
 
           // 将 API 返回的题目转换为组件需要的格式
-          const formattedQuestions: QuizQuestion[] = sessionQuestions.map((q: any) => ({
+          const formattedQuestions: QuizQuestion[] = sessionQuestions.map((q) => ({
             id: String(q.id),
             domain: q.domain,
             question: q.stem,

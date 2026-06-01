@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { articlesIndex } from '@/lib/search/client';
 import { db } from '@/lib/db/client';
 import { careerContents } from '@/lib/db/schema';
-import { eq, desc, ilike, or, and, not, notIlike, sql } from 'drizzle-orm';
+import { eq, desc, ilike, or, and, notIlike, sql } from 'drizzle-orm';
+import { parseSearchParams } from '@/lib/search/params';
 
 type SearchHit =
   | {
@@ -31,17 +32,11 @@ type SearchHit =
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const query = (searchParams.get('q') || '').trim();
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const rawLimit = parseInt(searchParams.get('limit') || '10', 10);
-    const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(10, rawLimit) : 10;
+    const { query, page, limit, offset } = parseSearchParams(request.nextUrl.searchParams);
 
     if (!query) {
       return NextResponse.json({ hits: [], totalHits: 0, page: 1, totalPages: 0 });
     }
-
-    const offset = (page - 1) * limit;
 
     // 优先使用 MeiliSearch
     try {

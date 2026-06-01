@@ -1,9 +1,7 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { getQwenImageEnv } from '@/lib/env/server';
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const SUPPORTED_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
-const DEFAULT_DASHSCOPE_ENDPOINT = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 
 export type PrototypeGenerationResult = {
   imageDataUrl: string;
@@ -21,39 +19,6 @@ export function validatePrototypeInput(input: PrototypeInput): string | null {
   if (input.image.size > MAX_IMAGE_SIZE) return '图片不能超过 10MB';
   if (!input.prompt.trim()) return '请填写需要修改的内容';
   return null;
-}
-
-function ensureQwenEnv(): void {
-  if (process.env.DASHSCOPE_API_KEY) return;
-
-  try {
-    let dir = process.cwd();
-    for (let i = 0; i < 8; i += 1) {
-      const envPath = path.join(dir, '.env.local');
-      if (fs.existsSync(envPath)) {
-        const raw = fs.readFileSync(envPath, 'utf8');
-        for (const line of raw.split(/\r?\n/)) {
-          const trimmed = line.trim();
-          if (!trimmed || trimmed.startsWith('#')) continue;
-          const idx = trimmed.indexOf('=');
-          if (idx <= 0) continue;
-
-          const key = trimmed.slice(0, idx).trim();
-          if (key !== 'DASHSCOPE_API_KEY' && key !== 'QWEN_IMAGE_MODEL' && key !== 'DASHSCOPE_BASE_URL') continue;
-
-          const value = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
-          if (value && !process.env[key]) process.env[key] = value;
-        }
-        return;
-      }
-
-      const parent = path.dirname(dir);
-      if (parent === dir) return;
-      dir = parent;
-    }
-  } catch {
-    return;
-  }
 }
 
 async function fileToDataUrl(file: File): Promise<string> {
@@ -94,11 +59,7 @@ export async function generatePrototypeImage(input: PrototypeInput): Promise<Pro
   const validationError = validatePrototypeInput(input);
   if (validationError) throw new Error(validationError);
 
-  ensureQwenEnv();
-
-  const apiKey = process.env.DASHSCOPE_API_KEY || '';
-  const model = process.env.QWEN_IMAGE_MODEL || 'qwen-image-2.0-pro';
-  const endpoint = process.env.DASHSCOPE_BASE_URL || DEFAULT_DASHSCOPE_ENDPOINT;
+  const { apiKey, model, endpoint } = getQwenImageEnv();
   if (!apiKey) throw new Error('未配置 DASHSCOPE_API_KEY，无法生成原型图');
 
   const prompt = [

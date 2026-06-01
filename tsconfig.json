@@ -24,11 +24,21 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "config/**/*.ts",
+    "instrumentation.ts",
+    "lib/**/*.ts",
+    "scripts/prod/**/*.ts",
+    "types/**/*.ts",
+    "__tests__/**/*.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "*.config.ts",
+    "*.config.mts",
+    "*.config.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "scripts/debug/**", "scripts/maintenance/**"]
 }

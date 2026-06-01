@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { validateImageProxyUrl } from '@/lib/utils/image-proxy-validation';
 
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存
 
@@ -55,22 +56,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const imageUrl = request.nextUrl.searchParams.get('url');
 
-  if (!imageUrl) {
-    return NextResponse.json({ error: 'Missing url parameter' }, { status: 400 });
-  }
+  const finalUrl = imageUrl ? normalizeUpstreamImageUrl(imageUrl) : null;
 
-  const finalUrl = normalizeUpstreamImageUrl(imageUrl);
-
-  // 验证 URL 格式
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(finalUrl);
-    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-      return NextResponse.json({ error: 'Invalid protocol' }, { status: 400 });
-    }
-  } catch {
-    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
-  }
+  const validation = validateImageProxyUrl(finalUrl);
+  if (!validation.ok) return NextResponse.json({ error: validation.error }, { status: 400 });
+  const parsedUrl = validation.url;
+  const normalizedUrl = parsedUrl.toString();
 
   // 确保缓存目录存在
   const cacheDir = getCacheDir();
@@ -78,7 +69,7 @@ export async function GET(request: NextRequest) {
     fs.mkdirSync(cacheDir, { recursive: true });
   }
 
-  const cachePath = getCachePath(finalUrl);
+  const cachePath = getCachePath(normalizedUrl);
   const ext = path.extname(cachePath);
 
   // 检查缓存
@@ -105,7 +96,7 @@ export async function GET(request: NextRequest) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
 
-    const response = await fetch(finalUrl, {
+    const response = await fetch(normalizedUrl, {
       signal: controller.signal,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

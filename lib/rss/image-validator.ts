@@ -100,6 +100,7 @@ export async function validateImageUrl(url: string): Promise<ImageValidationResu
     result.valid = true;
     return result;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.name === 'AbortError') {
       result.reason = `加载超时 (>${IMAGE_TIMEOUT}ms)`;

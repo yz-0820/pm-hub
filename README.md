@@ -110,7 +110,7 @@ npm run search:rebuild
 | `DATABASE_URL_UNPOOLED` | 否 | 迁移或导入脚本可使用的直连 URL |
 | `API_KEY` | 否 | 手动触发 RSS/career 抓取接口的 Bearer token |
 | `SITE_URL` | 建议 | 站点地址，本地通常是 `http://localhost:3000` |
-| `REVALIDATE_TOKEN` | 否 | 手动 revalidate 接口 token |
+| `REVALIDATE_SECRET` | 否 | 手动 revalidate 接口密钥 |
 | `CRON_SECRET` | 线上必填 | Vercel Cron 调用 `/api/cron/fetch-content` 的鉴权 token |
 | `ENABLE_LOCAL_RSS_SCHEDULER` | 否 | 是否在本地开发环境启用 RSS 定时器 |
 | `LOCAL_RSS_INTERVAL_MINUTES` | 否 | 本地 RSS 抓取间隔，默认 60 |

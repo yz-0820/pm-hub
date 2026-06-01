@@ -1,6 +1,28 @@
 import Parser from 'rss-parser';
 import { ParsedArticle } from '@/types';
 
+interface RSSParserItem {
+  title?: string;
+  link?: string;
+  pubDate?: string;
+  content?: string;
+  'content:encoded'?: string;
+  summary?: string;
+  contentSnippet?: string;
+  author?: string;
+  creator?: string;
+  categories?: string[];
+  enclosure?: { url?: string; type?: string };
+  'media:content'?: RSSMediaItem | RSSMediaItem[];
+  'media:thumbnail'?: RSSMediaItem | RSSMediaItem[];
+  description?: string;
+}
+
+interface RSSMediaItem {
+  $?: { url?: string };
+  url?: string;
+}
+
 const rssParser = new Parser({
   timeout: 20000,
   headers: {
@@ -59,7 +81,7 @@ export async function parseRSSFeed(feedUrl: string): Promise<ParsedArticle[]> {
  * 4. summary / description 中的 <img> 标签
  * 5. og:image 从 link 中提取（部分 RSS 不含但原文有）
  */
-function extractImageUrl(item: any): string | undefined {
+function extractImageUrl(item: RSSParserItem): string | undefined {
   // 策略 1: enclosure（RSS 标准附件）
   if (item.enclosure?.url) {
     const url = item.enclosure.url;
@@ -139,7 +161,7 @@ function extractFirstValidImage(html: string): string | undefined {
 }
 
 // 判断 enclosure 是否为内容图片（而非音频/视频）
-function isLikelyContentImage(url: string, enclosure: any): boolean {
+function isLikelyContentImage(url: string, enclosure: { type?: string }): boolean {
   const type = enclosure.type || '';
   if (type.startsWith('image/')) return true;
   if (type.startsWith('audio/') || type.startsWith('video/')) return false;

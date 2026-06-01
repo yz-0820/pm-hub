@@ -9,10 +9,36 @@ const xmlParser = new XMLParser({
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 
+interface RSSHubItem {
+  title?: string;
+  link?: string;
+  description?: string | { '#text'?: string };
+  'content:encoded'?: string | { '#text'?: string };
+  enclosure?: { '@_url'?: string; '@_type'?: string };
+  guid?: string | { '#text'?: string };
+  'dc:creator'?: string;
+  author?: string;
+  category?: string | Array<string | { '#text'?: string }> | { '#text'?: string };
+  pubDate?: string;
+  'dc:date'?: string;
+}
+
 function pickUrl(text: unknown): string {
   const s = String(text || '');
   const m = /(https?:\/\/[^\s"'<>]+)/i.exec(s);
   return m?.[1] || '';
+}
+
+function normalizeTags(category: RSSHubItem['category']): string[] {
+  if (!category) return [];
+  const values = Array.isArray(category) ? category : [category];
+  return values
+    .map((item) => (typeof item === 'string' ? item : item['#text']))
+    .filter((item): item is string => Boolean(item));
+}
+
+function textValue(value: string | { '#text'?: string } | undefined): string {
+  return typeof value === 'string' ? value : value?.['#text'] || '';
 }
 
 export async function fetchWithRetry(url: string, maxRetries = 3, timeout = 30000): Promise<Response> {
@@ -50,7 +76,7 @@ export async function parseRSSHubFeed(
   const items = parsed?.rss?.channel?.item || [];
   if (!Array.isArray(items)) return [];
 
-  return items.map((item: any) => {
+  return (items as RSSHubItem[]).map((item) => {
     const description = typeof item.description === 'object' ? item.description['#text'] || '' : item.description || '';
     const content = typeof item['content:encoded'] === 'object' ? item['content:encoded']['#text'] || '' : item['content:encoded'] || '';
 
@@ -69,7 +95,7 @@ export async function parseRSSHubFeed(
 
     const coverUrl = !videoUrl && enclosureUrl ? enclosureUrl : (images[0] || extractImage(description));
 
-    const guid = item.guid?.['#text'] || item.guid || '';
+    const guid = textValue(item.guid);
     const link = item.link || '';
     const guidUrl = pickUrl(guid);
     const originalUrl = (() => {
@@ -99,7 +125,7 @@ export async function parseRSSHubFeed(
         images,
       },
       stats: {},
-      tags: item.category ? (Array.isArray(item.category) ? item.category.map((c: any) => typeof c === 'string' ? c : c['#text']) : [typeof item.category === 'string' ? item.category : item.category['#text']]) : [],
+      tags: normalizeTags(item.category),
       publishedAt: new Date(item.pubDate || item['dc:date'] || Date.now()),
     };
   });

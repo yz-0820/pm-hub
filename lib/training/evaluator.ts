@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import fs from 'node:fs';
-import path from 'node:path';
+import { getDeepSeekEnv } from '@/lib/env/server';
 
 const weights = {
   userValue: 0.3,
@@ -405,40 +404,6 @@ export type TrainingEvaluationResult = {
   usedAI: boolean;
 };
 
-function ensureDeepSeekEnv(): void {
-  if (process.env.DEEPSEEK_API_KEY) return;
-  try {
-    let dir = process.cwd();
-    let envPath: string | null = null;
-    for (let i = 0; i < 8; i += 1) {
-      const candidate = path.join(dir, '.env.local');
-      if (fs.existsSync(candidate)) {
-        envPath = candidate;
-        break;
-      }
-      const parent = path.dirname(dir);
-      if (parent === dir) break;
-      dir = parent;
-    }
-    if (!envPath) return;
-
-    const raw = fs.readFileSync(envPath, 'utf8');
-    for (const line of raw.split(/\r?\n/)) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const idx = trimmed.indexOf('=');
-      if (idx <= 0) continue;
-      const key = trimmed.slice(0, idx).trim();
-      if (key !== 'DEEPSEEK_API_KEY' && key !== 'DEEPSEEK_BASE_URL' && key !== 'DEEPSEEK_MODEL') continue;
-      const value = trimmed.slice(idx + 1).trim();
-      if (!value) continue;
-      if (!process.env[key]) process.env[key] = value;
-    }
-  } catch {
-    return;
-  }
-}
-
 function clampScore(n: number): number {
   if (!Number.isFinite(n)) return 0;
   return Math.max(0, Math.min(100, Math.round(n)));
@@ -603,10 +568,7 @@ export async function evaluateWithAI(input: {
   answer: string;
 }): Promise<TrainingEvaluationResult> {
   if (isLowQualityAnswer(input.answer)) return invalidAnswerEvaluate();
-  ensureDeepSeekEnv();
-  const apiKey = process.env.DEEPSEEK_API_KEY || '';
-  const baseUrl = (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com').replace(/\/+$/, '');
-  const model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+  const { apiKey, baseUrl, model } = getDeepSeekEnv();
   const isDev = process.env.NODE_ENV !== 'production';
 
   if (!apiKey) {

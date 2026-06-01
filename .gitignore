@@ -29,6 +29,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.dev-server.log
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -38,6 +39,7 @@ yarn-error.log*
 
 # image cache
 /data/image-cache/
+/data/*.db
 /data/sqlite.db
 /data/sqlite.db-shm
 /data/sqlite.db-wal

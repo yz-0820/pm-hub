@@ -60,6 +60,14 @@ const getStorageKey = (category: string) => `pm-hub-career-${category}-version`;
 const getLastRefreshKey = (category: string) => `pm-hub-career-${category}-last-refresh`;
 const getContentCountKey = (category: string) => `pm-hub-career-${category}-count`;
 
+interface NavigatorConnection {
+  effectiveType?: string;
+}
+
+interface NavigatorWithConnection extends Navigator {
+  connection?: NavigatorConnection;
+}
+
 export function useCareerCategoryRefresh(
   options: UseCareerCategoryRefreshOptions
 ): UseCareerCategoryRefreshResult {
@@ -142,7 +150,7 @@ export function useCareerCategoryRefresh(
     if (!navigator.onLine) return 'offline';
     
     // 检测弱网环境（通过 connection API）
-    const connection = (navigator as any).connection;
+    const connection = (navigator as NavigatorWithConnection).connection;
     if (connection) {
       const effectiveType = connection.effectiveType;
       if (effectiveType === '2g' || effectiveType === 'slow-2g') {

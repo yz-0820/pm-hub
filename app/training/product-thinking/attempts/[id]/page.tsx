@@ -252,7 +252,7 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
                   analysis={detail?.analysis}
                   evidence={detail?.evidence}
                   suggestions={detail?.suggestions}
-                  referenceFramework={(detail as any)?.reference?.length ? (detail as any).reference : report?.overall?.reference_framework}
+                  referenceFramework={detail?.reference?.length ? detail.reference : report?.overall?.reference_framework}
                 />
               );
             })}

@@ -1,6 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { z } from 'zod';
+import { getDeepSeekEnv } from '@/lib/env/server';
 
 export const prdInputSchema = z.object({
   productName: z.string().trim().min(1, '请填写产品或功能名称').max(80),
@@ -19,39 +18,6 @@ export type PrdGenerationResult = {
   model: string;
   usedAI: boolean;
 };
-
-function ensureDeepSeekEnv(): void {
-  if (process.env.DEEPSEEK_API_KEY) return;
-
-  try {
-    let dir = process.cwd();
-    for (let i = 0; i < 8; i += 1) {
-      const envPath = path.join(dir, '.env.local');
-      if (fs.existsSync(envPath)) {
-        const raw = fs.readFileSync(envPath, 'utf8');
-        for (const line of raw.split(/\r?\n/)) {
-          const trimmed = line.trim();
-          if (!trimmed || trimmed.startsWith('#')) continue;
-          const idx = trimmed.indexOf('=');
-          if (idx <= 0) continue;
-
-          const key = trimmed.slice(0, idx).trim();
-          if (key !== 'DEEPSEEK_API_KEY' && key !== 'DEEPSEEK_BASE_URL' && key !== 'DEEPSEEK_MODEL') continue;
-
-          const value = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
-          if (value && !process.env[key]) process.env[key] = value;
-        }
-        return;
-      }
-
-      const parent = path.dirname(dir);
-      if (parent === dir) return;
-      dir = parent;
-    }
-  } catch {
-    return;
-  }
-}
 
 function fallbackGenerate(input: PrdInput): PrdGenerationResult {
   const constraints = input.constraints || '待补充';
@@ -114,11 +80,7 @@ function fallbackGenerate(input: PrdInput): PrdGenerationResult {
 }
 
 export async function generatePrd(input: PrdInput): Promise<PrdGenerationResult> {
-  ensureDeepSeekEnv();
-
-  const apiKey = process.env.DEEPSEEK_API_KEY || '';
-  const baseUrl = (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com').replace(/\/+$/, '');
-  const model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+  const { apiKey, baseUrl, model } = getDeepSeekEnv();
   const isDev = process.env.NODE_ENV !== 'production';
 
   if (!apiKey) {
