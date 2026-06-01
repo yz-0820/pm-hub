@@ -66,35 +66,42 @@ async function getCareerData(
 
   const whereClause = and(...conditions);
 
-  // 优化：使用窗口函数去重，避免全表扫描
-  // 按标题去重，保留最新的一条
-  const dedupedContents = await db.execute(sql`
-    WITH ranked AS (
-      SELECT *,
-        ROW_NUMBER() OVER (
-          PARTITION BY REPLACE(title, ' ', '') 
-          ORDER BY published_at DESC
-        ) as rn
-      FROM ${careerContents}
-      WHERE ${whereClause}
-    )
-    SELECT * FROM ranked 
-    WHERE rn = 1
-    ORDER BY published_at DESC
-    LIMIT ${CONTENTS_PER_PAGE}
-    OFFSET ${offset}
-  `);
+  // 先获取所有符合条件的文章ID（按标题去重）
+  const allContents = await db
+    .select({
+      id: careerContents.id,
+      title: careerContents.title,
+      publishedAt: careerContents.publishedAt,
+    })
+    .from(careerContents)
+    .where(whereClause)
+    .orderBy(desc(careerContents.publishedAt));
 
-  const contents = dedupedContents as unknown as typeof careerContents.$inferSelect[];
+  // 按标题去重（去除空格后比较）
+  const seenTitles = new Set<string>();
+  const uniqueIds: number[] = [];
+  for (const content of allContents) {
+    const normalizedTitle = content.title.replace(/\s/g, '');
+    if (!seenTitles.has(normalizedTitle)) {
+      seenTitles.add(normalizedTitle);
+      uniqueIds.push(content.id);
+    }
+  }
 
-  // 获取总数（使用 COUNT DISTINCT 优化）
-  const countResult = await db.execute(sql`
-    SELECT COUNT(DISTINCT REPLACE(title, ' ', '')) as count
-    FROM ${careerContents}
-    WHERE ${whereClause}
-  `);
-  const totalCount = Number((countResult[0] as { count: string }).count) || 0;
+  const totalCount = uniqueIds.length;
   const totalPages = Math.ceil(totalCount / CONTENTS_PER_PAGE);
+
+  // 分页获取实际内容
+  const paginatedIds = uniqueIds.slice(offset, offset + CONTENTS_PER_PAGE);
+  
+  let contents: typeof careerContents.$inferSelect[] = [];
+  if (paginatedIds.length > 0) {
+    contents = await db
+      .select()
+      .from(careerContents)
+      .where(inArray(careerContents.id, paginatedIds))
+      .orderBy(desc(careerContents.publishedAt));
+  }
 
   const latestPublishedResult = await db
     .select({ latest: sql<Date | null>`max(${careerContents.publishedAt})` })
