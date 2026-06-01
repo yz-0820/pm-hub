@@ -15,7 +15,7 @@ type AIRelevanceResult = {
   };
 };
 
-export const AI_THRESHOLD = 35;
+export const AI_THRESHOLD = 95;
 
 // 强金融信号词 - 标题中出现这些词时，即使有 AI 关键词也应排除
 // 因为这些词明确表明文章主题是金融而非 AI 技术

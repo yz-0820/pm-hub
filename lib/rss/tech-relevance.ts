@@ -17,7 +17,7 @@ type TechRelevanceResult = {
   };
 };
 
-export const TECH_THRESHOLD = 40;
+export const TECH_THRESHOLD = 95;
 
 // 强金融信号词 - 标题中出现这些词时，即使有科技关键词也应排除
 // 注意：只包含最明确的金融术语，避免与科技/AI文章混淆

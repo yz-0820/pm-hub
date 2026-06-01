@@ -24,6 +24,7 @@
     "rss:schedule": "tsx scripts/scheduled-fetch-rss.ts",
     "career:fetch": "tsx scripts/fetch-career.ts",
     "career:schedule": "tsx scripts/scheduled-fetch-career.ts",
+    "career:videos:validate": "tsx scripts/validate-career-video-links.ts",
     "career:purge-pm-videos": "tsx scripts/purge-career-pm-training-videos.ts",
     "search:rebuild": "tsx scripts/build-search-index.ts",
     "articles:delete-product-discovery": "tsx scripts/delete-product-discovery-articles.ts",

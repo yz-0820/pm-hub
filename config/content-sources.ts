@@ -657,7 +657,7 @@ export const contentSources: ContentSourceConfig[] = [
     sourceType: 'rss',
     platform: 'bilibili',
     category: 'all',
-    url: 'http://localhost:3001/api/career/video-feed?platform=bilibili',
+    url: '/api/career/video-feed?platform=bilibili',
     enabled: true,
     weight: 6,
     fetchInterval: 1800,

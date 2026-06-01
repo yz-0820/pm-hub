@@ -1,9 +1,9 @@
 import { rssSources } from '@/config/rss';
 import { parseRSSFeed, generateSlug } from './parser';
 import { validateImageUrl } from './image-validator';
-import { evaluateTechRelevance } from './tech-relevance';
-import { evaluateFinanceRelevance } from './finance-relevance';
-import { evaluateAIRelevance } from './ai-relevance';
+import { evaluateTechRelevance, TECH_THRESHOLD } from './tech-relevance';
+import { evaluateFinanceRelevance, FINANCE_THRESHOLD } from './finance-relevance';
+import { evaluateAIRelevance, AI_THRESHOLD } from './ai-relevance';
 import { detectPromoDeal } from './promo-deal';
 import { detectITHomeProductLaunch } from './product-launch';
 import { db } from '@/lib/db/client';
@@ -201,26 +201,26 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
               continue;
             }
 
-            // 优先检查：强金融信号（分数 >= 70 表示命中强信号词）
-            if (financeR.passed && financeR.score >= 70) {
+            // 优先检查：强金融信号（分数 >= 阈值 表示命中强信号词）
+            if (financeR.passed && financeR.score >= FINANCE_THRESHOLD) {
               // 强金融信号：归类到 finance
               finalCategory = 'finance';
               relevanceScore = financeR.score;
               relevanceMeta = JSON.stringify({ ...financeR.meta, autoCategorized: true, originalCategory: source.category });
               console.log(`Auto-categorized as finance (strong signal ${financeR.score}): "${article.title}"`);
-            } else if (aiR.passed && !aiR.meta.financeConflict && aiR.score >= 35) {
+            } else if (aiR.passed && !aiR.meta.financeConflict && aiR.score >= AI_THRESHOLD) {
               // AI相关度高（且无金融冲突）：归类到 ai
               finalCategory = 'ai';
               relevanceScore = aiR.score;
               relevanceMeta = JSON.stringify({ ...aiR.meta, autoCategorized: true, originalCategory: source.category });
               console.log(`Auto-categorized as ai (${aiR.score}): "${article.title}"`);
-            } else if (financeR.passed && financeR.score >= 45) {
+            } else if (financeR.passed && financeR.score >= FINANCE_THRESHOLD) {
               // 常规金融信号：归类到 finance
               finalCategory = 'finance';
               relevanceScore = financeR.score;
               relevanceMeta = JSON.stringify({ ...financeR.meta, autoCategorized: true, originalCategory: source.category });
               console.log(`Auto-categorized as finance (${financeR.score}): "${article.title}"`);
-            } else if (techR.passed) {
+            } else if (techR.passed && techR.score >= TECH_THRESHOLD) {
               // 科技相关：保持 tech
               finalCategory = 'tech';
               relevanceScore = techR.score;

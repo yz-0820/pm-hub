@@ -134,6 +134,24 @@ function resolveRsshubUrl(url: string): string {
   }
 }
 
+function getSiteUrl(): string {
+  const explicit = process.env.SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, '');
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    const host = vercelUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `https://${host}`;
+  }
+
+  return `http://localhost:${process.env.PORT || '3000'}`;
+}
+
+function resolveContentSourceUrl(url: string): string {
+  if (!url.startsWith('/')) return url;
+  return new URL(url, getSiteUrl()).toString();
+}
+
 // 带重试的fetch
 async function fetchWithRetry(url: string, options?: RequestInit, maxRetries = 3): Promise<Response> {
   let lastError: Error | null = null;
@@ -581,7 +599,7 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
   
   try {
     console.log(`[${source.sourceName}] Starting fetch...`);
-    const sourceUrl = resolveRsshubUrl(source.url);
+    const sourceUrl = resolveRsshubUrl(resolveContentSourceUrl(source.url));
     
     // 根据平台类型选择解析器
     let rawContents: PlatformRawContent[];

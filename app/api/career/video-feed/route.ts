@@ -46,10 +46,23 @@ function getCategoryHint(category?: string): string {
   }
 }
 
+function getSiteUrl(): string {
+  const explicit = process.env.SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, '');
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    const host = vercelUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `https://${host}`;
+  }
+
+  return `http://localhost:${process.env.PORT || '3000'}`;
+}
+
 export async function GET(req: Request) {
   const u = new URL(req.url);
   const platform = u.searchParams.get('platform');
-  const siteUrl = process.env.SITE_URL || 'http://localhost:3001';
+  const siteUrl = getSiteUrl();
 
   const filePath = path.join(process.cwd(), 'data', 'career-video-links.json');
   const raw = await readFile(filePath, 'utf8');
