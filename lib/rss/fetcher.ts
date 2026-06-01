@@ -5,6 +5,7 @@ import { evaluateTechRelevance } from './tech-relevance';
 import { evaluateFinanceRelevance } from './finance-relevance';
 import { evaluateAIRelevance } from './ai-relevance';
 import { detectPromoDeal } from './promo-deal';
+import { detectITHomeProductLaunch } from './product-launch';
 import { db } from '@/lib/db/client';
 import { articles, rssSourceStatus } from '@/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -109,6 +110,19 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           if (gamingHits.length >= 2) {
             console.log(`Skipped (gaming/entertainment - universal block): "${article.title}"`);
             continue;
+          }
+
+          // ========== IT之家 产品介绍/发售检测 ==========
+          // IT之家 大量发布产品发售、上市类文章，需要单独过滤
+          if (source.id === 'ithome') {
+            const productLaunchCheck = detectITHomeProductLaunch(
+              article.title || '',
+              `${article.summary || ''} ${article.content || ''}`
+            );
+            if (productLaunchCheck.isProductLaunch) {
+              console.log(`Skipped (IT之家 product launch: ${productLaunchCheck.reason}): "${article.title}"`);
+              continue;
+            }
           }
 
           // ========== 统一非顶尖品牌产品发布预检（第三优先级，所有来源生效） ==========
