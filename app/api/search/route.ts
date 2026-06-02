@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { articlesIndex } from '@/lib/search/client';
 import { db } from '@/lib/db/client';
-import { careerContents } from '@/lib/db/schema';
-import { eq, desc, ilike, or, and, notIlike, sql } from 'drizzle-orm';
+import { articles, careerContents } from '@/lib/db/schema';
+import { eq, desc, ilike, or, and, notIlike, sql, inArray } from 'drizzle-orm';
 import { parseSearchParams } from '@/lib/search/params';
 
 type SearchHit =
@@ -83,8 +83,22 @@ export async function GET(request: NextRequest) {
       console.log('MeiliSearch unavailable, falling back to database search');
     }
 
-    // Fallback: 数据库搜索（仅搜索 career 内容）
+    // Fallback: 数据库搜索（搜索 articles 和 career 内容）
     const pattern = `%${query}%`;
+    const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
+    
+    // Articles 搜索条件
+    const articlesWhere = and(
+      inArray(articles.category, articleCategories),
+      or(
+        ilike(articles.title, pattern),
+        ilike(articles.summary, pattern),
+        ilike(articles.content, pattern),
+        ilike(articles.sourceName, pattern)
+      )
+    );
+
+    // Career 搜索条件
     const careerWhere = and(
       eq(careerContents.status, 'active'),
       or(
@@ -99,17 +113,36 @@ export async function GET(request: NextRequest) {
       notIlike(careerContents.originalUrl, '%127.0.0.1%')
     );
 
-    const [careerRows, careerCountRes] = await Promise.all([
+    // 并行搜索 articles 和 career
+    const [articleRows, careerRows] = await Promise.all([
+      db.query.articles.findMany({
+        where: articlesWhere,
+        orderBy: [desc(articles.publishedAt)],
+        limit: limit,
+        offset: offset,
+      }),
       db.query.careerContents.findMany({
         where: careerWhere,
         orderBy: [desc(careerContents.publishedAt)],
-        limit,
-        offset,
+        limit: limit,
+        offset: offset,
       }),
-      db.select({ count: sql<number>`cast(count(*) as int)` }).from(careerContents).where(careerWhere),
     ]);
 
-    const hits: SearchHit[] = careerRows.map((c) => ({
+    // 合并结果
+    const articleHits: SearchHit[] = articleRows.map((a) => ({
+      kind: 'article' as const,
+      id: a.id,
+      title: a.title,
+      summary: a.summary || '',
+      category: a.category,
+      sourceName: a.sourceName,
+      publishedAt: a.publishedAt.toISOString(),
+      originalUrl: a.originalUrl,
+      imageUrl: a.imageUrl || null,
+    }));
+
+    const careerHits: SearchHit[] = careerRows.map((c) => ({
       kind: 'career' as const,
       id: c.id,
       title: c.title,
@@ -122,10 +155,21 @@ export async function GET(request: NextRequest) {
       contentType: c.contentType,
     }));
 
-    const totalHits = careerCountRes[0]?.count || 0;
+    // 合并并按时间排序
+    const allHits = [...articleHits, ...careerHits]
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .slice(0, limit);
+
+    // 计算总数
+    const [articleCountRes, careerCountRes] = await Promise.all([
+      db.select({ count: sql<number>`cast(count(*) as int)` }).from(articles).where(articlesWhere),
+      db.select({ count: sql<number>`cast(count(*) as int)` }).from(careerContents).where(careerWhere),
+    ]);
+
+    const totalHits = (articleCountRes[0]?.count || 0) + (careerCountRes[0]?.count || 0);
 
     return NextResponse.json({
-      hits,
+      hits: allHits,
       totalHits,
       page,
       totalPages: Math.ceil(totalHits / limit),

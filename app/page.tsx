@@ -189,7 +189,7 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
     .select({
       id: articles.id,
       title: articles.title,
-      slug: articles.slug,
+      originalUrl: articles.originalUrl,
       category: articles.category,
       imageUrl: articles.imageUrl,
     })
@@ -201,28 +201,31 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
   return results.map((item) => ({
     id: item.id,
     title: item.title,
-    href: item.slug ? `/articles/${item.slug}` : `/articles/${item.id}`,
+    href: item.originalUrl, // 使用外部链接
     imageUrl: item.imageUrl || getArticleDefaultCover(item.category, `${item.id}-${item.title}`),
     category: item.category,
   }));
 }
 
 async function getLatestCareerForCarousel(limit: number = 5) {
+  // 从 careerContents 获取最新的职业发展内容（与 /career 页面一致）
   const results = await db
     .select({
       id: careerContents.id,
       title: careerContents.title,
+      originalUrl: careerContents.originalUrl,
       category: careerContents.category,
       coverImage: careerContents.coverImage,
     })
     .from(careerContents)
-    .orderBy(desc(careerContents.createdAt))
+    .where(eq(careerContents.status, 'active'))
+    .orderBy(desc(careerContents.publishedAt))
     .limit(limit);
 
   return results.map((item) => ({
     id: item.id,
     title: item.title,
-    href: `/career/${item.id}`,
+    href: item.originalUrl, // 使用外部链接
     imageUrl: item.coverImage || getArticleDefaultCover('product-management', `${item.id}-${item.title}`),
     category: item.category,
   }));
@@ -238,7 +241,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-10 lg:py-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-5 lg:py-8">
         {/* 装饰性背景元素 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
@@ -248,15 +251,11 @@ export default async function HomePage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <Newspaper className="h-4 w-4" />
-              <span>每日精选优质内容</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
               属于PM的
               <span className="text-primary">专业学习平台</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
               汇聚专业资讯、职业发展、题库训练、PRD生成等多种功能，助力产品人持续成长
             </p>
           </div>
@@ -331,6 +330,8 @@ export default async function HomePage() {
                     查看全部
                   </Link>
                 </div>
+
+                <ArticleCarousel items={latestCareer} autoplayDelay={3500} />
 
                 <div className="grid grid-cols-4 gap-3 sm:gap-4">
                   {resourceCategories.map((cat) => (

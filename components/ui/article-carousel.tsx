@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface CarouselItem {
   id: number;
@@ -17,6 +16,11 @@ interface CarouselItem {
 interface ArticleCarouselProps {
   items: CarouselItem[];
   autoplayDelay?: number;
+}
+
+// 判断是否为外部链接
+function isExternalLink(href: string): boolean {
+  return href.startsWith('http://') || href.startsWith('https://');
 }
 
 export function ArticleCarousel({ items, autoplayDelay = 3500 }: ArticleCarouselProps) {
@@ -43,12 +47,20 @@ export function ArticleCarousel({ items, autoplayDelay = 3500 }: ArticleCarousel
   if (items.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-[28px] mb-6">
+    <div className="relative overflow-hidden rounded-2xl mb-5">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex">
-          {items.map((item) => (
+          {items.map((item) => {
+            const isExternal = isExternalLink(item.href);
+            const LinkComponent = isExternal ? 'a' : 'a';
+            const linkProps = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+            
+            return (
             <div key={item.id} className="flex-[0_0_100%] min-w-0">
-              <Link href={item.href} className="group relative block aspect-[16/9] overflow-hidden">
+              <LinkComponent 
+                href={item.href} 
+                {...linkProps}
+                className="group relative block aspect-[21/9] overflow-hidden cursor-pointer">
                 {/* 背景图片 */}
                 <Image
                   src={item.imageUrl}
@@ -63,26 +75,26 @@ export function ArticleCarousel({ items, autoplayDelay = 3500 }: ArticleCarousel
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 
                 {/* 标题 */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                  <h3 className="text-white font-semibold text-base sm:text-lg line-clamp-2 leading-snug">
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                  <h3 className="text-white font-semibold text-sm sm:text-base line-clamp-1 leading-snug">
                     {item.title}
                   </h3>
                 </div>
-              </Link>
+              </LinkComponent>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 
       {/* 圆点指示器 */}
-      <div className="absolute bottom-4 right-4 flex gap-1.5">
+      <div className="absolute bottom-3 right-3 flex gap-1">
         {items.map((_, index) => (
           <button
             key={index}
             onClick={() => emblaApi?.scrollTo(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
               index === selectedIndex
-                ? 'bg-white w-4'
+                ? 'bg-white w-3'
                 : 'bg-white/50 hover:bg-white/70'
             }`}
             aria-label={`Go to slide ${index + 1}`}
