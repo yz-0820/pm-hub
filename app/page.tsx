@@ -277,8 +277,6 @@ async function getHotEvents(limit: number = 5) {
     href: item.originalUrl,
     publishedAt: item.publishedAt,
   }));
-    category: item.category,
-  }));
 }
 
 export default async function HomePage() {
