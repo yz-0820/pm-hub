@@ -11,6 +11,7 @@ import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
 import { PM_THRESHOLD } from '@/lib/rss/pm-relevance';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
 import { ArticleCarousel } from '@/components/ui/article-carousel';
+import { HotEvents } from '@/components/ui/hot-events';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -227,15 +228,65 @@ async function getLatestCareerForCarousel(limit: number = 5) {
     title: item.title,
     href: item.originalUrl, // 使用外部链接
     imageUrl: item.coverImage || getArticleDefaultCover('product-management', `${item.id}-${item.title}`),
+  }));
+}
+
+async function getHotEvents(limit: number = 5) {
+  // 从最近14天的文章中筛选包含热点关键词的文章
+  const keywords = ['发布会', '大会', '峰会', '论坛', '财报', '营收', '季报', '年报',
+    '上线', '发布', '推出', '开测', '公测', '融资', '收购', '并购', 
+    'IPO', '上市', '监管', '政策', '法规', '禁令', '批准'];
+  
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
+  
+  const results = await db
+    .select({
+      id: articles.id,
+      title: articles.title,
+      originalUrl: articles.originalUrl,
+      publishedAt: articles.publishedAt,
+    })
+    .from(articles)
+    .where(
+      and(
+        gte(articles.publishedAt, fourteenDaysAgo),
+        inArray(articles.category, articleCategories),
+      )
+    )
+    .orderBy(desc(articles.publishedAt))
+    .limit(50);
+
+  // 关键词过滤
+  const filtered = results.filter(item => 
+    keywords.some(kw => item.title.includes(kw))
+  );
+
+  // 去重（相似标题）
+  const seen = new Set<string>();
+  const unique = filtered.filter(item => {
+    const key = item.title.replace(/\s/g, '').slice(0, 20);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return unique.slice(0, limit).map((item) => ({
+    id: item.id,
+    title: item.title,
+    href: item.originalUrl,
+    publishedAt: item.publishedAt,
+  }));
     category: item.category,
   }));
 }
 
 export default async function HomePage() {
-  const [todayPicks, latestArticles, latestCareer] = await Promise.all([
+  const [todayPicks, latestArticles, latestCareer, hotEvents] = await Promise.all([
     getTodayPicks(),
     getLatestArticlesForCarousel(5),
     getLatestCareerForCarousel(5),
+    getHotEvents(5),
   ]);
 
   return (
@@ -268,8 +319,8 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
-            <div className="flex flex-col gap-6 lg:h-full">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
+            <div className="flex flex-col gap-6">
               <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
@@ -355,8 +406,8 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <aside className="lg:h-full">
-              <div className="flex h-full flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
+            <aside>
+              <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
                 <div className="mb-5 flex items-center gap-2">
                   <h2 className="text-2xl font-bold sm:text-3xl">每日精选</h2>
                 </div>
@@ -426,6 +477,8 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
+              
+              <HotEvents events={hotEvents} />
             </aside>
           </div>
         </div>
