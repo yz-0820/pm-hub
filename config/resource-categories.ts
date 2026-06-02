@@ -14,7 +14,7 @@ export const resourceCategories: ResourceCategory[] = [
   {
     id: 'communication',
     name: '职场沟通',
-    description: '高效沟通、协作技巧',
+    description: '',
     icon: MessageSquare,
     color: 'text-blue-600',
     gradient: 'from-blue-500/10 to-cyan-500/5',
@@ -23,7 +23,7 @@ export const resourceCategories: ResourceCategory[] = [
   {
     id: 'productivity',
     name: '高效工作',
-    description: '时间管理、效率提升',
+    description: '',
     icon: Zap,
     color: 'text-amber-600',
     gradient: 'from-amber-500/10 to-orange-500/5',
@@ -32,7 +32,7 @@ export const resourceCategories: ResourceCategory[] = [
   {
     id: 'teamwork',
     name: '团队协作',
-    description: '团队建设、冲突解决',
+    description: '',
     icon: Users,
     color: 'text-emerald-600',
     gradient: 'from-emerald-500/10 to-teal-500/5',
@@ -41,7 +41,7 @@ export const resourceCategories: ResourceCategory[] = [
   {
     id: 'leadership',
     name: '领导力',
-    description: '管理思维、决策能力',
+    description: '',
     icon: Crown,
     color: 'text-purple-600',
     gradient: 'from-purple-500/10 to-pink-500/5',
@@ -52,19 +52,19 @@ export const resourceCategories: ResourceCategory[] = [
 export const resourceCategoryLabels: Record<string, { name: string; description: string }> = {
   communication: {
     name: '职场沟通',
-    description: '高效沟通、协作技巧',
+    description: '',
   },
   productivity: {
     name: '高效工作',
-    description: '时间管理、效率提升',
+    description: '',
   },
   teamwork: {
     name: '团队协作',
-    description: '团队建设、冲突解决',
+    description: '',
   },
   leadership: {
     name: '领导力',
-    description: '管理思维、决策能力',
+    description: '',
   },
 };
 

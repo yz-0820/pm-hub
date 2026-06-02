@@ -303,18 +303,18 @@ export const rssSources: RSSSource[] = [
 export const categoryLabels: Record<string, { name: string; description: string }> = {
   'product-management': {
     name: '产品经理',
-    description: '产品思维、需求分析',
+    description: '',
   },
   'tech': {
     name: '科技动态',
-    description: '前沿技术、行业趋势',
+    description: '',
   },
   'ai': {
     name: '人工智能',
-    description: 'AI 技术、应用洞察',
+    description: '',
   },
   'finance': {
     name: '金融市场',
-    description: '投资分析、财经动态',
+    description: '',
   },
 };

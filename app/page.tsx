@@ -22,6 +22,7 @@ type TodayPick = {
   title: string;
   href: string;
   imageUrl: string;
+  score: number;
   kind: 'article' | 'career';
 };
 
@@ -29,7 +30,16 @@ function getBeijingTodayRange(now = new Date()) {
   const beijingDate = new Date(now.getTime() + BEIJING_OFFSET_MS).toISOString().slice(0, 10);
   const start = new Date(`${beijingDate}T00:00:00+08:00`);
   const end = new Date(start.getTime() + DAY_MS);
-  return { start, end };
+  return { start, end, beijingDate };
+}
+
+function getStableDailyRank(pick: TodayPick, beijingDate: string) {
+  const seed = `${beijingDate}:${pick.kind}:${pick.id}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash;
 }
 
 function getArticleCategoryThreshold(category: string) {
@@ -40,7 +50,7 @@ function getArticleCategoryThreshold(category: string) {
 }
 
 async function getTodayPicks(): Promise<TodayPick[]> {
-  const { start, end } = getBeijingTodayRange();
+  const { start, end, beijingDate } = getBeijingTodayRange();
 
   try {
     const articlePromises = todayArticleCategories.map(async (category) => {
@@ -61,6 +71,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
           title: articles.title,
           href: articles.originalUrl,
           imageUrl: articles.imageUrl,
+          score: articles.relevanceScore,
         })
         .from(articles)
         .where(and(...conditions))
@@ -73,6 +84,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         title: item.title,
         href: item.href,
         imageUrl: item.imageUrl || getArticleDefaultCover(category, `${item.id}-${item.title}`),
+        score: item.score,
         kind: 'article' as const,
       }) : null;
     });
@@ -85,6 +97,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         category: careerContents.category,
         coverImage: careerContents.coverImage,
         originalId: careerContents.originalId,
+        score: sql<number>`${careerContents.qualityScore} * 0.5 + ${careerContents.matchScore} * 0.5`,
       })
       .from(careerContents)
       .where(and(
@@ -112,6 +125,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
             item.category,
             item.originalId || item.href || item.title || String(item.id)
           ),
+          score: item.score,
           kind: 'career' as const,
         }) : null;
       });
@@ -124,7 +138,15 @@ async function getTodayPicks(): Promise<TodayPick[]> {
     const picks: Array<TodayPick | null> = [...articlePicks, careerPick];
     return picks.filter(
       (item): item is TodayPick => item !== null
-    );
+    ).sort((a, b) => {
+      const scoreDiff = b.score - a.score;
+      if (scoreDiff !== 0) return scoreDiff;
+
+      const rankDiff = getStableDailyRank(a, beijingDate) - getStableDailyRank(b, beijingDate);
+      if (rankDiff !== 0) return rankDiff;
+
+      return b.id - a.id;
+    });
   } catch (error) {
     console.error('Failed to load today picks:', error);
     return [];
@@ -196,8 +218,8 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
-            <div className="rounded-2xl border bg-card/55 p-5 shadow-sm backdrop-blur-sm sm:p-6">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
+            <div className="rounded-2xl border bg-card/55 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:h-full">
               <div>
                 <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
@@ -212,8 +234,8 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
-                  {Object.entries(categoryLabels).map(([key, { name, description }]) => {
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                  {Object.entries(categoryLabels).map(([key, { name }]) => {
                     const config = categoryConfig[key] || {
                       icon: Newspaper,
                       color: 'text-gray-600',
@@ -229,16 +251,13 @@ export default async function HomePage() {
                         className="group relative overflow-hidden"
                       >
                         <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                        <div className="relative rounded-2xl border bg-background/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md">
-                          <div className="mb-2 flex items-center gap-3">
-                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.iconBg} transition-transform duration-300 group-hover:scale-105`}>
-                              <Icon className={`h-5 w-5 ${config.color}`} />
-                            </div>
-                            <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
-                              {name}
-                            </h3>
+                        <div className="relative flex min-h-[124px] flex-col items-center justify-center rounded-2xl border bg-background/70 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md sm:min-h-[136px] sm:p-5">
+                          <div className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${config.iconBg} transition-transform duration-300 group-hover:scale-110 mb-3`}>
+                            <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${config.color}`} />
                           </div>
-                          <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
+                          <h3 className="font-bold text-sm sm:text-base group-hover:text-primary transition-colors">
+                            {name}
+                          </h3>
                         </div>
                       </Link>
                     );
@@ -262,7 +281,7 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                   {resourceCategories.map((cat) => (
                     <Link
                       key={cat.id}
@@ -270,16 +289,13 @@ export default async function HomePage() {
                       className="group relative overflow-hidden"
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                      <div className="relative rounded-2xl border bg-background/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-blue-200 hover:shadow-md">
-                        <div className="mb-2 flex items-center gap-3">
-                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-105`}>
-                            <cat.icon className={`h-5 w-5 ${cat.color}`} />
-                          </div>
-                          <h3 className="font-bold text-base sm:text-lg group-hover:text-blue-600 transition-colors">
-                            {cat.name}
-                          </h3>
+                      <div className="relative flex min-h-[124px] flex-col items-center justify-center rounded-2xl border bg-background/70 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:border-blue-200 hover:shadow-md sm:min-h-[136px] sm:p-5">
+                        <div className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-110 mb-3`}>
+                          <cat.icon className={`h-6 w-6 sm:h-7 sm:w-7 ${cat.color}`} />
                         </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{cat.description}</p>
+                        <h3 className="font-bold text-sm sm:text-base group-hover:text-blue-600 transition-colors">
+                          {cat.name}
+                        </h3>
                       </div>
                     </Link>
                   ))}
@@ -287,14 +303,14 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <aside className="lg:self-start">
-              <div className="rounded-2xl border bg-card/80 p-5 sm:p-6 shadow-sm backdrop-blur-sm">
+            <aside className="lg:h-full">
+              <div className="flex h-full flex-col rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
                 <div className="mb-4 flex items-center gap-2">
                   <h2 className="text-xl font-bold">每日精选</h2>
                 </div>
 
                 {todayPicks.length > 0 ? (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-1 flex-col gap-3 lg:justify-between">
                     {todayPicks.map((item, index) => {
                       const isFeatured = index === 0;
                       return (
