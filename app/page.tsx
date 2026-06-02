@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid } from 'lucide-react';
-import { and, desc, eq, gte, lt, notLike, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, notLike, sql, inArray } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
 import { getArticleDefaultCover, getCareerDefaultCover } from '@/config/default-covers';
@@ -10,6 +10,7 @@ import { articles, careerContents } from '@/lib/db/schema';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
 import { PM_THRESHOLD } from '@/lib/rss/pm-relevance';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
+import { ArticleCarousel } from '@/components/ui/article-carousel';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -181,8 +182,58 @@ const categoryConfig: Record<string, { icon: React.ElementType; color: string; g
   },
 };
 
+async function getLatestArticlesForCarousel(limit: number = 5) {
+  const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
+  
+  const results = await db
+    .select({
+      id: articles.id,
+      title: articles.title,
+      slug: articles.slug,
+      category: articles.category,
+      imageUrl: articles.imageUrl,
+    })
+    .from(articles)
+    .where(inArray(articles.category, articleCategories))
+    .orderBy(desc(articles.publishedAt))
+    .limit(limit);
+
+  return results.map((item) => ({
+    id: item.id,
+    title: item.title,
+    href: item.slug ? `/articles/${item.slug}` : `/articles/${item.id}`,
+    imageUrl: item.imageUrl || getArticleDefaultCover(item.category, `${item.id}-${item.title}`),
+    category: item.category,
+  }));
+}
+
+async function getLatestCareerForCarousel(limit: number = 5) {
+  const results = await db
+    .select({
+      id: careerContents.id,
+      title: careerContents.title,
+      category: careerContents.category,
+      coverImage: careerContents.coverImage,
+    })
+    .from(careerContents)
+    .orderBy(desc(careerContents.createdAt))
+    .limit(limit);
+
+  return results.map((item) => ({
+    id: item.id,
+    title: item.title,
+    href: `/career/${item.id}`,
+    imageUrl: item.coverImage || getArticleDefaultCover('product-management', `${item.id}-${item.title}`),
+    category: item.category,
+  }));
+}
+
 export default async function HomePage() {
-  const todayPicks = await getTodayPicks();
+  const [todayPicks, latestArticles, latestCareer] = await Promise.all([
+    getTodayPicks(),
+    getLatestArticlesForCarousel(5),
+    getLatestCareerForCarousel(5),
+  ]);
 
   return (
     <div className="min-h-screen">
@@ -219,8 +270,8 @@ export default async function HomePage() {
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
-            <div className="rounded-2xl border bg-card/55 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:h-full">
-              <div>
+            <div className="flex flex-col gap-6 lg:h-full">
+              <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
                     <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-primary transition-colors">专业资讯</h2>
@@ -234,7 +285,9 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <ArticleCarousel items={latestArticles} autoplayDelay={3500} />
+
+                <div className="grid grid-cols-4 gap-3 sm:gap-4">
                   {Object.entries(categoryLabels).map(([key, { name }]) => {
                     const config = categoryConfig[key] || {
                       icon: Newspaper,
@@ -250,12 +303,12 @@ export default async function HomePage() {
                         href={`/articles?${new URLSearchParams({ category: key }).toString()}`}
                         className="group relative overflow-hidden"
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                        <div className="relative flex min-h-[124px] flex-col items-center justify-center rounded-2xl border bg-background/70 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md sm:min-h-[136px] sm:p-5">
-                          <div className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${config.iconBg} transition-transform duration-300 group-hover:scale-110 mb-3`}>
-                            <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${config.color}`} />
+                        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[28px]`} />
+                        <div className="relative flex min-h-[132px] flex-col items-center justify-center rounded-[28px] p-4 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[152px] sm:p-5">
+                          <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${config.iconBg} transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16`}>
+                            <Icon className={`h-7 w-7 sm:h-8 sm:w-8 ${config.color}`} />
                           </div>
-                          <h3 className="font-bold text-sm sm:text-base group-hover:text-primary transition-colors">
+                          <h3 className="text-lg font-normal leading-tight tracking-normal sm:text-xl group-hover:text-primary transition-colors">
                             {name}
                           </h3>
                         </div>
@@ -265,9 +318,7 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="my-7 border-t border-border/70 sm:my-8" />
-
-              <div>
+              <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <a href="/career" className="block group cursor-pointer">
                     <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors">职业发展</h2>
@@ -281,19 +332,19 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <div className="grid grid-cols-4 gap-3 sm:gap-4">
                   {resourceCategories.map((cat) => (
                     <Link
                       key={cat.id}
                       href={`/career?category=${cat.id}`}
                       className="group relative overflow-hidden"
                     >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                      <div className="relative flex min-h-[124px] flex-col items-center justify-center rounded-2xl border bg-background/70 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:border-blue-200 hover:shadow-md sm:min-h-[136px] sm:p-5">
-                        <div className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-110 mb-3`}>
-                          <cat.icon className={`h-6 w-6 sm:h-7 sm:w-7 ${cat.color}`} />
+                      <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[28px]`} />
+                      <div className="relative flex min-h-[132px] flex-col items-center justify-center rounded-[28px] p-4 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[152px] sm:p-5">
+                        <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16`}>
+                          <cat.icon className={`h-7 w-7 sm:h-8 sm:w-8 ${cat.color}`} />
                         </div>
-                        <h3 className="font-bold text-sm sm:text-base group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-lg font-normal leading-tight tracking-normal sm:text-xl group-hover:text-blue-600 transition-colors">
                           {cat.name}
                         </h3>
                       </div>
@@ -304,9 +355,9 @@ export default async function HomePage() {
             </div>
 
             <aside className="lg:h-full">
-              <div className="flex h-full flex-col rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
-                <div className="mb-4 flex items-center gap-2">
-                  <h2 className="text-xl font-bold">每日精选</h2>
+              <div className="flex h-full flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
+                <div className="mb-5 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold sm:text-3xl">每日精选</h2>
                 </div>
 
                 {todayPicks.length > 0 ? (
@@ -321,8 +372,8 @@ export default async function HomePage() {
                           rel="noopener noreferrer"
                           className={
                             isFeatured
-                              ? 'group block overflow-hidden rounded-2xl border bg-background/80 transition-colors hover:border-primary/30 hover:bg-primary/5'
-                              : 'group flex min-h-[78px] items-center gap-3 rounded-xl border bg-background/70 p-3 text-sm font-medium leading-6 text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary'
+                              ? 'group block overflow-hidden rounded-[28px] bg-background/65 transition-colors hover:bg-primary/5'
+                              : 'group flex min-h-[86px] items-center gap-4 rounded-2xl p-2.5 text-sm font-normal leading-6 text-foreground transition-colors hover:bg-primary/5 hover:text-primary sm:text-base sm:leading-7'
                           }
                         >
                           {isFeatured ? (
@@ -336,22 +387,22 @@ export default async function HomePage() {
                                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                                   referrerPolicy="no-referrer"
                                 />
-                                <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-sm font-bold text-primary shadow-sm">
+                                <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-base font-bold text-primary shadow-sm">
                                   {index + 1}
                                 </span>
                               </div>
-                              <div className="p-4">
-                                <span className="line-clamp-2 text-base font-bold leading-6 text-foreground group-hover:text-primary">
+                              <div className="p-4 sm:p-5">
+                                <span className="line-clamp-2 text-base font-normal leading-6 text-foreground group-hover:text-primary sm:text-lg sm:leading-7">
                                   {item.title}
                                 </span>
                               </div>
                             </>
                           ) : (
                             <>
-                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                                 {index + 1}
                               </span>
-                              <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
+                              <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
                                 <Image
                                   src={item.imageUrl}
                                   alt={item.title}
@@ -369,7 +420,7 @@ export default async function HomePage() {
                     })}
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-dashed bg-background/60 px-4 py-10 text-center text-sm text-muted-foreground">
+                  <div className="rounded-2xl bg-background/50 px-4 py-10 text-center text-base text-muted-foreground">
                     今日暂无精选
                   </div>
                 )}
