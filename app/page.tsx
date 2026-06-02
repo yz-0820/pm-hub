@@ -323,7 +323,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-3 lg:py-4">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-5 lg:py-4">
         {/* 装饰性背景元素 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
@@ -357,9 +357,9 @@ export default async function HomePage() {
                   <Link href="/articles" className="block group cursor-pointer">
                     <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
                       <Newspaper className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                      <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">专业资讯</h2>
+                      <h2 className="text-[22px] sm:text-2xl font-bold group-hover:text-primary transition-colors">专业资讯</h2>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground">探索你感兴趣领域的最新内容</p>
+                    <p className="text-sm text-muted-foreground">探索你感兴趣领域的最新内容</p>
                   </Link>
                   <Link
                     href="/articles"
@@ -407,9 +407,9 @@ export default async function HomePage() {
                   <a href="/career" className="block group cursor-pointer">
                     <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
                       <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                      <h2 className="text-xl sm:text-2xl font-bold group-hover:text-blue-600 transition-colors">职业发展</h2>
+                      <h2 className="text-[22px] sm:text-2xl font-bold group-hover:text-blue-600 transition-colors">职业发展</h2>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground">系统整合职场发展内容，助力你的职业成长</p>
+                    <p className="text-sm text-muted-foreground">系统整合职场发展内容，助力你的职业成长</p>
                   </a>
                   <Link
                     href="/career"
@@ -447,7 +447,7 @@ export default async function HomePage() {
               <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
                 <div className="mb-5 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold sm:text-2xl">每日精选</h2>
+                  <h2 className="text-[22px] font-bold sm:text-2xl">每日精选</h2>
                 </div>
 
                 {todayPicks.length > 0 ? (
@@ -498,7 +498,7 @@ export default async function HomePage() {
             <Link href="/training" className="block group cursor-pointer mb-6">
               <div className="flex items-center gap-2 mb-1 sm:mb-2">
                 <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">题库训练</h2>
+                <h2 className="text-[22px] sm:text-2xl font-bold group-hover:text-primary transition-colors">题库训练</h2>
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">用结构化题库与 AI 评分报告提升产品拆解能力</p>
             </Link>
@@ -538,7 +538,7 @@ export default async function HomePage() {
             <Link href="/tools" className="block group cursor-pointer mb-6">
               <div className="flex items-center gap-2 mb-1 sm:mb-2">
                 <Wrench className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">实用工具</h2>
+                <h2 className="text-[22px] sm:text-2xl font-bold group-hover:text-primary transition-colors">实用工具</h2>
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">把常见产品工作流沉淀成可直接使用的工具</p>
             </Link>
