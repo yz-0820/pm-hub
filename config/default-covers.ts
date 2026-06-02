@@ -17,6 +17,12 @@ export const articleDefaultCovers: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1552581234-26160f608093?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&h=400&fit=crop',
   ],
   'tech': [
     'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
@@ -29,6 +35,12 @@ export const articleDefaultCovers: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?w=800&h=400&fit=crop',
   ],
   'ai': [
     'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
@@ -36,11 +48,15 @@ export const articleDefaultCovers: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1516110833967-0b5716ca1387?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1516192518150-0d8fee5425e3?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&h=400&fit=crop',
   ],
   'finance': [
     'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
@@ -49,10 +65,16 @@ export const articleDefaultCovers: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1560472355-536de3962603?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1560472355-536de3962603?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1554224154-22dec7ec8818?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1559526324-593bc073d938?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1565372913169-9b090bb9d4d6?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=800&h=400&fit=crop',
   ],
 };
 
@@ -124,6 +146,7 @@ export const careerDefaultCovers: Record<string, string[]> = {
 export const allDefaultCoverValues = new Set([
   ...Object.values(articleDefaultCovers).flat(),
   ...Object.values(careerDefaultCovers).flat(),
+  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
 ]);
 
 /**
@@ -138,11 +161,15 @@ function stableImageIndex(seed: string, size: number): number {
   return hash % size;
 }
 
+function uniqueCovers(covers: string[]): string[] {
+  return Array.from(new Set(covers));
+}
+
 /**
  * 获取文章分类的默认封面
  */
 export function getArticleDefaultCover(category: string, seed = ''): string {
-  const covers = articleDefaultCovers[category] || articleDefaultCovers['product-management'];
+  const covers = uniqueCovers(articleDefaultCovers[category] || articleDefaultCovers['product-management']);
   return covers[stableImageIndex(seed || category, covers.length)] || covers[0];
 }
 
@@ -150,7 +177,7 @@ export function getArticleDefaultCover(category: string, seed = ''): string {
  * 获取职业分类的默认封面
  */
 export function getCareerDefaultCover(category: string, seed = ''): string {
-  const covers = careerDefaultCovers[category] || careerDefaultCovers.all;
+  const covers = uniqueCovers(careerDefaultCovers[category] || careerDefaultCovers.all);
   return covers[stableImageIndex(seed || category, covers.length)] || careerDefaultCovers.all[0];
 }
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { CareerContent } from '@/lib/db/schema';
-import { isDefaultCoverImage, platformLabels } from '@/config/content-sources';
-import { getCareerDefaultCover } from '@/config/default-covers';
+import { platformLabels } from '@/config/content-sources';
+import { getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
 import { 
   FileText, 
   Video, 

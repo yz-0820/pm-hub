@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles } from 'lucide-react';
+import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles, Briefcase, BookOpen, Wrench } from 'lucide-react';
 import { and, desc, eq, gte, lt, notLike, sql, inArray } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
-import { getArticleDefaultCover, getCareerDefaultCover } from '@/config/default-covers';
+import { getArticleDefaultCover, getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
 import { db } from '@/lib/db/client';
 import { articles, careerContents } from '@/lib/db/schema';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
@@ -35,8 +35,7 @@ function getBeijingTodayRange(now = new Date()) {
   return { start, end, beijingDate };
 }
 
-function getStableDailyRank(pick: TodayPick, beijingDate: string) {
-  const seed = `${beijingDate}:${pick.kind}:${pick.id}`;
+function getStableHash(seed: string) {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) {
     hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
@@ -44,11 +43,32 @@ function getStableDailyRank(pick: TodayPick, beijingDate: string) {
   return hash;
 }
 
+function getStableDailyRank(pick: TodayPick, beijingDate: string) {
+  return getStableHash(`${beijingDate}:${pick.kind}:${pick.id}`);
+}
+
+function getStableIndex(seed: string, size: number) {
+  if (size <= 1) return 0;
+  return getStableHash(seed) % size;
+}
+
 function getArticleCategoryThreshold(category: string) {
   if (category === 'product-management') return PM_THRESHOLD;
   if (category === 'tech') return TECH_THRESHOLD;
   if (category === 'finance') return FINANCE_THRESHOLD;
   return null;
+}
+
+function resolveArticleCover(category: string, seed: string, imageUrl?: string | null) {
+  return imageUrl && !isDefaultCoverImage(imageUrl)
+    ? imageUrl
+    : getArticleDefaultCover(category, seed);
+}
+
+function resolveCareerCover(category: string, seed: string, imageUrl?: string | null) {
+  return imageUrl && !isDefaultCoverImage(imageUrl)
+    ? imageUrl
+    : getCareerDefaultCover(category, seed);
 }
 
 async function getTodayPicks(): Promise<TodayPick[]> {
@@ -85,12 +105,13 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         id: item.id,
         title: item.title,
         href: item.href,
-        imageUrl: item.imageUrl || getArticleDefaultCover(category, `${item.id}-${item.title}`),
+        imageUrl: resolveArticleCover(category, `${item.id}-${item.title}`, item.imageUrl),
         score: item.score,
         kind: 'article' as const,
       }) : null;
     });
 
+    const careerScore = sql<number>`${careerContents.qualityScore} * 0.5 + ${careerContents.matchScore} * 0.5`;
     const careerPromise = db
       .select({
         id: careerContents.id,
@@ -99,33 +120,32 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         category: careerContents.category,
         coverImage: careerContents.coverImage,
         originalId: careerContents.originalId,
-        score: sql<number>`${careerContents.qualityScore} * 0.5 + ${careerContents.matchScore} * 0.5`,
+        score: careerScore,
       })
       .from(careerContents)
       .where(and(
         eq(careerContents.status, 'active'),
-        gte(careerContents.publishedAt, start),
-        lt(careerContents.publishedAt, end),
+        gte(careerScore, 80),
         notLike(careerContents.originalUrl, '%example.com/%'),
         notLike(careerContents.originalUrl, '%rsshub.app/%'),
         notLike(careerContents.originalUrl, '%localhost%'),
         notLike(careerContents.originalUrl, '%127.0.0.1%')
       ))
       .orderBy(
-        desc(sql`${careerContents.qualityScore} * 0.5 + ${careerContents.matchScore} * 0.5`),
+        desc(careerScore),
         desc(careerContents.publishedAt),
         desc(careerContents.id)
       )
-      .limit(1)
       .then((rows) => {
-        const item = rows[0];
+        const item = rows[getStableIndex(`${beijingDate}:career`, rows.length)];
         return item ? ({
           id: item.id,
           title: item.title,
           href: item.href,
-          imageUrl: item.coverImage || getCareerDefaultCover(
+          imageUrl: resolveCareerCover(
             item.category,
-            item.originalId || item.href || item.title || String(item.id)
+            item.originalId || item.href || item.title || String(item.id),
+            item.coverImage
           ),
           score: item.score,
           kind: 'career' as const,
@@ -203,7 +223,7 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
     id: item.id,
     title: item.title,
     href: item.originalUrl, // 使用外部链接
-    imageUrl: item.imageUrl || getArticleDefaultCover(item.category, `${item.id}-${item.title}`),
+    imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
     category: item.category,
   }));
 }
@@ -227,7 +247,7 @@ async function getLatestCareerForCarousel(limit: number = 5) {
     id: item.id,
     title: item.title,
     href: item.originalUrl, // 使用外部链接
-    imageUrl: item.coverImage || getArticleDefaultCover('product-management', `${item.id}-${item.title}`),
+    imageUrl: resolveCareerCover(item.category, `${item.id}-${item.title}`, item.coverImage),
   }));
 }
 
@@ -303,7 +323,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-5 lg:py-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-3 lg:py-4">
         {/* 装饰性背景元素 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
@@ -325,18 +345,21 @@ export default async function HomePage() {
       </section>
 
       {/* Content & Picks Section */}
-      <section className="py-12 sm:py-20 relative overflow-hidden">
+      <section className="py-6 sm:py-10 relative overflow-hidden">
         {/* 背景装饰 */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
             <div className="flex flex-col gap-6">
-              <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
-                <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
+              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5">
+                <div className="flex items-start justify-between gap-4 mb-3 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-primary transition-colors">专业资讯</h2>
-                    <p className="text-sm sm:text-base text-muted-foreground">探索你感兴趣领域的最新内容</p>
+                    <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                      <Newspaper className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                      <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">专业资讯</h2>
+                    </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">探索你感兴趣领域的最新内容</p>
                   </Link>
                   <Link
                     href="/articles"
@@ -365,11 +388,11 @@ export default async function HomePage() {
                         className="group relative overflow-hidden"
                       >
                         <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[28px]`} />
-                        <div className="relative flex min-h-[132px] flex-col items-center justify-center rounded-[28px] p-4 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[152px] sm:p-5">
-                          <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${config.iconBg} transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16`}>
-                            <Icon className={`h-7 w-7 sm:h-8 sm:w-8 ${config.color}`} />
+                        <div className="relative flex min-h-[88px] flex-col items-center justify-center rounded-[28px] p-2 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[96px] sm:p-3">
+                          <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-2xl ${config.iconBg} transition-transform duration-300 group-hover:scale-110`}>
+                            <Icon className={`h-5 w-5 ${config.color}`} />
                           </div>
-                          <h3 className="text-lg font-normal leading-tight tracking-normal sm:text-xl group-hover:text-primary transition-colors">
+                          <h3 className="text-base font-normal leading-tight tracking-normal sm:text-lg group-hover:text-primary transition-colors">
                             {name}
                           </h3>
                         </div>
@@ -379,11 +402,14 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
-                <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
+              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5">
+                <div className="flex items-start justify-between gap-4 mb-3 relative z-10">
                   <a href="/career" className="block group cursor-pointer">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors">职业发展</h2>
-                    <p className="text-sm sm:text-base text-muted-foreground">系统整合职场发展内容，助力你的职业成长</p>
+                    <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                      <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                      <h2 className="text-xl sm:text-2xl font-bold group-hover:text-blue-600 transition-colors">职业发展</h2>
+                    </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">系统整合职场发展内容，助力你的职业成长</p>
                   </a>
                   <Link
                     href="/career"
@@ -403,11 +429,11 @@ export default async function HomePage() {
                       className="group relative overflow-hidden"
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[28px]`} />
-                      <div className="relative flex min-h-[132px] flex-col items-center justify-center rounded-[28px] p-4 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[152px] sm:p-5">
-                        <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16`}>
-                          <cat.icon className={`h-7 w-7 sm:h-8 sm:w-8 ${cat.color}`} />
+                      <div className="relative flex min-h-[88px] flex-col items-center justify-center rounded-[28px] p-2 text-center transition-all duration-300 group-hover:-translate-y-0.5 sm:min-h-[96px] sm:p-3">
+                        <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-2xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-110`}>
+                          <cat.icon className={`h-5 w-5 ${cat.color}`} />
                         </div>
-                        <h3 className="text-lg font-normal leading-tight tracking-normal sm:text-xl group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-base font-normal leading-tight tracking-normal sm:text-lg group-hover:text-blue-600 transition-colors">
                           {cat.name}
                         </h3>
                       </div>
@@ -467,77 +493,83 @@ export default async function HomePage() {
       {/* Training & Tools Section */}
       <section className="py-12 sm:py-20 relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-muted/20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-8">
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 relative z-10 gap-4">
-                <Link href="/training" className="block group cursor-pointer">
-                  <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-primary transition-colors">题库训练</h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">用结构化题库与 AI 评分报告提升产品拆解能力</p>
-                </Link>
+          {/* 题库训练模块 */}
+          <div className="mb-10">
+            <Link href="/training" className="block group cursor-pointer mb-6">
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">题库训练</h2>
               </div>
+              <p className="text-sm sm:text-base text-muted-foreground">用结构化题库与 AI 评分报告提升产品拆解能力</p>
+            </Link>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-5">
-                <Link href="/training/product-thinking" className="group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                  <div className="relative p-4 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 h-full flex flex-col">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                    </div>
-                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors">产品思维训练</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground flex-1">
-                      多行业产品案例拆解题，练习用户价值、商业逻辑与功能设计。
-                    </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <Link href="/training/product-thinking" className="group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 h-full flex flex-col">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
-                </Link>
-                <Link href="/training/programming" className="group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                  <div className="relative p-4 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 h-full flex flex-col">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <Code2 className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                    </div>
-                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-emerald-600 transition-colors">编程知识训练</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground flex-1">
-                      前端、后端、数据库三大领域选择题库，即时反馈与解析，巩固技术基础。
-                    </p>
+                  <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-primary transition-colors">产品思维训练</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">
+                    多行业产品案例拆解题，练习用户价值、商业逻辑与功能设计。
+                  </p>
+                  <span className="text-sm font-medium text-primary group-hover:underline">开始训练 →</span>
+                </div>
+              </Link>
+              <Link href="/training/programming" className="group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 h-full flex flex-col">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Code2 className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
                   </div>
-                </Link>
-              </div>
+                  <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-emerald-600 transition-colors">编程知识训练</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">
+                    前端、后端、数据库三大领域选择题库，即时反馈与解析，巩固技术基础。
+                  </p>
+                  <span className="text-sm font-medium text-emerald-600 group-hover:underline">开始训练 →</span>
+                </div>
+              </Link>
             </div>
+          </div>
 
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 relative z-10 gap-4">
-                <Link href="/tools" className="block group cursor-pointer">
-                  <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-primary transition-colors">实用工具</h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">把常见产品工作流沉淀成可直接使用的工具</p>
-                </Link>
+          {/* 实用工具模块 */}
+          <div>
+            <Link href="/tools" className="block group cursor-pointer mb-6">
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                <Wrench className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-bold group-hover:text-primary transition-colors">实用工具</h2>
               </div>
+              <p className="text-sm sm:text-base text-muted-foreground">把常见产品工作流沉淀成可直接使用的工具</p>
+            </Link>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-5">
-                <Link href="/tools/prd" className="group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                  <div className="relative p-4 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-sky-200 transition-all duration-300 h-full flex flex-col">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-sky-500/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-sky-600" />
-                    </div>
-                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-sky-600 transition-colors">PRD 生成</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground flex-1">
-                      输入需求背景与功能点，AI 自动生成结构化产品需求文档。
-                    </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <Link href="/tools/prd" className="group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-sky-200 transition-all duration-300 h-full flex flex-col">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-sky-600" />
                   </div>
-                </Link>
-                <Link href="/tools/prototype" className="group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                  <div className="relative p-4 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-violet-200 transition-all duration-300 h-full flex flex-col">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-violet-600" />
-                    </div>
-                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-violet-600 transition-colors">原型生成</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground flex-1">
-                      上传界面截图并描述修改需求，AI 生成编辑后的原型图。
-                    </p>
+                  <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-sky-600 transition-colors">PRD 生成</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">
+                    输入需求背景与功能点，AI 自动生成结构化产品需求文档。
+                  </p>
+                  <span className="text-sm font-medium text-sky-600 group-hover:underline">打开工具 →</span>
+                </div>
+              </Link>
+              <Link href="/tools/prototype" className="group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-violet-200 transition-all duration-300 h-full flex flex-col">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-violet-600" />
                   </div>
-                </Link>
-              </div>
+                  <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-violet-600 transition-colors">原型生成</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">
+                    上传界面截图并描述修改需求，AI 生成编辑后的原型图。
+                  </p>
+                  <span className="text-sm font-medium text-violet-600 group-hover:underline">打开工具 →</span>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

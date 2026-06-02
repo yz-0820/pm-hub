@@ -7,7 +7,7 @@ import { categoryLabels } from '@/config/rss';
 import { ImageIcon } from 'lucide-react';
 import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
-import { getArticleDefaultCover } from '@/config/default-covers';
+import { getArticleDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
 
 interface ArticleCardProps {
   article: Article;
@@ -16,9 +16,10 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   const categoryLabel = categoryLabels[article.category]?.name || article.category;
-  const proxiedImageUrl = getProxiedImageUrl(article.imageUrl);
   // 没有图片时使用分类相关的默认配图
   const fallbackCover = getArticleDefaultCover(article.category, article.id?.toString() || article.title);
+  const sourceImageUrl = article.imageUrl && !isDefaultCoverImage(article.imageUrl) ? article.imageUrl : null;
+  const proxiedImageUrl = getProxiedImageUrl(sourceImageUrl);
   const displayImageUrl = proxiedImageUrl || fallbackCover;
   const sourceName = simplifyArticleSourceName(article.sourceName);
 
