@@ -196,13 +196,19 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
-            <div className="space-y-10 sm:space-y-12">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
+            <div className="rounded-2xl border bg-card/55 p-5 shadow-sm backdrop-blur-sm sm:p-6">
               <div>
-                <div className="flex items-center justify-between mb-5 sm:mb-6 relative z-10">
+                <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
                     <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-primary transition-colors">专业资讯</h2>
                     <p className="text-sm sm:text-base text-muted-foreground">探索你感兴趣领域的最新内容</p>
+                  </Link>
+                  <Link
+                    href="/articles"
+                    className="shrink-0 pt-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    查看全部
                   </Link>
                 </div>
 
@@ -223,14 +229,16 @@ export default async function HomePage() {
                         className="group relative overflow-hidden"
                       >
                         <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                        <div className="relative p-4 sm:p-5 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 h-full flex flex-col">
-                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${config.iconBg} flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                            <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${config.color}`} />
+                        <div className="relative rounded-2xl border bg-background/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md">
+                          <div className="mb-2 flex items-center gap-3">
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.iconBg} transition-transform duration-300 group-hover:scale-105`}>
+                              <Icon className={`h-5 w-5 ${config.color}`} />
+                            </div>
+                            <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
+                              {name}
+                            </h3>
                           </div>
-                          <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-primary transition-colors">
-                            {name}
-                          </h3>
-                          <p className="text-xs sm:text-sm text-muted-foreground flex-1">{description}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
                         </div>
                       </Link>
                     );
@@ -238,12 +246,20 @@ export default async function HomePage() {
                 </div>
               </div>
 
+              <div className="my-7 border-t border-border/70 sm:my-8" />
+
               <div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 sm:mb-6 relative z-10 gap-4 sm:gap-0">
+                <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
                   <a href="/career" className="block group cursor-pointer">
                     <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors">职业发展</h2>
                     <p className="text-sm sm:text-base text-muted-foreground">系统整合职场发展内容，助力你的职业成长</p>
                   </a>
+                  <Link
+                    href="/career"
+                    className="shrink-0 pt-1 text-sm font-medium text-muted-foreground transition-colors hover:text-blue-600"
+                  >
+                    查看全部
+                  </Link>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
@@ -254,14 +270,16 @@ export default async function HomePage() {
                       className="group relative overflow-hidden"
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                      <div className="relative p-4 sm:p-5 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 h-full flex flex-col">
-                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${cat.iconBg} flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                          <cat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${cat.color}`} />
+                      <div className="relative rounded-2xl border bg-background/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-blue-200 hover:shadow-md">
+                        <div className="mb-2 flex items-center gap-3">
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cat.iconBg} transition-transform duration-300 group-hover:scale-105`}>
+                            <cat.icon className={`h-5 w-5 ${cat.color}`} />
+                          </div>
+                          <h3 className="font-bold text-base sm:text-lg group-hover:text-blue-600 transition-colors">
+                            {cat.name}
+                          </h3>
                         </div>
-                        <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 group-hover:text-blue-600 transition-colors">
-                          {cat.name}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground flex-1">{cat.description}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{cat.description}</p>
                       </div>
                     </Link>
                   ))}
@@ -277,30 +295,62 @@ export default async function HomePage() {
 
                 {todayPicks.length > 0 ? (
                   <div className="flex flex-col gap-3">
-                    {todayPicks.map((item, index) => (
-                      <a
-                        key={`${item.kind}-${item.id}`}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex min-h-[88px] items-center gap-3 rounded-xl border bg-background/70 p-3 text-sm font-medium leading-6 text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
-                      >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                          {index + 1}
-                        </span>
-                        <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          <Image
-                            src={item.imageUrl}
-                            alt={item.title}
-                            fill
-                            sizes="80px"
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                        <span className="line-clamp-2 min-w-0 flex-1">{item.title}</span>
-                      </a>
-                    ))}
+                    {todayPicks.map((item, index) => {
+                      const isFeatured = index === 0;
+                      return (
+                        <a
+                          key={`${item.kind}-${item.id}`}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={
+                            isFeatured
+                              ? 'group block overflow-hidden rounded-2xl border bg-background/80 transition-colors hover:border-primary/30 hover:bg-primary/5'
+                              : 'group flex min-h-[78px] items-center gap-3 rounded-xl border bg-background/70 p-3 text-sm font-medium leading-6 text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary'
+                          }
+                        >
+                          {isFeatured ? (
+                            <>
+                              <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                                <Image
+                                  src={item.imageUrl}
+                                  alt={item.title}
+                                  fill
+                                  sizes="(min-width: 1280px) 448px, (min-width: 1024px) 384px, 100vw"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                  referrerPolicy="no-referrer"
+                                />
+                                <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-sm font-bold text-primary shadow-sm">
+                                  {index + 1}
+                                </span>
+                              </div>
+                              <div className="p-4">
+                                <span className="line-clamp-2 text-base font-bold leading-6 text-foreground group-hover:text-primary">
+                                  {item.title}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                                {index + 1}
+                              </span>
+                              <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
+                                <Image
+                                  src={item.imageUrl}
+                                  alt={item.title}
+                                  fill
+                                  sizes="80px"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                              <span className="line-clamp-2 min-w-0 flex-1">{item.title}</span>
+                            </>
+                          )}
+                        </a>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="rounded-xl border border-dashed bg-background/60 px-4 py-10 text-center text-sm text-muted-foreground">
