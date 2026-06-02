@@ -251,11 +251,11 @@ export default async function HomePage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4">
               属于PM的
               <span className="text-primary">专业学习平台</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
+            <p className="text-sm md:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
               汇聚专业资讯、职业发展、题库训练、PRD生成等多种功能，助力产品人持续成长
             </p>
           </div>
