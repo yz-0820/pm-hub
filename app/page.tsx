@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid } from 'lucide-react';
+import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles } from 'lucide-react';
 import { and, desc, eq, gte, lt, notLike, sql, inArray } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
@@ -232,12 +232,21 @@ async function getLatestCareerForCarousel(limit: number = 5) {
 }
 
 async function getHotEvents(limit: number = 5) {
-  // 从最近14天的文章中筛选包含热点关键词的文章
+  // 严格只保留知名公司新闻 - 扩大查询范围到30天确保有足够结果
   const keywords = ['发布会', '大会', '峰会', '论坛', '财报', '营收', '季报', '年报',
     '上线', '发布', '推出', '开测', '公测', '融资', '收购', '并购', 
     'IPO', '上市', '监管', '政策', '法规', '禁令', '批准'];
   
-  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  // 知名公司/品牌列表
+  const companies = ['苹果', 'Apple', '谷歌', 'Google', '微软', 'Microsoft', '亚马逊', 'Amazon',
+    'Meta', 'Facebook', '特斯拉', 'Tesla', '英伟达', 'NVIDIA', 'AMD', '英特尔', 'Intel',
+    'OpenAI', 'ChatGPT', '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
+    '百度', '美团', '滴滴', '小米', '华为', 'OPPO', 'vivo', '京东', '拼多多', '网易',
+    '快手', 'B站', '哔哩哔哩', '知乎', '小红书', '微博', '携程', '饿了么',
+    'Salesforce', 'Oracle', 'IBM', 'SAP', 'Adobe', 'Zoom', 'Slack', 'Shopify',
+    'Netflix', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square'];
+  
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
   
   const results = await db
@@ -250,24 +259,28 @@ async function getHotEvents(limit: number = 5) {
     .from(articles)
     .where(
       and(
-        gte(articles.publishedAt, fourteenDaysAgo),
+        gte(articles.publishedAt, thirtyDaysAgo),
         inArray(articles.category, articleCategories),
       )
     )
     .orderBy(desc(articles.publishedAt))
-    .limit(50);
+    .limit(200);
 
   // 关键词过滤
   const filtered = results.filter(item => 
     keywords.some(kw => item.title.includes(kw))
   );
 
-  // 去重（相似标题）
+  // 严格知名公司过滤 - 只保留包含知名公司的文章
+  const companyFiltered = filtered.filter(item =>
+    companies.some(company => item.title.includes(company))
+  );
+
+  // 去重（完全相同的标题）
   const seen = new Set<string>();
-  const unique = filtered.filter(item => {
-    const key = item.title.replace(/\s/g, '').slice(0, 20);
-    if (seen.has(key)) return false;
-    seen.add(key);
+  const unique = companyFiltered.filter(item => {
+    if (seen.has(item.title)) return false;
+    seen.add(item.title);
     return true;
   });
 
@@ -317,7 +330,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_28rem]">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
             <div className="flex flex-col gap-6">
               <div className="rounded-[28px] border bg-card/35 p-5 backdrop-blur-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6 relative z-10">
@@ -404,70 +417,39 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <aside>
+            <aside className="flex flex-col lg:h-full">
               <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
                 <div className="mb-5 flex items-center gap-2">
-                  <h2 className="text-2xl font-bold sm:text-3xl">每日精选</h2>
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-bold sm:text-2xl">每日精选</h2>
                 </div>
 
                 {todayPicks.length > 0 ? (
-                  <div className="flex flex-1 flex-col gap-3 lg:justify-between">
-                    {todayPicks.map((item, index) => {
-                      const isFeatured = index === 0;
-                      return (
-                        <a
-                          key={`${item.kind}-${item.id}`}
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={
-                            isFeatured
-                              ? 'group block overflow-hidden rounded-[28px] bg-background/65 transition-colors hover:bg-primary/5'
-                              : 'group flex min-h-[86px] items-center gap-4 rounded-2xl p-2.5 text-sm font-normal leading-6 text-foreground transition-colors hover:bg-primary/5 hover:text-primary sm:text-base sm:leading-7'
-                          }
-                        >
-                          {isFeatured ? (
-                            <>
-                              <div className="relative aspect-[16/9] overflow-hidden bg-muted">
-                                <Image
-                                  src={item.imageUrl}
-                                  alt={item.title}
-                                  fill
-                                  sizes="(min-width: 1280px) 448px, (min-width: 1024px) 384px, 100vw"
-                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  referrerPolicy="no-referrer"
-                                />
-                                <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-base font-bold text-primary shadow-sm">
-                                  {index + 1}
-                                </span>
-                              </div>
-                              <div className="p-4 sm:p-5">
-                                <span className="line-clamp-2 text-base font-normal leading-6 text-foreground group-hover:text-primary sm:text-lg sm:leading-7">
-                                  {item.title}
-                                </span>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                                {index + 1}
-                              </span>
-                              <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
-                                <Image
-                                  src={item.imageUrl}
-                                  alt={item.title}
-                                  fill
-                                  sizes="80px"
-                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  referrerPolicy="no-referrer"
-                                />
-                              </div>
-                              <span className="line-clamp-2 min-w-0 flex-1">{item.title}</span>
-                            </>
-                          )}
-                        </a>
-                      );
-                    })}
+                  <div className="flex flex-1 flex-col gap-3">
+                    {todayPicks.map((item, index) => (
+                      <a
+                        key={`${item.kind}-${item.id}`}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex min-h-[92px] items-center gap-4 rounded-2xl p-2.5 text-sm font-normal leading-6 text-foreground transition-colors hover:bg-primary/5 hover:text-primary sm:min-h-[104px] sm:text-base sm:leading-7"
+                      >
+                        <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-24 sm:w-32">
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.title}
+                            fill
+                            sizes="128px"
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            referrerPolicy="no-referrer"
+                          />
+                          <span className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm font-bold text-primary shadow-sm">
+                            {index + 1}
+                          </span>
+                        </div>
+                        <span className="line-clamp-2 min-w-0 flex-1">{item.title}</span>
+                      </a>
+                    ))}
                   </div>
                 ) : (
                   <div className="rounded-2xl bg-background/50 px-4 py-10 text-center text-base text-muted-foreground">

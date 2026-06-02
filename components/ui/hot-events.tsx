@@ -28,7 +28,7 @@ export function HotEvents({ events }: HotEventsProps) {
   if (events.length === 0) return null;
 
   return (
-    <div className="rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6 mt-6">
+    <div className="mt-6 flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6 lg:flex-1">
       <div className="mb-4 flex items-center gap-2">
         <Flame className="h-5 w-5 text-orange-500" />
         <h2 className="text-xl font-bold sm:text-2xl">近期热点</h2>
