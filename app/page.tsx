@@ -323,21 +323,41 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-5">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/3 py-16">
         {/* 装饰性背景元素 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/3 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-transparent rounded-full blur-3xl opacity-50" />
+          
+          {/* 浮动动画图标 */}
+          <div className="absolute top-[15%] left-[8%] text-primary/20 animate-bounce" style={{ animationDuration: '3s' }}>
+            <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10" />
+          </div>
+          <div className="absolute top-[25%] right-[10%] text-primary/15 animate-pulse" style={{ animationDuration: '4s' }}>
+            <Sparkles className="h-6 w-6 sm:h-8 sm:w-8" />
+          </div>
+          <div className="absolute bottom-[20%] left-[12%] text-primary/15 animate-bounce" style={{ animationDuration: '5s', animationDelay: '1s' }}>
+            <Cpu className="h-7 w-7 sm:h-9 sm:w-9" />
+          </div>
+          <div className="absolute bottom-[30%] right-[8%] text-primary/20 animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
+            <LineChart className="h-8 w-8 sm:h-10 sm:w-10" />
+          </div>
+          <div className="absolute top-[45%] left-[5%] text-primary/10 animate-bounce" style={{ animationDuration: '6s', animationDelay: '2s' }}>
+            <Bot className="h-5 w-5 sm:h-7 sm:w-7" />
+          </div>
+          <div className="absolute top-[40%] right-[5%] text-primary/10 animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}>
+            <Newspaper className="h-6 w-6 sm:h-8 sm:w-8" />
+          </div>
         </div>
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
               属于PM的
               <span className="text-primary">专业学习平台</span>
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
               汇聚专业资讯、职业发展、题库训练、PRD生成等多种功能，助力产品人持续成长
             </p>
           </div>
