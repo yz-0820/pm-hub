@@ -30,7 +30,7 @@ export function HotEvents({ events }: HotEventsProps) {
   return (
     <div className="mt-6 rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
       <div className="mb-4 flex items-center gap-2">
-        <Flame className="h-5 w-5 text-orange-500" />
+        <Flame className="h-5 w-5 text-red-500" />
         <h2 className="text-[22px] font-bold sm:text-2xl">近期热点</h2>
       </div>
 

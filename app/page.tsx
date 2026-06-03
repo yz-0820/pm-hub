@@ -466,7 +466,7 @@ export default async function HomePage() {
             <aside className="flex flex-col lg:h-full">
               <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
                 <div className="mb-5 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
+                  <Sparkles className="h-5 w-5 text-amber-500" />
                   <h2 className="text-[22px] font-bold sm:text-2xl">每日精选</h2>
                 </div>
 
