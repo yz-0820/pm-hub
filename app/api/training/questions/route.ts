@@ -7,7 +7,8 @@ import { ensureTrainingSchema } from '@/lib/training/ensure-schema';
 
 function isAdmin(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
-  const apiKey = process.env.API_KEY || 'your-secret-api-key';
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return false;
   return authHeader === `Bearer ${apiKey}`;
 }
 

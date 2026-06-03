@@ -8,7 +8,11 @@ import { revalidatePath } from 'next/cache';
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const apiKey = process.env.API_KEY || 'your-secret-api-key';
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      return NextResponse.json({ success: false, error: 'Server configuration error' }, { status: 500 });
+    }
 
     if (authHeader !== `Bearer ${apiKey}`) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
