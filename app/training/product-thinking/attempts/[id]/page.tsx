@@ -142,9 +142,6 @@ export default async function TrainingAttemptReportPage(props: { params: Promise
                   {attempt.submittedAt ? new Date(attempt.submittedAt).toLocaleString('zh-CN') : '-'}
                 </div>
               </div>
-              <div className="md:ml-auto text-xs text-muted-foreground">
-                尝试 #{attempt.id}
-              </div>
             </div>
           </div>
           <div className="px-6 py-6">

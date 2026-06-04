@@ -1,0 +1,609 @@
+
+> pm-website@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://10.32.28.130:3000
+- Environments: .env.local
+✓ Ready in 5.7s
+
+[Career][SchedulerProcess] 
+> pm-website@0.1.0 career:schedule
+> tsx scripts/prod/scheduled-fetch-career.ts
+
+[RSS][SchedulerProcess] 
+> pm-website@0.1.0 rss:schedule
+> tsx scripts/prod/scheduled-fetch-rss.ts
+
+[RSS][SchedulerProcess] [Scheduler] RSS fetch scheduler started
+[RSS][SchedulerProcess] [Scheduler] Interval: 60min
+
+[Fetch] Starting at 2026-06-04T01:40:23.969Z
+Fetching: 人人都是产品经理
+[Career][SchedulerProcess] [Scheduler] Career content fetch scheduler started
+[Career][SchedulerProcess] [Scheduler] Interval: 3600s (60min)
+[Career][SchedulerProcess] 
+[Fetch] Starting at 2026-06-04T01:40:23.994Z
+[RSS][SchedulerProcess] Skipped (low PM relevance 72): "真正危险的不是 OpenAI，是 Anthropic 的下一行 Release Note"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "实测 mimo-v2.5-pro：它适合做什么，不适合做什么"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "从”数据堆砌”到”安全输出”：多盘对比界面的两个致命坑"
+[RSS][SchedulerProcess] Skipped (low PM relevance 67): "为什么你用的 AI 客服，还是那么笨？"
+[RSS][SchedulerProcess] Skipped (low PM relevance 36): "拼多多切车玩法"
+[RSS][SchedulerProcess] Skipped (low PM relevance 90): "AI toB行业三条扎心真相  ——来自一线的深度观察与冷静反思"
+[RSS][SchedulerProcess] Skipped (low PM relevance 74): "真正实操部署飞书应用后，总结了4大必踩坑"
+[RSS][SchedulerProcess] Skipped (low PM relevance 0): "非技术人用 AI 工具独立建站全流程复盘：从想法到备案上线只用了3周"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "从”优惠”到”不想换平台”，滴滴会员做了什么？"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "14倍增长背后：量贩零食正在发起一场「农村包围城市」的渠道变革"
+[RSS][SchedulerProcess] Fetching: 极客公园
+[RSS][SchedulerProcess] Fetching: 36氪
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "深圳具身公司获得汇川、中国电信亿元融资，“视触觉”传感器出货量行业第一｜硬氪首发"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "深创投领投，这家微型关节模组企业完成数千万融资丨36氪首发"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "8点1氪丨A股第4只两千元股诞生；问界回应浙江台州M9事故；马斯克个人财富将突破万亿美元"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "36氪独家 | 火山引擎提升MaaS营收目标至全年150亿元，Seedance 2.0单月营收已超10亿元"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "深圳具身公司星尘智能完成超10亿B轮融资，估值破百亿｜硬氪首发"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "8点1氪丨腾讯股价暴涨，创2021年后单日最高涨幅；预计今年安排约1100亿育儿补贴；英伟达与微软合作推出统一技术栈"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "氪星晚报｜私募股权公司Ardian将与Verne合作，斥资50亿欧元在法国建数字基础设施园区；快手：平台累计催生189个新职业，其中由AI发展带来的新职业达15个；中央财政下达育儿补贴补助资金999亿元支持实施育儿补贴制度"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment news, not AI tech): "美团在竞争中看清自己"
+[RSS][SchedulerProcess] Using default image for "现代汽车与英伟达商讨在韩设立人工智能研发中心"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 80): "央行今日7天期逆回购操作量为零"
+Using default image for "央行今日7天期逆回购操作量为零"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 80): "A股三大指数集体低开，光模块概念领跌"
+[RSS][SchedulerProcess] Using default image for "A股三大指数集体低开，光模块概念领跌"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "恒指开盘跌0.66%，恒生科技指数跌1.23%"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "人民币兑美元中间价报6.8203，下调19点"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=33, techR.passed=false, financeR.passed=false): "Uber对自动驾驶创企Nuro的承诺投资总额据悉近5亿美元"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 90): "中信证券：建议将汇率纳入盈利分析，关注高出海高汇兑敏感公司的业绩预期差"
+Using default image for "中信证券：建议将汇率纳入盈利分析，关注高出海高汇兑敏感公司的业绩预期差"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "黑石集团支持的Liftoff Mobile在美国首次公开募股中筹集4.37亿美元"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "日本家电零售商山田控股和爱电王计划合并"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "华泰证券：下半年风险资产或延续占优"
+[RSS][SchedulerProcess] Using default image for "AI基建催生“算力金属”热潮，供给端“硬约束”成为核心逻辑"
+[RSS][SchedulerProcess] Using default image for "AI与新能源需求共振，高端铜箔产能供不应求"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 76): "Vanguard旗下VOO资产规模突破1万亿美元，刷新ETF行业里程碑"
+Using default image for "Vanguard旗下VOO资产规模突破1万亿美元，刷新ETF行业里程碑"
+[RSS][SchedulerProcess] Using default image for "意法半导体：AI需求强劲，上调数据中心收入预期"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "深港通下的港股通标的证券名单调整：调入文远知行、小马智行"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 60): "中信证券：国内外AI算力与具身智能产业将迎重要产业进展"
+Using default image for "中信证券：国内外AI算力与具身智能产业将迎重要产业进展"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 80): "两市融资余额增加84.95亿元"
+Using default image for "两市融资余额增加84.95亿元"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 80): "达利欧称美债已越过临界点，美联储或将人为压低利率"
+Using default image for "达利欧称美债已越过临界点，美联储或将人为压低利率"
+[RSS][SchedulerProcess] Using default image for "江波龙：目前存储产业正处于高景气周期中"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "京东方A：玻璃基封装载板试验线良率尚未达到量产水平"
+[RSS][SchedulerProcess] Fetching: 爱范儿
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "早报｜曝苹果Vision Pro系列被砍/多地高考将查验智能眼镜/DeepSeek首轮融资规模约500亿元"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "云台相机 2026 大乱斗，它到底怎么来的，又去往哪里？｜硬哲学"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "刚刚，Windows「梦中神机」来了，把你的 PC 变成 Agent 工位"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "一夜之间，ChatGPT 变成了第二个 Claude"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "制糖工厂发布 AI 小电拼 Mirror，支持 AI Agent 原生接入"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "早报｜微软发布Windows「梦中神机」/腾讯云DeepSeek-V4最高降价97.5%/徕卡相机或被中国资本收购"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "礼让行人挥手被判赔 30%？纯属胡扯！别被营销号逼得不敢当好人"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "Anthropic 抢跑 IPO，AI 巨头接连秘密上市，背后是怎样的攻防战"
+[RSS][SchedulerProcess] Skipped (low tech relevance 94): "制糖工厂发布 AI 小电拼 Mirror：琥珀屏、双支架与可拼拆设计，重构桌面能源设备"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "早报｜OpenAI官宣进军机器人领域/AI误把文物照片上架，闲鱼致歉/天涯社区重启首日被挤爆"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "华为发布 nova 16 系列：2 亿主摄，红枫影像，还有十年的答案"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "世界模型赛道，VAST 选了一条还没有人走过的路"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "英伟达掀桌，Windows 终于迎来真 AI PC"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "提前看看，今年新 iPhone 系统长什么样｜WWDC26"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "制糖工厂发布 AI 小电拼 Mirror：全球首款智能体电源，支持 AI Agent 原生接入"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "早报｜曝苹果眼镜明年底发布/英伟达首款自研芯片PC本周亮相/特斯拉推出Model Y原厂手动遮阳帘"
+[RSS][SchedulerProcess] Skipped (tech article with strong finance signal): "领克 10 上市售价 18.39 万起，底盘调教比千匹马力更有看点"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "早报｜曝苹果用谷歌AI训练自己模型/黄仁勋：工程师不烧Token我会气炸/工信部：动力电池进入规模化退役阶段"
+[RSS][SchedulerProcess] Fetching: IT之家
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "NASA 罗曼空间望远镜完成最终检测，最快 8 月 30 日发射升空"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: strong_product_launch_signal: 跌破): "比特币跌破 6.3 万美元，日跌 5.91%"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 首发): "消息称某厂 2nm 大屏迭代旗舰 2 亿主摄首发新一代 LOFIC 技术，预计为小米 18 Pro Max"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 新增): "特斯拉被曝修改 FSD 购买协议：新增“需人工监督”条款，并限制车主查阅原始合同"
+[RSS][SchedulerProcess] Auto-categorized as finance (strong signal 100): "消息称苹果将调用英伟达 Blackwell B200 处理 iOS 27 部分 Siri AI 请求"
+Using default image for "消息称苹果将调用英伟达 Blackwell B200 处理 iOS 27 部分 Siri AI 请求"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "何小鹏辟谣加价 2 万插队提车，称公司绝对禁止该行为"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "LG Display 暂缓 G10.5 OLED 产线投资：外部环境不确定性持续"
+[Career][SchedulerProcess] Starting fetch for 26 content sources...
+[Career][SchedulerProcess] [人人都是产品经理-职场] Starting fetch...
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=41, techR.passed=false, financeR.passed=false): "中国小伙带宇树机器人登上《美国达人秀》，同台共舞惊艳评委观众"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "微软 Surface RTX Spark Dev Box 更详细规格曝光：约 1000 孔铝壳散热驾驭 AI 负载"
+[Career][SchedulerProcess] [人人都是产品经理-职场] Fetched 15 items
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=49, techR.passed=false, financeR.passed=false): "联合国报告警示：AI 驱动下，2030 年数据中心水电消耗将翻倍"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "铁路端午假期运输首日火车票开售，今天可买 6 月 18 日"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_specs: 曝光): "新“炸弹”拒绝服务攻击曝光：单机拖垮服务器，约 10 秒耗尽 32GB 内存"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "京东方：玻璃基封装载板试验线良率尚未达到量产水平"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "任天堂确认：将在欧盟发售配备可更换电池的 Switch 2"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "Meta 推出商业智能体，欲借 AI 开拓广告之外的新营收渠道"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=49, techR.passed=false, financeR.passed=false): "Uber 人力资源部门裁员 23%，称和人工智能无关"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_specs: 推出): "特斯拉在奥斯汀推出无安全员自动驾驶出租车服务"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=82, techR.passed=false, financeR.passed=false): "JPR 报告 2026Q1 全球 PC GPU 出货量：AMD 和英伟达争夺英特尔份额"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "SpaceX 下周即将 IPO，马斯克有望成为首个万亿美元富豪"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment news, not AI tech): "IT早报 0604：豆包将推专业版，基础功能免费；估值 1.77 万亿美元，SpaceX 发行价敲定；腾讯人士称微信智能体上线时间暂未定；大疆否认 Pocket 4 饥饿营销..."
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "西锐为 Vision Pro 推免费应用，带你“乘坐”私人飞机"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "国家邮政局公布 2026 年第一季度快递服务满意度调查：顺丰、京东前二"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "SpaceX 敲定 IPO 发行价：每股 135 美元，估值有望达 1.77 万亿美元"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "4 月汽车商品出口额 251.1 亿美元同比增长 29.5%，进口额下降 19.5%"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "谷歌推出 AI 应用 Dreambeans：整合用户数据生成生活灵感随笔"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 曝光): "微软 Surface Pro 第 12 版宣传图曝光：骁龙 X2 Elite 芯片、续航增 10%"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=33, techR.passed=false, financeR.passed=false): "郭明錤：苹果路线图已移除 Vision Pro 系列，专注 AI 眼镜"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_specs: 曝光): "黑色版苹果 Vision Pro 头显配件再曝光，含侧边格栅等"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: simple_brand_launch_pattern): "对标杜比视界：苹果、谷歌联合推出 Eclipsa Video HDR 开源标准，有望率先应用于 iPhone 18 Pro 系列"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "0 点补货：11999 → 10399 元，华为 Pura X Max 淘宝 618 补贴开启"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 上市): "马斯克 SpaceX 上市在即：多名白宫官员被曝持股，预计可带来数百万美元账面收益"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 版本): "拼好饭上“岛”、窥屏保护实装等：荣耀 Magic8 系列手机 MagicOS 10.0.0.160 版本开推"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=16, techR.passed=false, financeR.passed=false): "我国科学家攻克作物花期冷害难题，可挽回超 50% 低温减产损失"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=8, techR.passed=false, financeR.passed=false): "我国科学家找回“丢失”的野生玉米基因，可显著提升其蛋白含量"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "“爱达 · 魔都号”执航：全国首个邮轮无目的地海上游航线定档 6 月 6 日启航"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 上市, 亮相): "芝奇首款 AMD EXPO ULL 内存亮相：DDR5-6000 CL26 配主动散热模块，下半年上市"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 上市): "安克创新向港交所提交上市申请"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "世界最大规模海上换流站抵达广东阳江海域，“海风之心”进入浮托安装阶段"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "不用苦等灰度：微信鸿蒙版 App 消息通知显示联系人头像功能隐藏开启方式曝光"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "联想推出 2199 元昭阳 K13 平板电脑：13 英寸 3.5K 护眼屏，高通骁龙 8s Gen4"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=41, techR.passed=false, financeR.passed=false): "谷歌：Gemini App 月活超 9 亿同比翻倍，是其增长最快的产品之一"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "2027 财年起，奇瑞将在日产英国桑德兰工厂生产汽车"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: product_launch_with_price: 亮相): "双 2.5G 网口：高通骁龙 8cx Gen3 迷你主板瑞莎 Dragon Q8B 亮相，799 元起"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "微软揭晓 6 月第一波 XGP 游戏：《女神异闻录 5 皇家版》《牧灵奇旅》领衔"
+[RSS][SchedulerProcess] Skipped (no relevant category - aiR.score=0, techR.passed=false, financeR.passed=false): "65mm 大画幅：索尼宣布研发 RIALTO 65 影像传感器模块，适用于 CineAltaV 2 电影摄影机"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "小米汽车：升级 HyperOS 1.16 版本后，YU7 Pro / Max / 长续航版均搭载 XLA 认知大模型"
+[RSS][SchedulerProcess] Skipped (IT之家 product launch: simple_brand_launch_pattern): "由华为牵头制定，欧洲电信标准化协会发布首个面向 AI 计算平台安全要求的国际标准"
+[RSS][SchedulerProcess] Fetching: 少数派
+[Career][SchedulerProcess] [人人都是产品经理-运营] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-运营] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-管理] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：领导力] Fetched 15 items
+[RSS][SchedulerProcess] Skipped (low tech relevance 49): "派早报：豆包确认将推出付费版服务、樱桃发布 UWB 键盘等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 0): "小车车里的大世界：车模收藏入坑指南"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): " 让原生体验「接地气」：Pixel Text 与「原点系列」工具集"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "App+1 | 零基础 3 分钟在线搞定产品演示视频：Mockup Studio"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "派早报：Apple 公布 2026 年 Apple 设计大奖得主等"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "得力管家还是多此一举？聊聊 macOS 后台进程管理工具 App Tamer"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "在视频时代，认真拍一张照片：OPPO Find X9 Ultra 影像漫谈"
+[RSS][SchedulerProcess] Skipped (tech article with strong finance signal): "从插件到 AI 辅助：Obsidian 如何成为我的主力工具"
+[RSS][SchedulerProcess] Skipped (low tech relevance 74): "派评 | 近期值得关注的 App"
+[RSS][SchedulerProcess] Skipped (low tech relevance 37): "成本 600 元不到，我 3D 打印了一把能弹的电吉他"
+[RSS][SchedulerProcess] Fetching: 雷峰网
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：战略] Fetched 14 items
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "NUS 余浩泳教授：外骨骼的轻量化与任务感知丨ICRA 2026"
+[RSS][SchedulerProcess] Skipped (low AI relevance 49): "宏利香港与阿里云达成战略合作，加速保险业AI规模化落地"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "对话桥介数物尚阳星：机器人运动能力，远远没有被解决"
+[RSS][SchedulerProcess] Skipped (low AI relevance 57): "NUS 余浩泳教授：外骨骼的轻量化与任务感知丨ICRA 2026"
+[RSS][SchedulerProcess] Skipped (low AI relevance 40): "上海交大王贺升教授：从画地图到预测未来，传统 SLAM 正走出静态世界 | ICRA 2026"
+[RSS][SchedulerProcess] Skipped (low AI relevance 24): "从"各自为战"到"共生共筑"：信创产业的多路线安全逻辑"
+[RSS][SchedulerProcess] Skipped (low AI relevance 65): "独家解读丨日薪高达17万：华尔街为何疯抢「AI落地官」？"
+[RSS][SchedulerProcess] Skipped (low AI relevance 41): "千问宣布向第三方Agent、Skill全面开放，肯德基、瑞幸、蜜雪冰城、东航将首批接入"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "独家｜成立10个月融资10亿元，星源智加码世界模型"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "击败主场霸主英伟达与PI！千寻智能登上具身智能「奥林匹克」最高领奖台"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "独家实拍｜苏昊旗下机器人全球首次亮相，苏度科技惊艳 ICRA 2026"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "独家｜原华为终端云大模型技术负责人、天才少年李一同加盟吉翼智能"
+[RSS][SchedulerProcess] Skipped (low AI relevance 40): "ICRA 2026五篇最佳论文Finalist出炉！灵巧手三雄争霸，Day 1精华全在这｜ICRA 日报"
+[RSS][SchedulerProcess] Skipped (low AI relevance 40): "雷峰网现场直击，ICRA 2026开幕全景解码！"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "BCS 2026|齐向东：中美网安产业相差12倍，AI革命催生千亿级增量市场"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "橡木果发布“本能驱动”技术路线，为机器人赋予“具身本能”"
+[RSS][SchedulerProcess] Skipped (low AI relevance 32): "中国工程院院士金涌 ：全固态电池量产至少再等十年 | 大湾区车展观察"
+[RSS][SchedulerProcess] Skipped (AI article with strong finance signal): "滴滴2026Q1财报：国内基本盘稳固 国际业务成第二增长引擎"
+[RSS][SchedulerProcess] Skipped (gaming/entertainment - universal block): "对话灵初智能王启斌：「操作才是皇冠上的明珠，移动只是入场券」"
+[RSS][SchedulerProcess] Skipped (low AI relevance 65): "AI出海「血管」大堵塞，钱付不出去，卡申不下来，谁在给中国AI当输血管？"
+[RSS][SchedulerProcess] Fetching: 量子位
+[RSS][SchedulerProcess] Skipped (low AI relevance 66): "从看懂世界到做对动作，卧安机器人OneModel 1.7用一条「隐式通路」打通了具身智能的关键断层"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "世界模型榜首易主！跨维智能登顶WorldArena"
+[RSS][SchedulerProcess] Skipped (AI article with strong finance signal): "刚刚，Anthropic提交了招股书！"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "刚刚，Meta Skill来了"
+[RSS][SchedulerProcess] Skipped (low AI relevance 0): "MiniMax M3一手实测：老黄PPT上74个Logo，我以为能难住它"
+[RSS][SchedulerProcess] Skipped (low AI relevance 66): "OpenAI挖走中科大少年班校友！12岁上大学，哈佛史上最年轻正教授"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "头部厂商集体买单，全球AI原生达人营销头号平台正在诞生！"
+[RSS][SchedulerProcess] Skipped (low AI relevance 33): "橡木果发布“本能驱动”技术路线，开辟自下而上具身智能新范式"
+[RSS][SchedulerProcess] Skipped (AI article with strong finance signal): "滴滴2026Q1财报：国内基本盘稳固 国际业务成第二增长引擎"
+[RSS][SchedulerProcess] Skipped (low AI relevance 66): "字节开源统一框架Bernini：给DiT配个“大模型军师”，AI视频编辑先理解再动手"
+[RSS][SchedulerProcess] Fetching: 雪球
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "当价值被宣布“死亡”"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "铁打的红利，流水的行业：中证红利十余年行业变迁的投资启示"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "AI产业链10万亿美元估值的真正问题：终端ROI在哪里？"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "中国玉米市场十年周期复盘与2026年展望：缺口、博弈与国家意志"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "AI浪潮之下，美股的“这次不一样了”"
+[RSS][SchedulerProcess] Skipped (low finance relevance 50): "再谈AI、AIpcb与胜宏科技"
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Starting fetch...
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "锂矿：全球供需展望与190家锂矿产量产能"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "中行2026年一季报点评"
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革] Fetched 8 items
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "最好的预测是不预测"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "深度复盘格力2026高管变动：空降人才频频离场，格力留不住人才了吗？"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "不是光站在那里，也不是站在光里，而是要追着光"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "算力租赁投资指南：怎么系统性的理解这个生意"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "我对煤炭行业的看法：周期已死，终局将至"
+[RSS][SchedulerProcess] Skipped (low finance relevance 50): "随便聊聊6.2"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "知道ASCO的第一个单词，就能理解LBA4和LBA5的待遇差别"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "这个对了87年的估值指标，却让一代价值投资者永久退出市场"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "来了，伊利股息又来了。"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "当硫磺的库存防线被击穿之后"
+[RSS][SchedulerProcess] Fetching: 新浪财经美股
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：变革管理] Fetched 0 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：组织变革] Fetched 15 items
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "现代汽车与英伟达商讨在韩设立人工智能研发中心"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "韩华航空航天在致命爆炸事故后暂停所有工厂运营"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "黄仁勋将出席韩国棒球赛事，担任开球嘉宾"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "韩国金融监管部门研讨提振科斯达克市场方案"
+[RSS][SchedulerProcess] Using default image for "摩根大通CEO计划亲自出马 将向数千名高净值客户推介SpaceX的IPO"
+[RSS][SchedulerProcess] Skipped (low finance relevance 50): "韩股重挫2.5%、韩元兑美元跌至3月来最低 财长称对汇市高度警惕"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "亚马逊工程师呼吁对数据中心爆炸式增长施加限制"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "美元温和走弱之际金价上涨"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "日经指数下跌1.2% 受科技和金属股拖累"
+[RSS][SchedulerProcess] Using default image for "韩国综合股价指数下跌 三星和SK海力士股价涨势减弱"
+[RSS][SchedulerProcess] Skipped (low finance relevance 50): "随着量子计算热潮升温 霍尼韦尔旗下Quantinuum在美国首次公开募股中筹集16.8亿美元"
+[RSS][SchedulerProcess] Using default image for "韩国股市大幅低开，追随隔夜美股走势，因伊朗局势再度紧张"
+[RSS][SchedulerProcess] Using default image for "Quantinuum IPO定价为每股60美元 高于推介区间"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "日韩股市集体低开 韩股跌2%"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "达利欧称美债已越过临界点，美联储或将人为压低利率"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "油价下跌 此前美国称以色列和黎巴嫩同意停火"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "在对伊朗冲突的担忧重燃之际 日经指数或下跌"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "消息人士：摩根大通的戴蒙将向富豪客户推介SpaceX的IPO"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "新西兰联储与澳审慎监管局敲定跨塔斯曼大型银行压力测试"
+[RSS][SchedulerProcess] Skipped (promo/deal - universal block): "美国消费者信心走弱，房屋卖家正以六年来最快速度下架房源"
+[RSS][SchedulerProcess] Fetching: 华尔街见闻美股快讯
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "特朗普告诉助手，只有在美军士兵遇袭丧生的情况下，他才会重启战争。（华尔街日报）"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "华尔街见闻早餐 | 2026年6月4日"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "美国称以色列和黎巴嫩同意执行停火。 美国称，以色列和黎巴嫩同意于6月22日当周再次举行会谈。 WTI原油期货跌超0.8%，在亚太盘初逼近95美元。"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "提醒：日内请重点关注（以下均为北京时间）"
+[RSS][SchedulerProcess] Skipped (low finance relevance 76): "电话会：博通为OpenAI开发芯片，将于2027财年部署1.3 GW。 到2028财年年底将向Meta部署3 GW。 围绕服务OpenAI与Anthropic，公司与阿波罗、黑石集团合作。"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "特朗普称与伊朗谈判进展“非常顺利”"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "约10个贸易团体敦促美国增加受AI挤压的内存芯片供应"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "美联储褐皮书：美国就业保持稳定，通胀持续走高"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "伊媒：伊美谅解备忘录若谈成，将分四阶段推进"
+[RSS][SchedulerProcess] Skipped (low finance relevance 0): "提醒：北京时间02:00，美联储将发布褐皮书。"
+[RSS][SchedulerProcess] Skipped (source keyword prefilter): "报道：Anthropic选定摩根士丹利和高盛牵头其IPO工作"
+[RSS][SchedulerProcess] [Fetch] Done in 56.3s
+[Fetch] Sources: 11, Fetched: 222, New: 26, Errors: 0
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：沟通] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：向上管理] Fetched 15 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：反馈] Fetched 6 items
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Starting fetch...
+[Career][SchedulerProcess] [人人都是产品经理-标签：复盘] Fetched 15 items
+[Career][SchedulerProcess] [少数派] Starting fetch...
+[Career][SchedulerProcess] [少数派] Fetched 10 items
+ GET / 200 in 3.1s (next.js: 2.1s, application-code: 961ms)
+ GET / 200 in 348ms (next.js: 38ms, application-code: 310ms)
+ GET / 200 in 260ms (next.js: 3ms, application-code: 257ms)
+[Career][SchedulerProcess] [知乎-热榜] Starting fetch...
+ GET /articles 200 in 973ms (next.js: 3ms, application-code: 970ms)
+ GET /career 200 in 572ms (next.js: 1947µs, application-code: 570ms)
+ GET /training 200 in 613ms (next.js: 577ms, application-code: 36ms)
+ GET /training/product-thinking 200 in 1374ms (next.js: 677ms, application-code: 697ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Djd.com%26sz%3D128 200 in 7.0s (next.js: 685ms, application-code: 6.3s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dmi.com%26sz%3D128 200 in 7.0s (next.js: 684ms, application-code: 6.3s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dzoom.us%26sz%3D128 200 in 7.1s (next.js: 685ms, application-code: 6.4s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dshopify.com%26sz%3D128 200 in 7.1s (next.js: 684ms, application-code: 6.4s)
+ GET /tools 200 in 106ms (next.js: 40ms, application-code: 66ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dduolingo.com%26sz%3D128 200 in 7.2s (next.js: 687ms, application-code: 6.5s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dpingan.com%26sz%3D128 200 in 100ms (next.js: 1310µs, application-code: 99ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dtemu.com%26sz%3D128 200 in 231ms (next.js: 1283µs, application-code: 230ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dmeituan.com%26sz%3D128 200 in 216ms (next.js: 1997µs, application-code: 214ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dairbnb.com%26sz%3D128 200 in 306ms (next.js: 1075µs, application-code: 305ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dnetflix.com%26sz%3D128 200 in 986ms (next.js: 1170µs, application-code: 985ms)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dalipay.com%26sz%3D128 200 in 8.1s (next.js: 685ms, application-code: 7.4s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dyuanfudao.com%26sz%3D128 200 in 2.3s (next.js: 1566µs, application-code: 2.3s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dcmbchina.com%26sz%3D128 200 in 2.3s (next.js: 1477µs, application-code: 2.3s)
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Ddouyin.com%26sz%3D128 200 in 2.3s (next.js: 1559µs, application-code: 2.3s)
+ GET /tools 200 in 29ms (next.js: 2ms, application-code: 27ms)
+ GET /tools 200 in 19ms (next.js: 1766µs, application-code: 18ms)
+ GET /training 200 in 29ms (next.js: 10ms, application-code: 19ms)
+ GET /training/product-thinking 200 in 659ms (next.js: 9ms, application-code: 650ms)
+[Career][SchedulerProcess] [知乎-日报] Starting fetch...
+ GET /api/image-proxy?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwechat.com%26sz%3D128 200 in 7.1s (next.js: 1525µs, application-code: 7.1s)
+ GET /training/product-thinking 200 in 185ms (next.js: 2ms, application-code: 183ms)
+ GET /training/product-thinking/16 200 in 2.3s (next.js: 1587ms, application-code: 725ms)
+ GET /api/training/drafts?questionId=16 200 in 1780ms (next.js: 1240ms, application-code: 540ms)
+ GET /api/training/drafts?questionId=16 200 in 1771ms (next.js: 1228ms, application-code: 542ms)
+[Career][SchedulerProcess] [知乎-日报] Fetched 4 items
+[Career][SchedulerProcess] [36氪-文章资讯] Starting fetch...
+[Career][SchedulerProcess] [36氪-文章资讯] Fetched 50 items
+[Career][SchedulerProcess] [虎嗅] Starting fetch...
+[Career][SchedulerProcess] [虎嗅] Fetched 29 items
+[Career][SchedulerProcess] [钛媒体] Starting fetch...
+[Career][SchedulerProcess] [钛媒体] Fetched 16 items
+[Career][SchedulerProcess] [爱范儿] Starting fetch...
+[Career][SchedulerProcess] [爱范儿] Fetched 20 items
+[Career][SchedulerProcess] [哔哩哔哩] Starting fetch...
+ GET /api/career/video-feed?platform=bilibili 200 in 501ms (next.js: 492ms, application-code: 9ms)
+[Career][SchedulerProcess] [哔哩哔哩] Fetched 40 items
+ PUT /api/training/drafts 200 in 1610ms (next.js: 914ms, application-code: 696ms)
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Starting fetch...
+ POST /api/training/attempts 200 in 10.7s (next.js: 924ms, application-code: 9.8s)
+ GET /training/product-thinking/attempts/29 200 in 1979ms (next.js: 1052ms, application-code: 927ms)
+[Career][SchedulerProcess] [哔哩哔哩-每周必看] Fetched 47 items
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Starting fetch...
+[Career][SchedulerProcess] [哔哩哔哩-职场热榜] Fetched 20 items
+[Career][SchedulerProcess] [B站-视频搜索：职场沟通] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：领导力] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：向上管理] Starting fetch...
+[Career][SchedulerProcess] [B站-视频搜索：跨部门沟通] Starting fetch...
+[Career][SchedulerProcess] Fetch completed: [
+  {
+    sourceId: 'woshipm-career',
+    sourceName: '人人都是产品经理-职场',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 15,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-operation',
+    sourceName: '人人都是产品经理-运营',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-manage',
+    sourceName: '人人都是产品经理-管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-leadership',
+    sourceName: '人人都是产品经理-标签：领导力',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 2,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-strategy',
+    sourceName: '人人都是产品经理-标签：战略',
+    fetched: 14,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-change',
+    sourceName: '人人都是产品经理-标签：变革',
+    fetched: 8,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-change-mgmt',
+    sourceName: '人人都是产品经理-标签：变革管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-org-change',
+    sourceName: '人人都是产品经理-标签：组织变革',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 15,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-communication',
+    sourceName: '人人都是产品经理-标签：沟通',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-upward-management',
+    sourceName: '人人都是产品经理-标签：向上管理',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 4,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-feedback',
+    sourceName: '人人都是产品经理-标签：反馈',
+    fetched: 6,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'woshipm-tag-review',
+    sourceName: '人人都是产品经理-标签：复盘',
+    fetched: 15,
+    newContents: 0,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'sspai-all',
+    sourceName: '少数派',
+    fetched: 10,
+    newContents: 1,
+    updatedContents: 9,
+    errors: []
+  },
+  {
+    sourceId: 'zhihu-hotlist-career',
+    sourceName: '知乎-热榜',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'zhihu-daily-career',
+    sourceName: '知乎-日报',
+    fetched: 4,
+    newContents: 0,
+    updatedContents: 4,
+    errors: []
+  },
+  {
+    sourceId: '36kr-articles',
+    sourceName: '36氪-文章资讯',
+    fetched: 50,
+    newContents: 39,
+    updatedContents: 1,
+    errors: []
+  },
+  {
+    sourceId: 'huxiu-rss',
+    sourceName: '虎嗅',
+    fetched: 29,
+    newContents: 27,
+    updatedContents: 0,
+    errors: []
+  },
+  {
+    sourceId: 'tmtpost',
+    sourceName: '钛媒体',
+    fetched: 16,
+    newContents: 6,
+    updatedContents: 6,
+    errors: []
+  },
+  {
+    sourceId: 'ifanr',
+    sourceName: '爱范儿',
+    fetched: 20,
+    newContents: 1,
+    updatedContents: 13,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-video-curation',
+    sourceName: '哔哩哔哩',
+    fetched: 40,
+    newContents: 0,
+    updatedContents: 40,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-weekly',
+    sourceName: '哔哩哔哩-每周必看',
+    fetched: 47,
+    newContents: 0,
+    updatedContents: 47,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-career-ranking',
+    sourceName: '哔哩哔哩-职场热榜',
+    fetched: 20,
+    newContents: 7,
+    updatedContents: 13,
+    errors: []
+  },
+  {
+    sourceId: 'bilibili-vsearch-workplace-communication',
+    sourceName: 'B站-视频搜索：职场沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-leadership',
+    sourceName: 'B站-视频搜索：领导力',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-upward-management',
+    sourceName: 'B站-视频搜索：向上管理',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  },
+  {
+    sourceId: 'bilibili-vsearch-cross-team-communication',
+    sourceName: 'B站-视频搜索：跨部门沟通',
+    fetched: 0,
+    newContents: 0,
+    updatedContents: 0,
+    errors: [ 'fetch failed' ]
+  }
+]
+[Fetch] Done in 725.5s
+[Fetch] Sources: 26, Fetched: 354, New: 81, Updated: 169, Errors: 5
+[Career][SchedulerProcess] [Cache] Invalidated due to new/updated content
+[Career][SchedulerProcess] [Cache] Memory: 0/300
+ GET /training/product-thinking/attempts/29 200 in 974ms (next.js: 98ms, application-code: 876ms)
+ GET /training/product-thinking/attempts/29 200 in 798ms (next.js: 7ms, application-code: 791ms)
+ GET /training/product-thinking/attempts/29 200 in 843ms (next.js: 9ms, application-code: 834ms)
+ GET /training/product-thinking/attempts/29 200 in 365ms (next.js: 7ms, application-code: 358ms)
+ GET /training/product-thinking/attempts/29 200 in 841ms (next.js: 9ms, application-code: 832ms)
+ GET /training/product-thinking/attempts/29 404 in 129ms (next.js: 7ms, application-code: 123ms)
+ GET /training/product-thinking 200 in 718ms (next.js: 73ms, application-code: 645ms)
+ GET /training/product-thinking/16 200 in 679ms (next.js: 68ms, application-code: 611ms)
+ GET /api/training/drafts?questionId=16 200 in 1277ms (next.js: 770ms, application-code: 507ms)
+ GET /api/training/drafts?questionId=16 200 in 1263ms (next.js: 699ms, application-code: 564ms)
+ GET /training/product-thinking 200 in 230ms (next.js: 39ms, application-code: 191ms)
+ GET /training/product-thinking?industry=internet 200 in 140ms (next.js: 1795µs, application-code: 138ms)
+ GET /training/product-thinking/10 200 in 132ms (next.js: 14ms, application-code: 119ms)
+ GET /api/training/drafts?questionId=10 200 in 103ms (next.js: 1515µs, application-code: 102ms)
+ GET /api/training/drafts?questionId=10 200 in 116ms (next.js: 1495µs, application-code: 114ms)
+ GET /training/product-thinking 200 in 170ms (next.js: 1553µs, application-code: 168ms)
+ GET /training/product-thinking/12 200 in 128ms (next.js: 6ms, application-code: 122ms)
+ GET /api/training/drafts?questionId=12 200 in 116ms (next.js: 1424µs, application-code: 114ms)
+ GET /api/training/drafts?questionId=12 200 in 114ms (next.js: 1459µs, application-code: 113ms)
+ GET /training/product-thinking/12 200 in 3.3s (next.js: 105ms, application-code: 3.2s)
+ PUT /api/training/drafts 200 in 2.6s (next.js: 584ms, application-code: 2.1s)
+ GET /training/product-thinking/12 200 in 2.1s (next.js: 47ms, application-code: 2.1s)
+ POST /api/training/attempts 200 in 17.2s (next.js: 752ms, application-code: 16.4s)
+ GET /training/product-thinking/attempts/30 200 in 1254ms (next.js: 14ms, application-code: 1240ms)
+ GET /training/product-thinking/12 200 in 2.1s (next.js: 6ms, application-code: 2.1s)
+ GET /api/training/drafts?questionId=12 200 in 431ms (next.js: 8ms, application-code: 423ms)
+ GET /tools 200 in 1097ms (next.js: 1064ms, application-code: 33ms)
+ GET /tools 200 in 36ms (next.js: 3ms, application-code: 34ms)
+ GET /tools 200 in 22ms (next.js: 2ms, application-code: 20ms)
+ GET /api/training/drafts?questionId=12 200 in 3.8s (next.js: 1312µs, application-code: 3.8s)
+ GET /training 200 in 737ms (next.js: 700ms, application-code: 37ms)
+○ Compiling /training/programming ...
+ GET /training/programming 200 in 3.5s (next.js: 3.4s, application-code: 33ms)
+ POST /api/training/programming/sessions 200 in 5.2s (next.js: 807ms, application-code: 4.4s)
+ GET /training/programming/quiz/24?domains=database&difficulty=advanced 200 in 1748ms (next.js: 1579ms, application-code: 169ms)
+ GET /api/training/programming/sessions/24 200 in 5.4s (next.js: 958ms, application-code: 4.5s)
+ GET /training 200 in 549ms (next.js: 506ms, application-code: 43ms)
+ GET /training/programming 200 in 23ms (next.js: 9ms, application-code: 14ms)
+ GET / 200 in 6.0s (next.js: 898ms, application-code: 5.1s)
+ POST /api/training/programming/sessions 200 in 3.2s (next.js: 674ms, application-code: 2.5s)
+ GET /training/programming/quiz/25?domains=database&difficulty=beginner 200 in 301ms (next.js: 77ms, application-code: 224ms)
+ GET /api/training/programming/sessions/25 200 in 4.2s (next.js: 470ms, application-code: 3.7s)
+ GET / 200 in 6.1s (next.js: 44ms, application-code: 6.0s)
+ GET / 200 in 3.1s (next.js: 2ms, application-code: 3.1s)
+ GET /training 200 in 32ms (next.js: 10ms, application-code: 22ms)
+ GET /training/programming 200 in 23ms (next.js: 9ms, application-code: 14ms)
+ GET /training/product-thinking 200 in 3.1s (next.js: 764ms, application-code: 2.3s)
+ POST /api/training/programming/sessions 200 in 2.9s (next.js: 457ms, application-code: 2.5s)
+ GET /training/programming/quiz/26?domains=frontend&difficulty=beginner 200 in 198ms (next.js: 43ms, application-code: 156ms)
+ GET /api/training/programming/sessions/26 200 in 3.0s (next.js: 566ms, application-code: 2.4s)
+ GET /training/programming/results/25 200 in 1830ms (next.js: 1671ms, application-code: 159ms)
+ GET /training/programming/quiz/26?domains=frontend&difficulty=beginner 200 in 69ms (next.js: 16ms, application-code: 54ms)
+ GET /api/training/programming/sessions/26 200 in 2.9s (next.js: 495ms, application-code: 2.4s)
+ GET /training/programming 200 in 190ms (next.js: 40ms, application-code: 151ms)
+ POST /api/training/programming/sessions 200 in 3.0s (next.js: 604ms, application-code: 2.4s)
+ GET /training/programming/quiz/27?domains=backend%2Cfrontend%2Cdatabase&difficulty=beginner 200 in 180ms (next.js: 45ms, application-code: 135ms)
+ GET /api/training/programming/sessions/27 200 in 5.4s (next.js: 439ms, application-code: 4.9s)
+ GET /training/programming/results/27 200 in 138ms (next.js: 32ms, application-code: 106ms)
+ GET /training/programming/results/25 200 in 131ms (next.js: 93ms, application-code: 38ms)
+ GET /training/programming/results/25 200 in 74ms (next.js: 49ms, application-code: 25ms)
+ GET /training/programming/results/25 200 in 198ms (next.js: 8ms, application-code: 190ms)
+ GET /training/programming/quiz/25 200 in 61ms (next.js: 14ms, application-code: 48ms)
+ GET /training 200 in 28ms (next.js: 8ms, application-code: 19ms)
+ GET /training/product-thinking 200 in 1570ms (next.js: 875ms, application-code: 695ms)
+ GET /training 200 in 27ms (next.js: 9ms, application-code: 18ms)
+ GET /training/programming 200 in 23ms (next.js: 10ms, application-code: 14ms)
+ POST /api/training/programming/sessions 200 in 1220ms (next.js: 486ms, application-code: 734ms)
+ GET /training/programming/quiz/28?domains=frontend&difficulty=beginner 200 in 198ms (next.js: 42ms, application-code: 156ms)
+ GET /api/training/programming/sessions/28 200 in 1277ms (next.js: 604ms, application-code: 673ms)
+ GET /tools 200 in 842ms (next.js: 804ms, application-code: 37ms)
+ GET /tools/prototype 200 in 689ms (next.js: 664ms, application-code: 26ms)
+ GET /tools 200 in 24ms (next.js: 8ms, application-code: 16ms)
+ GET /tools/prd 200 in 392ms (next.js: 361ms, application-code: 30ms)

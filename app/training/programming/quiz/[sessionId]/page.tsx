@@ -242,7 +242,7 @@ export default function QuizPage() {
       />
 
       {/* 主内容区 */}
-      <div className="pt-6 pb-32 px-4 sm:px-6 lg:px-8">
+      <div className="pt-6 pb-44 md:pb-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {/* 顶部操作栏 */}
           <div className="flex items-center justify-between mb-6">
@@ -287,14 +287,14 @@ export default function QuizPage() {
       </div>
 
       {/* 底部固定操作栏 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between max-w-3xl mx-auto">
+      <div className="fixed bottom-14 md:bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-40">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
+          <div className="grid grid-cols-2 gap-3 md:flex md:items-center md:justify-between max-w-3xl mx-auto">
             {/* 上一题按钮 */}
             <Button
               variant="outline"
               size="lg"
-              className="min-h-12 px-6"
+              className="min-h-12 w-full md:w-auto px-4 md:px-6"
               disabled={currentIndex === 0}
               onClick={handlePrevious}
             >
@@ -316,7 +316,7 @@ export default function QuizPage() {
             {currentIndex < questions.length - 1 ? (
               <Button
                 size="lg"
-                className="min-h-12 px-6"
+                className="min-h-12 w-full md:w-auto px-4 md:px-6"
                 onClick={handleNext}
               >
                 下一题
@@ -326,7 +326,7 @@ export default function QuizPage() {
               <Button
                 size="lg"
                 className={cn(
-                  'min-h-12 px-6',
+                  'min-h-12 w-full md:w-auto px-4 md:px-6',
                   canSubmit && 'bg-green-600 hover:bg-green-700'
                 )}
                 disabled={!canSubmit || isSubmitting}

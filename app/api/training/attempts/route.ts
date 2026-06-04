@@ -18,6 +18,17 @@ function validateAnswer(answer: string): string | null {
   return null;
 }
 
+function parseReferencePoints(value: string | null): string[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  } catch {
+    return [];
+  }
+}
+
 const postSchema = z.object({
   questionId: z.number().int().positive(),
   answer: z.string().min(1),
@@ -104,6 +115,7 @@ export async function POST(request: NextRequest) {
     const evaluation = await evaluateWithAI({
       questionTitle: question.title,
       questionPrompt: question.prompt,
+      questionReferencePoints: parseReferencePoints(question.referencePoints),
       answer: parsed.data.answer,
     });
 

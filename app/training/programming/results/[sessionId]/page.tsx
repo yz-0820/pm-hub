@@ -9,7 +9,7 @@ import {
   Home,
   CheckCircle,
   XCircle,
-  Target,
+  Sigma,
   TrendingUp,
   ChevronDown,
   ChevronUp,
@@ -305,7 +305,7 @@ export default function ResultsPage() {
           <div className="bg-card rounded-2xl border p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Target className="h-5 w-5 text-primary" />
+                <Sigma className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold">领域统计</h2>

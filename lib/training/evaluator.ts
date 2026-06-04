@@ -432,7 +432,34 @@ function keywordScore(text: string, keywords: string[]): number {
   return hits;
 }
 
-function fallbackEvaluate(answer: string): TrainingEvaluationResult {
+const defaultFallbackReferences: Record<
+  'user_value' | 'business_logic' | 'feature_design' | 'competition_analysis',
+  string[]
+> = {
+  user_value: ['价值主张画布', '用户画像与旅程图'],
+  business_logic: ['商业模式画布', 'AARRR 漏斗'],
+  feature_design: ['用户故事地图', '信息架构', '流程图'],
+  competition_analysis: ['竞品矩阵', 'SWOT 分析'],
+};
+
+function classifyReferencePoints(referencePoints?: string[]) {
+  const clean = (referencePoints || []).map((item) => item.trim()).filter(Boolean);
+  if (!clean.length) return defaultFallbackReferences;
+
+  const pick = (keywords: string[]) => {
+    const matched = clean.filter((item) => keywords.some((keyword) => item.includes(keyword)));
+    return (matched.length ? matched : clean).slice(0, 5);
+  };
+
+  return {
+    user_value: pick(['用户', '场景', '痛点', '需求', '价值', '体验', '信任', '动机']),
+    business_logic: pick(['商业', '收入', '成本', '费率', '转化', '留存', '增长', '指标', '漏斗', '风险', '合规']),
+    feature_design: pick(['功能', '流程', '链路', '交互', '信息架构', '模块', '机制', '异常', '边界']),
+    competition_analysis: pick(['竞品', '竞争', '对比', '差异', '护城河', '替代', '市场']),
+  };
+}
+
+function fallbackEvaluate(answer: string, referencePoints?: string[]): TrainingEvaluationResult {
   const len = answer.trim().length;
   const base = clampScore(Math.min(100, Math.round((len / 800) * 60 + 20)));
 
@@ -445,6 +472,7 @@ function fallbackEvaluate(answer: string): TrainingEvaluationResult {
   const businessScore = clampScore(base + bizHits * 5);
   const designScore = clampScore(base + designHits * 5);
   const competitionScore = clampScore(base + compHits * 6);
+  const references = classifyReferencePoints(referencePoints);
 
   return {
     totalScore: weightedTotal({
@@ -464,28 +492,28 @@ function fallbackEvaluate(answer: string): TrainingEvaluationResult {
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['补充目标用户与关键场景', '明确核心痛点与价值主张', '给出可验证的指标与方法'],
-          reference: ['价值主张画布', '用户画像与旅程图'],
+          reference: references.user_value,
         },
         business_logic: {
           score: businessScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['补充收入/成本/定价与增长路径', '说明关键指标口径与漏斗', '识别约束条件与风险点'],
-          reference: ['商业模式画布', 'AARRR 漏斗'],
+          reference: references.business_logic,
         },
         feature_design: {
           score: designScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['明确关键流程与信息架构', '阐明功能取舍与优先级', '补充异常/边界与埋点'],
-          reference: ['用户故事地图', '信息架构', '流程图'],
+          reference: references.feature_design,
         },
         competition_analysis: {
           score: competitionScore,
           analysis: '基于答案长度与关键词覆盖的规则评分结果，仅用于兜底展示。',
           evidence: [],
           suggestions: ['选择 2-3 个直接竞品做对比', '从用户/供给/分发/履约维度对比差异', '总结可复制与不可复制点'],
-          reference: ['竞品矩阵', 'SWOT 分析'],
+          reference: references.competition_analysis,
         },
       },
       overall: {
@@ -565,6 +593,7 @@ function invalidAnswerEvaluate(): TrainingEvaluationResult {
 export async function evaluateWithAI(input: {
   questionTitle: string;
   questionPrompt: string;
+  questionReferencePoints?: string[];
   answer: string;
 }): Promise<TrainingEvaluationResult> {
   if (isLowQualityAnswer(input.answer)) return invalidAnswerEvaluate();
@@ -573,7 +602,7 @@ export async function evaluateWithAI(input: {
 
   if (!apiKey) {
     if (isDev) console.warn('DeepSeek disabled: missing DEEPSEEK_API_KEY');
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   const system = [
@@ -588,7 +617,9 @@ export async function evaluateWithAI(input: {
     '2) 商业逻辑完整性 business_logic（25%）',
     '3) 功能设计合理性 feature_design（25%）',
     '4) 竞争分析深度 competition_analysis（20%）',
-    '每个维度请在 evidence 同级增加 reference 字段（数组），给出该维度对应的参考答案框架/分析要点，仅与该维度相关，不要混入其他维度内容。',
+    '每个维度请在 evidence 同级增加 reference 字段（数组），给出“结合当前题目案例的参考作答要点”，仅与该维度相关，不要混入其他维度内容。',
+    'reference 必须输出 3-5 条短句；每条都要落到本题案例里的具体对象、场景、机制、指标或竞品，不要只写“需考虑用户价值/商业逻辑/功能设计/竞争分析”这类泛泛方法论。',
+    '如果题目参考要点提供了具体业务事实，请优先吸收这些事实，并改写成可以直接参考的作答要点。',
     '整体部分给出 strengths/weaknesses/next_steps。',
     '输出 JSON 结构必须严格遵循：',
     '{"dimensions":{"user_value":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"business_logic":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"feature_design":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]},"competition_analysis":{"score":0,"analysis":"","evidence":[""],"suggestions":[""],"reference":[""]}},"overall":{"strengths":[""],"weaknesses":[""],"next_steps":[""]}}',
@@ -597,6 +628,9 @@ export async function evaluateWithAI(input: {
   const user = [
     `题目：${input.questionTitle}`,
     `要求：${input.questionPrompt}`,
+    `题目参考要点：${
+      input.questionReferencePoints?.length ? input.questionReferencePoints.map((item, i) => `${i + 1}. ${item}`).join('\n') : '无'
+    }`,
     '候选人答案：',
     input.answer,
   ].join('\n\n');
@@ -623,7 +657,7 @@ export async function evaluateWithAI(input: {
     });
   } catch (error) {
     if (isDev) console.error('DeepSeek request failed:', error);
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   if (!res.ok) {
@@ -631,14 +665,14 @@ export async function evaluateWithAI(input: {
       const errText = await res.text().catch(() => '');
       console.error('DeepSeek response not ok:', res.status, errText.slice(0, 300));
     }
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   const data = await res.json().catch(() => null);
   const raw = data?.choices?.[0]?.message?.content;
   if (typeof raw !== 'string' || !raw.trim()) {
     if (isDev) console.error('DeepSeek empty content:', JSON.stringify(data)?.slice(0, 300));
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   let parsed: unknown;
@@ -646,7 +680,7 @@ export async function evaluateWithAI(input: {
     parsed = JSON.parse(raw);
   } catch {
     if (isDev) console.error('DeepSeek JSON parse failed:', raw.slice(0, 300));
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   const validated = aiOutputSchema.safeParse(parsed);
@@ -655,7 +689,7 @@ export async function evaluateWithAI(input: {
       console.error('DeepSeek schema invalid:', validated.error.issues.slice(0, 6));
       console.error('DeepSeek raw head:', raw.slice(0, 300));
     }
-    return fallbackEvaluate(input.answer);
+    return fallbackEvaluate(input.answer, input.questionReferencePoints);
   }
 
   const d = validated.data.dimensions;
