@@ -260,11 +260,13 @@ async function getHotEvents(limit: number = 5) {
   // 知名公司/品牌列表
   const companies = ['苹果', 'Apple', '谷歌', 'Google', '微软', 'Microsoft', '亚马逊', 'Amazon',
     'Meta', 'Facebook', '特斯拉', 'Tesla', '英伟达', 'NVIDIA', 'AMD', '英特尔', 'Intel',
-    'OpenAI', 'ChatGPT', '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
+    'OpenAI', 'ChatGPT', 'Anthropic', 'Claude', 'Space X', 'SpaceX',
+    '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
     '百度', '美团', '滴滴', '小米', '华为', 'OPPO', 'vivo', '京东', '拼多多', '网易',
     '快手', 'B站', '哔哩哔哩', '知乎', '小红书', '微博', '携程', '饿了么',
     'Salesforce', 'Oracle', 'IBM', 'SAP', 'Adobe', 'Zoom', 'Slack', 'Shopify',
-    'Netflix', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square'];
+    'Netflix', '网飞', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square',
+    '标普', '纳斯达克', '纳指'];
   
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const articleCategories = ['product-management', 'tech', 'ai', 'finance'];

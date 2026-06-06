@@ -81,6 +81,11 @@ const CAREER_KEYWORDS = [
   'PM', '产品人',
 ];
 
+// ========== 高权重职场关键词（标题命中时优先归类为职业发展）==========
+const HIGH_WEIGHT_CAREER_KEYWORDS = [
+  '领导力', '团队管理', '管理能力', '向上管理',
+];
+
 // ========== 非相关信号（直接拒绝）==========
 const NON_PM_SIGNALS = [
   // 纯技术开发
@@ -129,14 +134,26 @@ export function evaluatePMRelevance(article: ParsedArticle): PMRelevanceResult {
     };
   }
 
-  // ========== 2. 核心关键词匹配（标题权重更高）==========
+  // ========== 2. 高权重职场关键词检测（标题命中时优先职业发展）==========
+  const highWeightCareerTitleHits = matchKeywords(lowerTitle, HIGH_WEIGHT_CAREER_KEYWORDS);
+  const hasHighWeightCareerInTitle = highWeightCareerTitleHits.length >= 1;
+
+  // ========== 3. 核心关键词匹配（标题权重更高）==========
   const coreTitleHits = matchKeywords(lowerTitle, CORE_PM_KEYWORDS);
   const coreBodyHits = matchKeywords(fullText, CORE_PM_KEYWORDS);
   const coreHits = [...new Set([...coreTitleHits, ...coreBodyHits])];
 
   // 标题命中核心关键词，直接给高分
+  // 但如果标题同时命中高权重职场关键词，降低分数使其可能不通过阈值
   if (coreTitleHits.length >= 1) {
-    const titleScore = Math.min(100, 50 + coreTitleHits.length * 20 + coreHits.length * 10);
+    let titleScore = Math.min(100, 50 + coreTitleHits.length * 20 + coreHits.length * 10);
+    
+    // 如果标题以高权重职场关键词为主（如"领导力- 高阶产品人的核心必备能力"）
+    // 降低分数，使其更倾向于被归类到职业发展
+    if (hasHighWeightCareerInTitle && highWeightCareerTitleHits.length >= coreTitleHits.length) {
+      titleScore -= 30; // 降低30分，使其可能低于阈值95
+    }
+    
     return {
       passed: titleScore >= PM_THRESHOLD,
       score: titleScore,

@@ -6,7 +6,7 @@
     "node": ">=22 <23"
   },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "tsx scripts/prod/dev-local.ts",
     "dev:web": "next dev --webpack",
     "dev:all": "tsx scripts/prod/dev-all.ts",
     "build": "next build --webpack",
