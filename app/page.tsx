@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles, Briefcase, BookOpen, Wrench } from 'lucide-react';
+import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles, Briefcase, BookOpen, Wrench, GitBranch } from 'lucide-react';
 import { and, desc, eq, gte, lt, notLike, sql, inArray } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
@@ -563,7 +563,7 @@ export default async function HomePage() {
               <p className="text-sm sm:text-base text-muted-foreground">把常见产品工作流沉淀成可直接使用的工具</p>
             </Link>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <Link href="/tools/prd" className="group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
                 <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-sky-200 transition-all duration-300 h-full flex flex-col">
@@ -588,6 +588,19 @@ export default async function HomePage() {
                     上传界面截图并描述修改需求，AI 生成编辑后的原型图。
                   </p>
                   <span className="text-sm font-medium text-violet-600 group-hover:underline">打开工具 →</span>
+                </div>
+              </Link>
+              <Link href="/tools/flowchart" className="group relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                <div className="relative p-5 sm:p-6 rounded-2xl border bg-card/50 backdrop-blur-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 h-full flex flex-col">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <GitBranch className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
+                  </div>
+                  <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-indigo-600 transition-colors">流程图生成</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex-1">
+                    用自然语言生成、修改和优化流程图、架构图与业务流程图。
+                  </p>
+                  <span className="text-sm font-medium text-indigo-600 group-hover:underline">打开工具 →</span>
                 </div>
               </Link>
             </div>

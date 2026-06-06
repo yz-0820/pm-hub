@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, FileText, Image as ImageIcon, GitBranch } from 'lucide-react';
 
 export const revalidate = 60;
 
@@ -17,6 +17,13 @@ const tools = [
     description: '上传界面截图并描述修改需求，AI 生成编辑后的原型图。',
     icon: ImageIcon,
     color: 'violet',
+  },
+  {
+    href: '/tools/flowchart',
+    title: '流程图生成',
+    description: '用自然语言生成、修改和优化流程图、架构图与业务流程图。',
+    icon: GitBranch,
+    color: 'indigo',
   },
 ];
 
@@ -46,7 +53,7 @@ export default function ToolsHomePage() {
               实用工具
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-600">
-              AI 驱动的轻量工作台，覆盖 PRD 生成与原型生成两种高频场景
+              AI 驱动的轻量工作台，覆盖 PRD 生成、原型生成与流程图生成等高频场景
             </p>
           </div>
         </div>
@@ -55,12 +62,13 @@ export default function ToolsHomePage() {
       {/* 主内容区 */}
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {tools.map((tool) => {
               const Icon = tool.icon;
               const colorClasses: Record<string, { bg: string; text: string; border: string; hover: string }> = {
                 sky: { bg: 'bg-sky-500/10', text: 'text-sky-600', border: 'hover:border-sky-200', hover: 'group-hover:text-sky-600' },
                 violet: { bg: 'bg-violet-500/10', text: 'text-violet-600', border: 'hover:border-violet-200', hover: 'group-hover:text-violet-600' },
+                indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-600', border: 'hover:border-indigo-200', hover: 'group-hover:text-indigo-600' },
               };
               const c = colorClasses[tool.color] || colorClasses.sky;
               return (
