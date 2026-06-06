@@ -41,12 +41,17 @@ async function startSchedulerProcess(name: SchedulerName) {
   const { script, logPrefix } = schedulerCommands[name];
   const runtimeRequire = eval('require') as NodeRequire;
   const { spawn } = runtimeRequire('child_process') as typeof import('child_process');
-  const child = spawn('cmd.exe', ['/c', 'npm.cmd', 'run', script], {
+  const child = spawn('npm.cmd', ['run', script], {
     cwd: process.cwd(),
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],
+    shell: true,
     windowsHide: true,
+    detached: true,
   });
+
+  // 子进程独立运行，不阻塞父进程退出
+  child.unref();
 
   child.stdout?.on('data', (chunk) => {
     process.stdout.write(`[${logPrefix}][SchedulerProcess] ${chunk}`);
