@@ -41,11 +41,21 @@ async function startSchedulerProcess(name: SchedulerName) {
   const { script, logPrefix } = schedulerCommands[name];
   const runtimeRequire = eval('require') as NodeRequire;
   const { spawn } = runtimeRequire('child_process') as typeof import('child_process');
-  const child = spawn('npm.cmd', ['run', script], {
+
+  // Windows 上使用 START 命令隐藏窗口，macOS/Linux 使用 nohup
+  const isWindows = process.platform === 'win32';
+  const command = isWindows
+    ? 'start'
+    : 'nohup';
+  const args = isWindows
+    ? ['/b', '', 'npm.cmd', 'run', script]
+    : ['npm', 'run', script];
+
+  const child = spawn(command, args, {
     cwd: process.cwd(),
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],
-    shell: true,
+    shell: isWindows ? false : true,
     windowsHide: true,
     detached: true,
   });
