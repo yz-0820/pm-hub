@@ -7,10 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Flag,
-  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QuizProgress } from '@/components/training/programming/quiz-progress';
 import { QuizCard, QuizQuestion } from '@/components/training/programming/quiz-card';
 import { DomainType } from '@/components/training/programming/domain-selector';
 import { cn } from '@/lib/utils';
@@ -154,10 +152,6 @@ export default function QuizPage() {
   const currentQuestion = questions[currentIndex];
   const selectedOptionId = currentQuestion ? answers[currentQuestion.id] || null : null;
   const showResult = currentQuestion ? showResults[currentQuestion.id] || false : false;
-  const answeredQuestions = Object.keys(answers).map((id) =>
-    questions.findIndex((q) => q.id === id)
-  );
-
   const handleSelectOption = useCallback((optionId: string, event?: React.MouseEvent) => {
     if (!currentQuestion) return;
     
@@ -181,10 +175,6 @@ export default function QuizPage() {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
-  };
-
-  const handleJumpToQuestion = (index: number) => {
-    setCurrentIndex(index);
   };
 
   const handleSubmit = () => {
@@ -233,19 +223,11 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* 进度条 */}
-      <QuizProgress
-        current={currentIndex}
-        total={questions.length}
-        answeredQuestions={answeredQuestions}
-        onJumpToQuestion={handleJumpToQuestion}
-      />
-
       {/* 主内容区 */}
-      <div className="pt-6 pb-44 md:pb-32 px-4 sm:px-6 lg:px-8">
+      <div className="pt-6 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {/* 顶部操作栏 */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <button
               type="button"
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -255,6 +237,8 @@ export default function QuizPage() {
               退出
             </button>
           </div>
+
+
 
           {/* 题目卡片 */}
           <AnimatePresence mode="wait">
@@ -275,26 +259,13 @@ export default function QuizPage() {
             </motion.div>
           </AnimatePresence>
 
-          {/* 答题进度提示 */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <AlertCircle className="h-4 w-4" />
-            <span>
-              已答 {answeredCount} / {questions.length} 题
-              {canSubmit && ' - 可以提交答卷了'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 底部固定操作栏 */}
-      <div className="fixed bottom-14 md:bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
-          <div className="grid grid-cols-2 gap-3 md:flex md:items-center md:justify-between max-w-3xl mx-auto">
+          {/* 导航按钮 */}
+          <div className="mt-8 flex items-center justify-between max-w-3xl mx-auto">
             {/* 上一题按钮 */}
             <Button
               variant="outline"
               size="lg"
-              className="min-h-12 w-full md:w-auto px-4 md:px-6"
+              className="min-h-12 px-6"
               disabled={currentIndex === 0}
               onClick={handlePrevious}
             >
@@ -303,20 +274,17 @@ export default function QuizPage() {
             </Button>
 
             {/* 中间状态显示 */}
-            <div className="hidden sm:flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="font-medium text-foreground">
                 {currentIndex + 1} / {questions.length}
               </span>
-              {answeredCount < questions.length && (
-                <span>还剩 {questions.length - answeredCount} 题</span>
-              )}
             </div>
 
             {/* 下一题/提交按钮 */}
             {currentIndex < questions.length - 1 ? (
               <Button
                 size="lg"
-                className="min-h-12 w-full md:w-auto px-4 md:px-6"
+                className="min-h-12 px-6"
                 onClick={handleNext}
               >
                 下一题
@@ -326,7 +294,7 @@ export default function QuizPage() {
               <Button
                 size="lg"
                 className={cn(
-                  'min-h-12 w-full md:w-auto px-4 md:px-6',
+                  'min-h-12 px-6',
                   canSubmit && 'bg-green-600 hover:bg-green-700'
                 )}
                 disabled={!canSubmit || isSubmitting}
