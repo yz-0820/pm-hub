@@ -287,7 +287,7 @@ export default function ResultsPage() {
                 <RotateCcw className="h-5 w-5 mr-2" />
                 重新训练
               </Button>
-              <Button variant="outline" size="lg" onClick={() => router.push('/training/programming')}>
+              <Button variant="outline" size="lg" onClick={() => router.push('/')}>
                 <Home className="h-5 w-5 mr-2" />
                 返回首页
               </Button>
