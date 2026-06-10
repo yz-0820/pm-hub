@@ -10,6 +10,7 @@ function run(name: string, command: string): NamedChild {
     stdio: 'inherit',
     env: process.env,
     shell: true,
+    windowsHide: true,
   });
 
   return { name, child };
