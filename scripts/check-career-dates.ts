@@ -1,6 +1,6 @@
 import { db } from '../lib/db/client';
 import { careerContents } from '../lib/db/schema';
-import { desc, sql } from 'drizzle-orm';
+import { desc, sql, eq, and, gte, inArray, lt } from 'drizzle-orm';
 
 async function check() {
   console.log('检查职业发展内容的发布时间分布...\n');
@@ -67,7 +67,5 @@ async function check() {
 
   console.log(`视频/短视频总数: ${videoCount[0]?.count || 0}`);
 }
-
-import { and, gte, inArray, lt } from 'drizzle-orm';
 
 check().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
