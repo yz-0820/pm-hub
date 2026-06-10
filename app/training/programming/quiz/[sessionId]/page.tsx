@@ -285,6 +285,7 @@ export default function QuizPage() {
               <Button
                 size="lg"
                 className="min-h-12 px-6"
+                disabled={!answers[currentQuestion?.id || '']}
                 onClick={handleNext}
               >
                 下一题
