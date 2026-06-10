@@ -28,7 +28,9 @@ function getSchedulerProcessState(): SchedulerProcessState {
 function shouldStartScheduler(name: SchedulerName): boolean {
   if (process.env.NODE_ENV === 'production') return false;
   const envKey = schedulerCommands[name].envKey;
-  return (process.env[envKey] || 'true').toLowerCase() !== 'false';
+  const value = process.env[envKey];
+  // 必须显式设置为 true 才启动
+  return value !== undefined && value.toLowerCase() === 'true';
 }
 
 async function startSchedulerProcess(name: SchedulerName) {
