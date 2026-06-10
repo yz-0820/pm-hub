@@ -200,9 +200,12 @@ export default function QuizPage() {
 
     localStorage.setItem(`quiz-result-${sessionId}`, JSON.stringify(result));
     localStorage.removeItem(`quiz-progress-${sessionId}`);
+    
+    // 存储当前会话ID，用于结果页读取
+    localStorage.setItem('quiz-current-session', sessionId);
 
-    // 直接跳转到结果页
-    window.location.href = `/training/programming/results/${sessionId}`;
+    // 直接跳转到结果页（使用固定路由，不暴露sessionId）
+    window.location.href = `/training/programming/results/my`;
   };
 
   // 检查是否可以提交（所有题目都已作答）
