@@ -32,6 +32,11 @@ function splitModules(value: string, limit: number) {
     .slice(0, limit);
 }
 
+function conciseText(value: string | undefined, fallback: string, maxLength: number) {
+  const text = (value || '').replace(/\s+/g, ' ').trim() || fallback;
+  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+}
+
 function element(type: PrototypeV2Element['type'], patch: Omit<PrototypeV2Element, 'type'>): PrototypeV2Element {
   return { type, ...patch };
 }
@@ -89,7 +94,7 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
           }),
           element('hero', {
             name: 'Daily Mix Hero',
-            text: input.pageGoal || '让节奏接上你的状态',
+            text: conciseText(input.pageGoal, '让节奏接上你的状态', 34),
             items: ['今日专属推荐', '立即播放'],
             icon: 'play',
             assetRef: 'cover.green-wave',
@@ -161,7 +166,7 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
             icon: 'pause',
             assetRef: 'cover.green-wave',
             x: 24,
-            y: 754,
+            y: 706,
             width: 342,
             height: 58,
             background: '#101820',
@@ -257,8 +262,8 @@ function createGenericFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2
           }),
           element('hero', {
             name: 'Hero',
-            text: input.pageGoal,
-            items: [input.productContext.slice(0, 80), '开始体验'],
+            text: conciseText(input.pageGoal, '让用户快速理解价值并完成核心操作', isWide ? 48 : 34),
+            items: [conciseText(input.productContext, '核心价值说明', 40), '开始体验'],
             icon: 'play',
             assetRef: 'cover.blueprint',
             x: margin,
