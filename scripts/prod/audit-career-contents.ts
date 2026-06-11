@@ -1,84 +1,120 @@
-﻿import Database from 'better-sqlite3';
+/**
+ * 审计并清理 career_contents 中已存在的误分类文章
+ * 运行: npx tsx scripts/prod/audit-career-contents.ts
+ *
+ * 逻辑:
+ * 1. 扫描所有 status='active' 的 career 内容
+ * 2. 用最新的 hasCareerRelevance 规则重新判定
+ * 3. 将不符合新规则的内容标记为 archived
+ * 4. 输出审计报告
+ */
 
-type Row = {
-  id: number;
-  title: string;
-  category: string;
-  status: string;
-  quality_score: number;
-  quality_reasons: string | null;
-  match_score: number;
-  match_keywords: string | null;
-  match_core_matched: number;
-  match_core_missing: string | null;
-  published_at: number;
-};
+import 'dotenv/config';
+import { db } from '@/lib/db/client';
+import { careerContents } from '@/lib/db/schema';
+import { eq, and, gte, lt } from 'drizzle-orm';
+import { hasCareerRelevance, evaluateBestCategoryMatch } from '@/lib/career/quality';
+import { NormalizedContent } from '@/lib/career/platforms/types';
 
-function parseJson(value: string | null): unknown {
-  if (!value) return null;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
+const YEAR_START = new Date('2026-01-01T00:00:00.000Z');
+const YEAR_END = new Date('2027-01-01T00:00:00.000Z');
 
-function main() {
-  const db = new Database('./data/sqlite.db');
+async function auditCareerContents() {
+  console.log('开始审计 career_contents...\n');
 
-  const counts = db.prepare(
-    `SELECT status, COUNT(*) AS c
-     FROM career_contents
-     GROUP BY status
-     ORDER BY c DESC`
-  ).all() as Array<{ status: string; c: number }>;
+  const allContents = await db.query.careerContents.findMany({
+    where: and(
+      eq(careerContents.status, 'active'),
+      gte(careerContents.publishedAt, YEAR_START),
+      lt(careerContents.publishedAt, YEAR_END)
+    ),
+  });
 
-  console.log('Status counts:');
-  for (const r of counts) {
-    console.log(`- ${r.status}: ${r.c}`);
-  }
+  console.log(`共找到 ${allContents.length} 条 active 内容\n`);
 
-  const pick = (status: string) => {
-    const rows = db.prepare(
-      `SELECT
-        id,
-        title,
-        COALESCE(category, '') AS category,
-        COALESCE(status, '') AS status,
-        COALESCE(quality_score, 0) AS quality_score,
-        quality_reasons,
-        COALESCE(match_score, 0) AS match_score,
-        match_keywords,
-        COALESCE(match_core_matched, 0) AS match_core_matched,
-        match_core_missing,
-        published_at
-       FROM career_contents
-       WHERE status = ?
-       ORDER BY published_at DESC
-       LIMIT 5`
-    ).all(status) as Row[];
+  const toArchive: typeof allContents = [];
+  const toReclassify: Array<{ content: typeof allContents[0]; newCategory: string }> = [];
 
-    console.log(`\nSamples (${status}):`);
-    for (const row of rows) {
-      const reasons = parseJson(row.quality_reasons);
-      const keywords = parseJson(row.match_keywords);
-      const coreMissing = parseJson(row.match_core_missing);
-      console.log(
-        `- #${row.id} [${row.category}] q=${row.quality_score} m=${row.match_score} core=${row.match_core_matched ? 'ok' : 'missing'} title=${row.title.substring(0, 60)}`
-      );
-      if (reasons) console.log(`  qualityReasons=${JSON.stringify(reasons)}`);
-      if (keywords) console.log(`  matchKeywords=${JSON.stringify(keywords)}`);
-      if (coreMissing) console.log(`  coreMissing=${JSON.stringify(coreMissing)}`);
+  for (const content of allContents) {
+    const normalized: NormalizedContent = {
+      sourceId: content.sourceId,
+      sourceName: content.sourceName,
+      platform: content.platform as NormalizedContent['platform'],
+      originalId: content.originalId || String(content.id),
+      originalUrl: content.originalUrl,
+      title: content.title,
+      description: content.description || '',
+      content: content.content || '',
+      author: content.author || '',
+      authorId: '',
+      authorAvatar: '',
+      contentType: content.contentType as NormalizedContent['contentType'],
+      category: content.category,
+      tags: content.tags ? JSON.parse(content.tags) : [],
+      coverImage: content.coverImage || '',
+      videoUrl: content.videoUrl || '',
+      videoDuration: content.videoDuration || 0,
+      images: content.images ? JSON.parse(content.images) : [],
+      viewCount: content.viewCount,
+      likeCount: content.likeCount,
+      commentCount: content.commentCount,
+      shareCount: content.shareCount,
+      publishedAt: content.publishedAt,
+    };
+
+    // 用最新规则重新判定职场相关性
+    const relevance = hasCareerRelevance(normalized);
+
+    if (!relevance.relevant) {
+      toArchive.push(content);
+      console.log(`[归档] #${content.id} — ${content.title.substring(0, 60)}`);
+      console.log(`       原因: ${relevance.reason}`);
+      continue;
     }
-  };
 
-  pick('active');
-  pick('pending');
-  pick('rejected');
-  pick('archived');
+    // 重新评估最佳分类
+    const bestMatch = evaluateBestCategoryMatch(normalized);
+    if (bestMatch.category !== content.category && bestMatch.matched) {
+      toReclassify.push({ content, newCategory: bestMatch.category });
+      console.log(`[重分类] #${content.id} — ${content.title.substring(0, 60)}`);
+      console.log(`         ${content.category} → ${bestMatch.category}`);
+    }
+  }
 
-  db.close();
+  console.log(`\n========== 审计结果 ==========`);
+  console.log(`需归档: ${toArchive.length} 条`);
+  console.log(`需重分类: ${toReclassify.length} 条`);
+
+  if (toArchive.length === 0 && toReclassify.length === 0) {
+    console.log('所有内容均符合最新规则，无需操作。');
+    return;
+  }
+
+  // 执行归档
+  for (const content of toArchive) {
+    await db.update(careerContents)
+      .set({
+        status: 'archived',
+        updatedAt: new Date(),
+      })
+      .where(eq(careerContents.id, content.id));
+  }
+
+  // 执行重分类
+  for (const { content, newCategory } of toReclassify) {
+    await db.update(careerContents)
+      .set({
+        category: newCategory,
+        updatedAt: new Date(),
+      })
+      .where(eq(careerContents.id, content.id));
+  }
+
+  console.log(`\n已归档 ${toArchive.length} 条，已重分类 ${toReclassify.length} 条`);
+  console.log('缓存将在下次请求时自动刷新');
 }
 
-main();
-
+auditCareerContents().catch((err) => {
+  console.error('审计失败:', err);
+  process.exit(1);
+});
