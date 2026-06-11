@@ -18,6 +18,7 @@ export type PrototypeGenerationOutput = {
 };
 
 const MAX_VISION_INLINE_IMAGE_SIZE = 7 * 1024 * 1024;
+const MODEL_TIMEOUT_MS = 12_000;
 
 function element(type: PrototypeElement['type'], patch: Omit<PrototypeElement, 'type'>): PrototypeElement {
   return { type, ...patch };
@@ -197,8 +198,11 @@ async function requestJsonFromAI(system: string, user: string): Promise<{ conten
   const { apiKey, baseUrl, model } = getDeepSeekEnv();
   if (!apiKey) return null;
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), MODEL_TIMEOUT_MS);
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
+    signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
@@ -214,7 +218,7 @@ async function requestJsonFromAI(system: string, user: string): Promise<{ conten
       response_format: { type: 'json_object' },
       thinking: { type: 'disabled' },
     }),
-  });
+  }).finally(() => clearTimeout(timeout));
 
   if (!res.ok) return null;
   const data = await res.json().catch(() => null);
@@ -231,9 +235,12 @@ export async function summarizePrototypeReferenceImage(file: File): Promise<stri
 
   const bytes = Buffer.from(await file.arrayBuffer());
   const dataUrl = `data:${file.type};base64,${bytes.toString('base64')}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), MODEL_TIMEOUT_MS);
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
+    signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
@@ -262,7 +269,9 @@ export async function summarizePrototypeReferenceImage(file: File): Promise<stri
       temperature: 0.1,
       stream: false,
     }),
-  }).catch(() => null);
+  })
+    .catch(() => null)
+    .finally(() => clearTimeout(timeout));
 
   if (!res || !res.ok) return null;
   const data = await res.json().catch(() => null);
