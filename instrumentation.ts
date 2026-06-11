@@ -1,18 +1,20 @@
+import type { StdioOptions } from 'child_process';
+
 type SchedulerName = 'rss' | 'career';
 
 type SchedulerProcessState = {
   started: Partial<Record<SchedulerName, boolean>>;
 };
 
-const schedulerCommands: Record<SchedulerName, { envKey: string; script: string; logPrefix: string }> = {
+const schedulerCommands: Record<SchedulerName, { envKey: string; entry: string; logPrefix: string }> = {
   rss: {
     envKey: 'ENABLE_LOCAL_RSS_SCHEDULER',
-    script: 'rss:schedule',
+    entry: 'scripts/prod/scheduled-fetch-rss.ts',
     logPrefix: 'RSS',
   },
   career: {
     envKey: 'ENABLE_LOCAL_CAREER_SCHEDULER',
-    script: 'career:schedule',
+    entry: 'scripts/prod/scheduled-fetch-career.ts',
     logPrefix: 'Career',
   },
 };
@@ -40,40 +42,32 @@ async function startSchedulerProcess(name: SchedulerName) {
   if (state.started[name]) return;
   state.started[name] = true;
 
-  const { script, logPrefix } = schedulerCommands[name];
+  const { entry, logPrefix } = schedulerCommands[name];
   const runtimeRequire = eval('require') as NodeRequire;
   const { spawn } = runtimeRequire('child_process') as typeof import('child_process');
+  const { join } = runtimeRequire('path') as typeof import('path');
+  const tsxCli = join(process.cwd(), 'node_modules', 'tsx', 'dist', 'cli.mjs');
+  const shouldForwardLogs = (process.env.LOCAL_SCHEDULER_LOGS || '').toLowerCase() === 'true';
+  const stdio: StdioOptions = shouldForwardLogs ? ['ignore', 'pipe', 'pipe'] : 'ignore';
 
-  const isWindows = process.platform === 'win32';
-
-  // Windows: 使用 cmd /c 并设置 windowsHide 来隐藏窗口
-  // macOS/Linux: 使用 nohup
-  const child = isWindows
-    ? spawn('cmd.exe', ['/c', 'npm.cmd', 'run', script], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        windowsHide: true,
-        detached: true,
-      })
-    : spawn('nohup', ['npm', 'run', script], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        shell: true,
-        detached: true,
-      });
-
-  // 子进程独立运行，不阻塞父进程退出
-  child.unref();
-
-  child.stdout?.on('data', (chunk) => {
-    process.stdout.write(`[${logPrefix}][SchedulerProcess] ${chunk}`);
+  const child = spawn(process.execPath, [tsxCli, entry], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio,
+    windowsHide: true,
   });
 
-  child.stderr?.on('data', (chunk) => {
-    process.stderr.write(`[${logPrefix}][SchedulerProcess] ${chunk}`);
-  });
+  console.log(`[${logPrefix}][SchedulerProcess] Started silently`);
+
+  if (shouldForwardLogs) {
+    child.stdout?.on('data', (chunk) => {
+      process.stdout.write(`[${logPrefix}][SchedulerProcess] ${chunk}`);
+    });
+
+    child.stderr?.on('data', (chunk) => {
+      process.stderr.write(`[${logPrefix}][SchedulerProcess] ${chunk}`);
+    });
+  }
 
   child.on('exit', (code, signal) => {
     state.started[name] = false;
