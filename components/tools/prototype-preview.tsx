@@ -12,6 +12,7 @@ import {
 } from '@/lib/tools/prototype-spec';
 import { getIconGlyph, getPrototypeTheme } from '@/lib/tools/prototype-design-system';
 import { getPrototypeAsset } from '@/lib/tools/prototype-assets';
+import { validatePrototypeSpecForPreview } from '@/lib/tools/prototype-validator';
 import { cn } from '@/lib/utils';
 
 function baseStyle(element: PrototypeElement): CSSProperties {
@@ -418,7 +419,7 @@ export function PrototypePreview({ spec }: { spec: PrototypeSpec }) {
   }
 
   const isV2 = isPrototypeSpecV2(spec);
-  const warnings = isV2 ? spec.frames.flatMap((item) => item.validation || []) : [];
+  const warnings = isV2 ? validatePrototypeSpecForPreview(spec) : [];
 
   return (
     <div className="rounded-lg border bg-background p-4">
