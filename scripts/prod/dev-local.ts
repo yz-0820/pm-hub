@@ -1,5 +1,5 @@
 import { spawn, ChildProcess } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, appendFileSync, mkdirSync } from 'fs';
 import { createConnection } from 'net';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -12,6 +12,17 @@ type NamedChild = {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, '..', '..');
 const flowchartRoot = join(projectRoot, '..', 'next-ai-draw-io');
+const LOG_DIR = join(projectRoot, 'logs');
+
+function logToFile(name: string, data: string) {
+  try {
+    const timestamp = new Date().toISOString();
+    const line = `[${timestamp}] [${name}] ${data}`;
+    appendFileSync(join(LOG_DIR, `${name}.log`), line);
+  } catch {
+    // 忽略日志写入失败
+  }
+}
 
 function isPortOpen(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -31,11 +42,14 @@ function isPortOpen(port: number): Promise<boolean> {
 function run(name: string, command: string, cwd: string): NamedChild {
   const child = spawn(command, {
     cwd,
-    stdio: 'inherit',
+    stdio: ['ignore', 'pipe', 'pipe'],
     env: process.env,
     shell: true,
     windowsHide: true,
   });
+
+  child.stdout?.on('data', (data: Buffer) => logToFile(name, data.toString()));
+  child.stderr?.on('data', (data: Buffer) => logToFile(name, data.toString()));
 
   return { name, child };
 }
@@ -48,6 +62,13 @@ function stopAll(children: NamedChild[], code: number) {
 }
 
 async function main() {
+  // 确保日志目录存在
+  try {
+    mkdirSync(LOG_DIR, { recursive: true });
+  } catch {
+    // 目录已存在或创建失败时忽略
+  }
+
   const children: NamedChild[] = [];
 
   children.push(run('pm-hub', 'npm run dev:web', projectRoot));
