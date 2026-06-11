@@ -85,9 +85,20 @@ export async function GET(request: NextRequest) {
     career.errors.push(error instanceof Error ? error.message : String(error));
   }
 
+  // 刷新所有相关页面的 ISR 缓存
   revalidatePath('/', 'layout');
   revalidatePath('/articles', 'layout');
   revalidatePath('/career', 'layout');
+
+  // 刷新搜索索引（如果新内容产生）
+  if (rss.newItems > 0 || career.newItems > 0) {
+    try {
+      const { clearIndex } = await import('@/lib/search/indexer');
+      await clearIndex();
+    } catch (error) {
+      console.error('Failed to clear search index:', error);
+    }
+  }
 
   const success = rss.success && career.success;
 

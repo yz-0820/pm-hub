@@ -12,8 +12,12 @@ import {
   getStoredPrototype,
   savePrototypeVersion,
 } from '@/lib/tools/prototype-store';
+import { checkRateLimit, getClientIdentifier } from '@/lib/utils/rate-limiter';
 
 export const runtime = 'nodejs';
+
+// 原型生成限流：每 IP 每 10 分钟最多 5 次
+const PROTOTYPE_RATE_LIMIT = { windowMs: 10 * 60 * 1000, maxRequests: 5 };
 
 const MAX_REFERENCE_IMAGE_SIZE = 10 * 1024 * 1024;
 const SUPPORTED_REFERENCE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
@@ -74,6 +78,27 @@ async function parseRequest(request: NextRequest): Promise<unknown> {
 
 export async function POST(request: NextRequest) {
   try {
+    // 限流检查
+    const clientId = getClientIdentifier(request);
+    const limit = checkRateLimit(`prototype:${clientId}`, PROTOTYPE_RATE_LIMIT);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: '请求过于频繁，请稍后再试',
+          retryAfter: Math.ceil((limit.resetAt - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(PROTOTYPE_RATE_LIMIT.maxRequests),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(Math.ceil(limit.resetAt / 1000)),
+          },
+        }
+      );
+    }
+
     const body = await parseRequest(request);
     const mode = (body as { mode?: unknown })?.mode;
 

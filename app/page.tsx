@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles, Briefcase, BookOpen, Wrench, GitBranch } from 'lucide-react';
-import { and, desc, eq, gte, lt, notLike, sql, inArray } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, notLike, sql, inArray, or } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
 import { getArticleDefaultCover, getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
@@ -261,27 +261,40 @@ async function getLatestCareerForCarousel(limit: number = 5) {
   }
 }
 
+// 知名公司/品牌列表 - 用于 Hot Events 过滤
+const HOT_EVENT_KEYWORDS = [
+  '发布会', '大会', '峰会', '论坛', '财报', '营收', '季报', '年报',
+  '上线', '发布', '推出', '开测', '公测', '融资', '收购', '并购',
+  'IPO', '上市', '监管', '政策', '法规', '禁令', '批准',
+];
+
+const HOT_EVENT_COMPANIES = [
+  '苹果', 'Apple', '谷歌', 'Google', '微软', 'Microsoft', '亚马逊', 'Amazon',
+  'Meta', 'Facebook', '特斯拉', 'Tesla', '英伟达', 'NVIDIA', 'AMD', '英特尔', 'Intel',
+  'OpenAI', 'ChatGPT', 'Anthropic', 'Claude', 'Space X', 'SpaceX',
+  '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
+  '百度', '美团', '滴滴', '小米', '华为', 'OPPO', 'vivo', '京东', '拼多多', '网易',
+  '快手', 'B站', '哔哩哔哩', '知乎', '小红书', '微博', '携程', '饿了么',
+  'Salesforce', 'Oracle', 'IBM', 'SAP', 'Adobe', 'Zoom', 'Slack', 'Shopify',
+  'Netflix', '网飞', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square',
+  '标普', '纳斯达克', '纳指',
+];
+
 async function getHotEvents(limit: number = 5) {
   try {
-    // 严格只保留知名公司新闻 - 扩大查询范围到30天确保有足够结果
-    const keywords = ['发布会', '大会', '峰会', '论坛', '财报', '营收', '季报', '年报',
-      '上线', '发布', '推出', '开测', '公测', '融资', '收购', '并购', 
-      'IPO', '上市', '监管', '政策', '法规', '禁令', '批准'];
-    
-    // 知名公司/品牌列表
-    const companies = ['苹果', 'Apple', '谷歌', 'Google', '微软', 'Microsoft', '亚马逊', 'Amazon',
-      'Meta', 'Facebook', '特斯拉', 'Tesla', '英伟达', 'NVIDIA', 'AMD', '英特尔', 'Intel',
-      'OpenAI', 'ChatGPT', 'Anthropic', 'Claude', 'Space X', 'SpaceX',
-      '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
-      '百度', '美团', '滴滴', '小米', '华为', 'OPPO', 'vivo', '京东', '拼多多', '网易',
-      '快手', 'B站', '哔哩哔哩', '知乎', '小红书', '微博', '携程', '饿了么',
-      'Salesforce', 'Oracle', 'IBM', 'SAP', 'Adobe', 'Zoom', 'Slack', 'Shopify',
-      'Netflix', '网飞', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square',
-      '标普', '纳斯达克', '纳指'];
-    
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
-    
+
+    // 构建关键词 ILIKE 条件
+    const keywordConditions = HOT_EVENT_KEYWORDS.map(kw =>
+      sql`LOWER(${articles.title}) LIKE ${'%' + kw.toLowerCase() + '%'}`
+    );
+
+    // 构建公司 ILIKE 条件
+    const companyConditions = HOT_EVENT_COMPANIES.map(company =>
+      sql`LOWER(${articles.title}) LIKE ${'%' + company.toLowerCase() + '%'}`
+    );
+
     const results = await db
       .select({
         id: articles.id,
@@ -294,24 +307,16 @@ async function getHotEvents(limit: number = 5) {
         and(
           gte(articles.publishedAt, thirtyDaysAgo),
           inArray(articles.category, articleCategories),
+          or(...keywordConditions),
+          or(...companyConditions),
         )
       )
       .orderBy(desc(articles.publishedAt))
-      .limit(200);
-
-    // 关键词过滤
-    const filtered = results.filter(item => 
-      keywords.some(kw => item.title.includes(kw))
-    );
-
-    // 严格知名公司过滤 - 只保留包含知名公司的文章
-    const companyFiltered = filtered.filter(item =>
-      companies.some(company => item.title.includes(company))
-    );
+      .limit(50);
 
     // 去重（完全相同的标题）
     const seen = new Set<string>();
-    const unique = companyFiltered.filter(item => {
+    const unique = results.filter(item => {
       if (seen.has(item.title)) return false;
       seen.add(item.title);
       return true;
