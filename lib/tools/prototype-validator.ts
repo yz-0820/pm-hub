@@ -7,6 +7,13 @@ import {
 } from './prototype-spec';
 import { isPrototypeAssetRef } from './prototype-assets';
 
+type PositionedElement = PrototypeV2Element & {
+  absoluteX: number;
+  absoluteY: number;
+  path: string;
+  parentPath?: string;
+};
+
 function hexToRgb(hex?: string): [number, number, number] | null {
   if (!hex || !/^#([0-9a-fA-F]{6})$/.test(hex)) return null;
   return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
@@ -29,20 +36,34 @@ function contrastRatio(foreground?: string, background?: string): number | null 
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-function intersects(a: PrototypeV2Element, b: PrototypeV2Element) {
-  const ax2 = a.x + a.width;
-  const ay2 = a.y + a.height;
-  const bx2 = b.x + b.width;
-  const by2 = b.y + b.height;
-  const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(a.x, b.x));
-  const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(a.y, b.y));
+function intersects(a: PositionedElement, b: PositionedElement) {
+  const ax2 = a.absoluteX + a.width;
+  const ay2 = a.absoluteY + a.height;
+  const bx2 = b.absoluteX + b.width;
+  const by2 = b.absoluteY + b.height;
+  const overlapX = Math.max(0, Math.min(ax2, bx2) - Math.max(a.absoluteX, b.absoluteX));
+  const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(a.absoluteY, b.absoluteY));
   const overlapArea = overlapX * overlapY;
   const minArea = Math.min(a.width * a.height, b.width * b.height);
   return minArea > 0 && overlapArea / minArea > 0.42;
 }
 
-function flatten(elements: PrototypeV2Element[]): PrototypeV2Element[] {
-  return elements.flatMap((element) => [element, ...(element.children ? flatten(element.children) : [])]);
+function flatten(elements: PrototypeV2Element[], offsetX = 0, offsetY = 0, parentPath = ''): PositionedElement[] {
+  return elements.flatMap((element, index) => {
+    const path = parentPath ? `${parentPath}.${index}` : String(index);
+    const positioned: PositionedElement = {
+      ...element,
+      absoluteX: offsetX + element.x,
+      absoluteY: offsetY + element.y,
+      path,
+      parentPath: parentPath || undefined,
+    };
+    return [positioned, ...(element.children ? flatten(element.children, positioned.absoluteX, positioned.absoluteY, path) : [])];
+  });
+}
+
+function isAncestorOrDescendant(a: PositionedElement, b: PositionedElement) {
+  return a.path.startsWith(`${b.path}.`) || b.path.startsWith(`${a.path}.`);
 }
 
 export function validatePrototypeSpecForPreview(spec: PrototypeSpec): PrototypeValidationWarning[] {
@@ -56,7 +77,7 @@ export function validatePrototypeSpecV2(spec: PrototypeSpecV2): PrototypeValidat
   for (const frame of spec.frames) {
     const elements = flatten(frame.elements);
     for (const element of elements) {
-      if (element.x + element.width > frame.width || element.y + element.height > frame.height) {
+      if (element.absoluteX + element.width > frame.width || element.absoluteY + element.height > frame.height) {
         warnings.push({
           severity: 'error',
           code: 'out-of-bounds',
@@ -94,11 +115,12 @@ export function validatePrototypeSpecV2(spec: PrototypeSpecV2): PrototypeValidat
       }
     }
 
-    const majorElements = elements.filter((element) => !['background', 'divider'].includes(element.type));
+    const majorElements = elements.filter((element) => !['background', 'divider'].includes(element.type) && !element.children?.length);
     for (let i = 0; i < majorElements.length; i += 1) {
       for (let j = i + 1; j < majorElements.length; j += 1) {
         const a = majorElements[i];
         const b = majorElements[j];
+        if (isAncestorOrDescendant(a, b)) continue;
         if ((a.zIndex || 0) !== (b.zIndex || 0)) continue;
         if (intersects(a, b)) {
           warnings.push({

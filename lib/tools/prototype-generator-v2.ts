@@ -111,8 +111,8 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
             height: 78,
             layout: { mode: 'horizontal', align: 'between' },
             children: [
-              element('button', { name: 'Daily 30', text: '每日30首', icon: 'music', x: 0, y: 0, width: 74, height: 72, background: '#13d78a', color: '#ffffff', radius: 20 }),
-              element('button', { name: 'Ranking', text: '排行榜', icon: 'chart', x: 90, y: 0, width: 74, height: 72, background: '#1ba5ff', color: '#ffffff', radius: 20 }),
+              element('button', { name: 'Daily 30', text: '每日30首', icon: 'music', x: 0, y: 0, width: 74, height: 72, background: '#13d78a', color: '#063b2b', radius: 20 }),
+              element('button', { name: 'Ranking', text: '排行榜', icon: 'chart', x: 90, y: 0, width: 74, height: 72, background: '#1ba5ff', color: '#082f49', radius: 20 }),
               element('button', { name: 'Radio', text: '电台', icon: 'sparkles', x: 180, y: 0, width: 74, height: 72, background: '#7c3aed', color: '#ffffff', radius: 20 }),
               element('button', { name: 'Member', text: '会员', icon: 'star', x: 268, y: 0, width: 74, height: 72, background: '#ffb84d', color: '#101820', radius: 20 }),
             ],

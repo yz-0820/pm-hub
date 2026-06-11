@@ -257,6 +257,17 @@ function PrototypeElementV2View({ element, frame, nested = false }: { element: P
     );
   }
 
+  if (element.type === 'section' || element.type === 'frame') {
+    return (
+      <div
+        className={`${positionClass} overflow-visible`}
+        style={{ ...style, background: element.background ? style.background : undefined, boxShadow: element.shadow ? style.boxShadow : undefined }}
+      >
+        <V2Children element={element} frame={frame} />
+      </div>
+    );
+  }
+
   if (element.type === 'card') {
     return (
       <div className={`${positionClass} overflow-hidden border p-3`} style={{ ...style, background: element.background || theme.colors.surface, borderColor: element.borderColor || theme.colors.border }}>
