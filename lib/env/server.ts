@@ -14,6 +14,12 @@ export type QwenImageEnv = {
   model: string;
 };
 
+export type DashScopeVisionEnv = {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+};
+
 export function getDeepSeekEnv(): DeepSeekEnv {
   return {
     apiKey: process.env.DEEPSEEK_API_KEY || '',
@@ -29,5 +35,17 @@ export function getQwenImageEnv(): QwenImageEnv {
       process.env.DASHSCOPE_BASE_URL ||
       'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
     model: process.env.QWEN_IMAGE_MODEL || 'qwen-image-2.0-pro',
+  };
+}
+
+export function getDashScopeVisionEnv(): DashScopeVisionEnv {
+  return {
+    apiKey: process.env.DASHSCOPE_VISION_API_KEY || process.env.DASHSCOPE_API_KEY || '',
+    baseUrl: (
+      process.env.DASHSCOPE_COMPATIBLE_BASE_URL ||
+      process.env.DASHSCOPE_OPENAI_BASE_URL ||
+      'https://dashscope.aliyuncs.com/compatible-mode/v1'
+    ).replace(/\/+$/, ''),
+    model: process.env.QWEN_VISION_MODEL || 'qwen-vl-plus',
   };
 }

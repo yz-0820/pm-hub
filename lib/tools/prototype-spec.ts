@@ -65,6 +65,7 @@ export const createPrototypeInputSchema = z.object({
   keyContent: z.string().trim().min(1, '请填写关键模块').max(2000),
   instructions: z.string().trim().min(1, '请填写生成说明').max(2000),
   hasReferenceImage: z.boolean().optional().default(false),
+  referenceImageSummary: z.string().trim().max(1200).optional(),
 });
 
 export const revisePrototypeInputSchema = z.object({

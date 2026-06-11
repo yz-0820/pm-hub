@@ -6,6 +6,7 @@ import {
 import {
   generatePrototypeFromInput,
   revisePrototypeFromInput,
+  summarizePrototypeReferenceImage,
 } from '@/lib/tools/prototype-generator-v2';
 import {
   getStoredPrototype,
@@ -48,6 +49,11 @@ async function parseRequest(request: NextRequest): Promise<unknown> {
       };
     }
 
+    const referenceImageSummary =
+      referenceImage instanceof File && referenceImage.size > 0
+        ? await summarizePrototypeReferenceImage(referenceImage)
+        : null;
+
     return {
       mode: 'create',
       name: getString(formData, 'name'),
@@ -59,6 +65,7 @@ async function parseRequest(request: NextRequest): Promise<unknown> {
       keyContent: getString(formData, 'keyContent'),
       instructions: getString(formData, 'instructions'),
       hasReferenceImage: referenceImage instanceof File && referenceImage.size > 0,
+      referenceImageSummary: referenceImageSummary || undefined,
     };
   }
 

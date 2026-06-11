@@ -1,4 +1,4 @@
-import { getDeepSeekEnv } from '@/lib/env/server';
+import { getDashScopeVisionEnv, getDeepSeekEnv } from '@/lib/env/server';
 import {
   CreatePrototypeInput,
   PrototypeElement,
@@ -16,6 +16,8 @@ export type PrototypeGenerationOutput = {
   model: string;
   usedAI: boolean;
 };
+
+const MAX_VISION_INLINE_IMAGE_SIZE = 7 * 1024 * 1024;
 
 function element(type: PrototypeElement['type'], patch: Omit<PrototypeElement, 'type'>): PrototypeElement {
   return { type, ...patch };
@@ -221,6 +223,53 @@ async function requestJsonFromAI(system: string, user: string): Promise<{ conten
   return { content, model };
 }
 
+export async function summarizePrototypeReferenceImage(file: File): Promise<string | null> {
+  if (file.size <= 0 || file.size > MAX_VISION_INLINE_IMAGE_SIZE) return null;
+
+  const { apiKey, baseUrl, model } = getDashScopeVisionEnv();
+  if (!apiKey) return null;
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const dataUrl = `data:${file.type};base64,${bytes.toString('base64')}`;
+
+  const res = await fetch(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: dataUrl },
+            },
+            {
+              type: 'text',
+              text: [
+                '请分析这张参考图对产品原型生成有用的信息。',
+                '只总结页面结构、布局层级、主要模块、视觉风格、交互控件，不要输出无关描述。',
+                '控制在 300 字以内。',
+              ].join('\n'),
+            },
+          ],
+        },
+      ],
+      temperature: 0.1,
+      stream: false,
+    }),
+  }).catch(() => null);
+
+  if (!res || !res.ok) return null;
+  const data = await res.json().catch(() => null);
+  const content = data?.choices?.[0]?.message?.content;
+  return typeof content === 'string' && content.trim() ? content.trim().slice(0, 1200) : null;
+}
+
 const schemaInstruction = [
   '你是产品原型信息架构师。只输出 JSON，不要输出 Markdown 或解释。',
   '输出必须符合 prototypeSpec v1：version, specId, name, platform, canvas, frames。',
@@ -243,8 +292,9 @@ export async function generatePrototypeFromInput(input: CreatePrototypeInput): P
     `关键模块：${input.keyContent}`,
     `生成说明：${input.instructions}`,
     `是否提供参考图：${input.hasReferenceImage ? '是，仅作为布局/风格参考' : '否'}`,
+    input.referenceImageSummary ? `参考图视觉摘要：${input.referenceImageSummary}` : '',
     `请使用 specId：${fallback.prototypeSpec.specId}`,
-  ].join('\n\n');
+  ].filter(Boolean).join('\n\n');
 
   const ai = await requestJsonFromAI(schemaInstruction, user).catch(() => null);
   if (!ai) return fallback;
