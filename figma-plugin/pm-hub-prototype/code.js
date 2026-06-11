@@ -359,6 +359,16 @@ function drawV2Element(parent, element, fonts) {
     return;
   }
 
+  if (element.type === 'section' || element.type === 'frame') {
+    var section = createV2Frame(parent, element);
+    var sectionChildren = element.children || [];
+    if (sectionChildren.length === 0 && element.text) {
+      createText(section, { name: element.name + ' Label', text: element.text, x: 14, y: 12, width: element.width - 28, height: 22, color: element.color || '#101820', fontSize: 14 }, fonts, { bold: true, fontSize: 14 });
+    }
+    for (i = 0; i < sectionChildren.length; i += 1) drawV2Element(section, sectionChildren[i], fonts);
+    return;
+  }
+
   if (element.type === 'icon') {
     createText(parent, assign(element, { text: iconGlyph(element.icon), color: element.color || '#13d78a' }), fonts, { bold: true, fontSize: element.fontSize || 20 });
     return;
@@ -413,6 +423,38 @@ function drawV2Element(parent, element, fonts) {
       createText(list, { name: 'Rank ' + (i + 1), text: String(i + 1), x: 16, y: y, width: 28, height: 18, color: i === 0 ? '#13d78a' : '#94a3b8', fontSize: 13 }, fonts, { bold: true, fontSize: 13 });
       createText(list, { name: 'List Item ' + (i + 1), text: items[i], x: 50, y: y, width: list.width - 78, height: 18, color: '#101820', fontSize: 12 }, fonts, { fontSize: 12 });
     }
+    return;
+  }
+
+  if (element.type === 'mediaPlayer') {
+    var player = createV2Frame(parent, element);
+    drawAssetArt(player, assign(element, { x: 10, y: 9 }), fonts, { size: 40, radius: 20, iconSize: 16 });
+    createText(player, { name: 'Now Playing', text: element.text || element.name, x: 62, y: 12, width: player.width - 150, height: 18, color: '#ffffff', fontSize: 13 }, fonts, { bold: true, fontSize: 13 });
+    createText(player, { name: 'Now Playing Meta', text: (element.items && element.items[0]) || '', x: 62, y: 32, width: player.width - 150, height: 14, color: '#bac3cc', fontSize: 10 }, fonts, { fontSize: 10 });
+    createText(player, { name: 'Controls', text: iconGlyph(element.icon || 'pause') + '   ' + iconGlyph('next'), x: player.width - 72, y: 18, width: 58, height: 22, color: '#ffffff', fontSize: 18 }, fonts, { bold: true, fontSize: 18 });
+    return;
+  }
+
+  if (element.type === 'bottomNav') {
+    var bottomNav = createV2Frame(parent, element);
+    var navItems = (element.items || ['首页', '发现', '工具', '我的']).slice(0, 5);
+    var icons = ['home', 'search', 'music', 'user', 'settings'];
+    var itemWidth = bottomNav.width / navItems.length;
+    for (i = 0; i < navItems.length; i += 1) {
+      createText(bottomNav, { name: 'Tab Icon ' + navItems[i], text: iconGlyph(icons[i]), x: i * itemWidth, y: 10, width: itemWidth, height: 20, color: i === 0 ? '#13d78a' : '#8b95a1', fontSize: 17 }, fonts, { bold: true, fontSize: 17 });
+      createText(bottomNav, { name: 'Tab Label ' + navItems[i], text: navItems[i], x: i * itemWidth, y: 34, width: itemWidth, height: 14, color: i === 0 ? '#13d78a' : '#8b95a1', fontSize: 10 }, fonts, { fontSize: 10 });
+    }
+    return;
+  }
+
+  if (element.type === 'badge' || element.type === 'stat') {
+    var badge = createV2Frame(parent, element);
+    createText(badge, { name: 'Badge Label', text: iconGlyph(element.icon) + ' ' + (element.text || element.name), x: 14, y: element.height / 2 - 9, width: element.width - 28, height: 18, color: element.color || '#0f766e', fontSize: 12 }, fonts, { bold: true, fontSize: 12 });
+    return;
+  }
+
+  if (element.type === 'divider') {
+    createBox(parent, element, { radius: 0, fill: { r: 0.89, g: 0.91, b: 0.94 } });
     return;
   }
 
