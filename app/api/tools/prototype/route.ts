@@ -1,46 +1,143 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePrototypeImage, validatePrototypeInput } from '@/lib/tools/prototype-generator';
+import {
+  createPrototypeInputSchema,
+  revisePrototypeInputSchema,
+} from '@/lib/tools/prototype-spec';
+import {
+  generatePrototypeFromInput,
+  revisePrototypeFromInput,
+} from '@/lib/tools/prototype-generator-v2';
+import {
+  getStoredPrototype,
+  savePrototypeVersion,
+} from '@/lib/tools/prototype-store';
 
 export const runtime = 'nodejs';
 
+const MAX_REFERENCE_IMAGE_SIZE = 10 * 1024 * 1024;
+const SUPPORTED_REFERENCE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+
+function getString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === 'string' ? value : '';
+}
+
+function validateReferenceImage(file: FormDataEntryValue | null): string | null {
+  if (!file) return null;
+  if (!(file instanceof File)) return '参考图格式不正确';
+  if (file.size <= 0) return null;
+  if (!SUPPORTED_REFERENCE_TYPES.has(file.type)) return '参考图仅支持 PNG、JPG、JPEG、WEBP';
+  if (file.size > MAX_REFERENCE_IMAGE_SIZE) return '参考图不能超过 10MB';
+  return null;
+}
+
+async function parseRequest(request: NextRequest): Promise<unknown> {
+  const contentType = request.headers.get('content-type') || '';
+  if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    const referenceImage = formData.get('referenceImage');
+    const imageError = validateReferenceImage(referenceImage);
+    if (imageError) throw new Error(imageError);
+
+    const mode = getString(formData, 'mode') || 'create';
+    if (mode === 'revise') {
+      return {
+        mode,
+        baseSpecId: getString(formData, 'baseSpecId'),
+        revisionInstruction: getString(formData, 'revisionInstruction'),
+      };
+    }
+
+    return {
+      mode: 'create',
+      name: getString(formData, 'name'),
+      platform: getString(formData, 'platform'),
+      pageType: getString(formData, 'pageType'),
+      productContext: getString(formData, 'productContext'),
+      targetUser: getString(formData, 'targetUser'),
+      pageGoal: getString(formData, 'pageGoal'),
+      keyContent: getString(formData, 'keyContent'),
+      instructions: getString(formData, 'instructions'),
+      hasReferenceImage: referenceImage instanceof File && referenceImage.size > 0,
+    };
+  }
+
+  return request.json();
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const image = formData.get('image');
-    const prompt = formData.get('prompt');
+    const body = await parseRequest(request);
+    const mode = (body as { mode?: unknown })?.mode;
 
-    if (!(image instanceof File)) {
-      return NextResponse.json({ success: false, error: '请上传一张图片' }, { status: 400 });
+    if (mode === 'revise') {
+      const parsed = revisePrototypeInputSchema.safeParse(body);
+      if (!parsed.success) {
+        return NextResponse.json(
+          { success: false, error: parsed.error.issues[0]?.message || '参数错误', issues: parsed.error.issues },
+          { status: 400 }
+        );
+      }
+
+      const base = await getStoredPrototype(parsed.data.baseSpecId);
+      if (!base) {
+        return NextResponse.json(
+          { success: false, error: '上一版原型不存在或已过期，请重新生成' },
+          { status: 404 }
+        );
+      }
+
+      const generated = await revisePrototypeFromInput(base.prototypeSpec, parsed.data);
+      const stored = await savePrototypeVersion({
+        parentSpecId: base.specId,
+        version: base.version + 1,
+        summary: generated.summary,
+        model: generated.model,
+        usedAI: generated.usedAI,
+        prototypeSpec: generated.prototypeSpec,
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: stored,
+        timestamp: Date.now(),
+      });
     }
 
-    if (typeof prompt !== 'string') {
-      return NextResponse.json({ success: false, error: '请填写需要修改的内容' }, { status: 400 });
+    const parsed = createPrototypeInputSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: parsed.error.issues[0]?.message || '参数错误', issues: parsed.error.issues },
+        { status: 400 }
+      );
     }
 
-    const validationError = validatePrototypeInput({ image, prompt });
-    if (validationError) {
-      return NextResponse.json({ success: false, error: validationError }, { status: 400 });
-    }
-
-    const result = await generatePrototypeImage({ image, prompt });
+    const generated = await generatePrototypeFromInput(parsed.data);
+    const stored = await savePrototypeVersion({
+      parentSpecId: null,
+      version: 1,
+      summary: generated.summary,
+      model: generated.model,
+      usedAI: generated.usedAI,
+      prototypeSpec: generated.prototypeSpec,
+    });
 
     return NextResponse.json({
       success: true,
-      data: result,
+      data: stored,
       timestamp: Date.now(),
     });
   } catch (error) {
-    console.error('Error generating prototype image:', error);
-    const message = error instanceof Error ? error.message : '原型图生成失败';
-    const isConfigError = message.includes('DASHSCOPE_API_KEY');
+    const message = error instanceof Error ? error.message : '原型生成失败';
+    console.error('Error generating prototype spec:', message);
     return NextResponse.json(
       {
         success: false,
-        error: isConfigError ? message : '原型图生成失败',
+        error: message || '原型生成失败',
         details: process.env.NODE_ENV !== 'production' ? message : undefined,
         timestamp: Date.now(),
       },
-      { status: isConfigError ? 500 : 500 }
+      { status: 500 }
     );
   }
 }

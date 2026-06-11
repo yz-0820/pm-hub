@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, "Microsoft YaHei", sans-serif;
+        color: #0f172a;
+        background: #ffffff;
+      }
+      .wrap {
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      input {
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 6px;
+        padding: 9px 10px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      button {
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 8px;
+        color: #ffffff;
+        background: #2563eb;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+      .status {
+        min-height: 18px;
+        margin-top: 12px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .error {
+        color: #dc2626;
+      }
+      .success {
+        color: #059669;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>PM Hub 原型导入</h1>
+      <p>从 PM Hub 复制导入码，在当前 Figma 文件生成可编辑图层。</p>
+
+      <label>
+        PM Hub 地址
+        <input id="baseUrl" value="http://localhost:3000" />
+      </label>
+      <label>
+        导入码
+        <input id="code" placeholder="例如 ABC123" />
+      </label>
+
+      <button id="submit">导入原型</button>
+      <div id="status" class="status"></div>
+    </div>
+
+    <script>
+      const baseUrlInput = document.getElementById('baseUrl');
+      const codeInput = document.getElementById('code');
+      const submit = document.getElementById('submit');
+      const statusEl = document.getElementById('status');
+
+      submit.onclick = () => {
+        const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, '');
+        const code = codeInput.value.trim();
+        if (!baseUrl || !code) {
+          statusEl.className = 'status error';
+          statusEl.textContent = '请填写 PM Hub 地址和导入码';
+          return;
+        }
+        submit.disabled = true;
+        statusEl.className = 'status';
+        statusEl.textContent = '正在导入...';
+        parent.postMessage({ pluginMessage: { type: 'import', baseUrl, code } }, '*');
+      };
+
+      window.onmessage = (event) => {
+        const message = event.data.pluginMessage;
+        if (!message) return;
+        submit.disabled = false;
+        statusEl.className = `status ${message.type === 'success' ? 'success' : 'error'}`;
+        statusEl.textContent = message.message;
+      };
+    </script>
+  </body>
+</html>
