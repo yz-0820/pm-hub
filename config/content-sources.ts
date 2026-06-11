@@ -817,9 +817,9 @@ export function autoClassify(title: string, description?: string): string {
   const maxScore = sorted[0][1];
   const secondScore = sorted[1][1];
   
-  // 最低阈值：至少需要2分才能分配到具体分类
-  // 且领先第二名至少1分，确保分类有区分度
-  if (maxScore >= 2 && maxScore > secondScore) {
+  // 最低阈值：至少需要4分才能分配到具体分类
+  // 且领先第二名至少2分，确保分类有明确区分度
+  if (maxScore >= 4 && maxScore - secondScore >= 2) {
     return sorted[0][0];
   }
   

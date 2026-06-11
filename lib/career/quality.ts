@@ -126,6 +126,24 @@ const NON_CAREER_TOPIC_PATTERNS: Array<{ label: string; patterns: RegExp[]; allo
     ],
   },
   {
+    label: '企业人事变动/高管换帅',
+    patterns: [
+      /(换帅|卸任|接任|接任.*ceo|接任.*总裁|接任.*董事长)/i,
+      /(人事变动|人事调整|管理层调整|高管离职|高管变动)/i,
+      /(创始人|ceo|董事长|总裁).*(卸任|离职|退休|下课|出局)/i,
+      /(.*接任.*(ceo|总裁|董事长|总经理))/i,
+    ],
+  },
+  {
+    label: '商业竞争/业务布局',
+    patterns: [
+      /(外卖大战|打车大战|补贴大战|价格大战|烧钱)/i,
+      /(业务布局|战略布局|生态布局|矩阵|版图)/i,
+      /(下半场|中场休息|下一战|下一城|硬战|硬仗)/i,
+      /(守住|守住定价权|守住份额|卡位|抢占)/i,
+    ],
+  },
+  {
     label: '行业新闻/产品发布',
     allowWithCareerAnchor: true,
     patterns: [
@@ -167,12 +185,12 @@ const STRONG_WORKPLACE_ANCHORS = [
   '裁员', '涨薪', '年终奖',
 ];
 
-// 弱职场锚点 - 需要至少命中 2 个才算与职场相关
+// 弱职场锚点 - 需要至少命中 3 个才算与职场相关
 const WEAK_WORKPLACE_ANCHORS = [
-  '工作', '公司', '团队', '管理', '沟通', '项目', '领导', '汇报',
-  '员工', '绩效', '协作', '合作', '会议', '效率', '时间管理',
-  '客户', '需求', '方案', '计划', '任务', '目标', '执行',
-  '经验', '分享', '复盘', '总结', '成长', '技能', '能力',
+  '工作', '团队', '管理', '沟通', '项目', '领导', '汇报',
+  '员工', '绩效', '协作', '会议', '效率', '时间管理',
+  '需求', '方案', '计划', '任务', '目标', '执行',
+  '复盘', '总结', '成长', '技能', '能力',
   '干货', '心得', '教训', '避坑',
 ];
 
@@ -211,9 +229,9 @@ export function hasCareerRelevance(content: Pick<NormalizedContent, 'title' | 'd
     return { relevant: true, reason: `强锚点: ${strongHits.join(', ')}` };
   }
 
-  // 弱锚点检查：需要命中至少 2 个
+  // 弱锚点检查：需要命中至少 3 个
   const weakHits = WEAK_WORKPLACE_ANCHORS.filter(k => text.includes(k.toLowerCase()));
-  if (weakHits.length >= 2) {
+  if (weakHits.length >= 3) {
     return { relevant: true, reason: `弱锚点 x${weakHits.length}: ${weakHits.join(', ')}` };
   }
 
