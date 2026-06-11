@@ -12,6 +12,17 @@ function valueOr(value, fallback) {
   return value === undefined || value === null ? fallback : value;
 }
 
+function clampText(text, width, height, fontSize) {
+  var source = String(text || '');
+  var size = fontSize || 14;
+  var hasWideChars = /[^\x00-\x7F]/.test(source);
+  var charWidth = hasWideChars ? size * 1.02 : size * 0.58;
+  var charsPerLine = Math.max(4, Math.floor((width || 120) / charWidth));
+  var lines = Math.max(1, Math.floor((height || 24) / (size * 1.35)));
+  var maxChars = Math.max(4, charsPerLine * lines);
+  return source.length > maxChars ? source.slice(0, Math.max(1, maxChars - 3)) + '...' : source;
+}
+
 async function loadFonts() {
   var candidates = [
     { family: 'Inter', regular: 'Regular', bold: 'Bold' },
@@ -147,8 +158,8 @@ function createText(parent, element, fonts, options) {
   text.resize(element.width || 120, element.height || 32);
   text.fontName = { family: fonts.family, style: options.bold ? fonts.bold : fonts.regular };
   text.fontSize = element.fontSize || options.fontSize || 14;
-  text.characters = element.text || element.name || '';
-  text.textAutoResize = 'HEIGHT';
+  text.characters = clampText(element.text || element.name || '', element.width || 120, element.height || 32, text.fontSize);
+  text.textAutoResize = 'NONE';
   text.fills = [solid(element.color || options.color || '#0f172a')];
   parent.appendChild(text);
   return text;
@@ -332,8 +343,8 @@ function drawAssetArt(parent, element, fonts, options) {
   var size = options.size || Math.min(element.width || 96, element.height || 96, 104);
   var art = figma.createFrame();
   art.name = options.name || 'Asset Art';
-  art.x = options.x || 0;
-  art.y = options.y || 0;
+  art.x = valueOr(options.x, element.x || 0);
+  art.y = valueOr(options.y, element.y || 0);
   art.resize(size, size);
   art.cornerRadius = valueOr(options.radius, valueOr(element.radius, 18));
   art.clipsContent = true;
@@ -400,15 +411,21 @@ function drawV2Element(parent, element, fonts) {
 
   if (element.type === 'button') {
     var button = createV2Frame(parent, element);
-    createText(button, { name: 'Button Label', text: iconGlyph(element.icon) + ' ' + (element.text || element.name), x: 8, y: element.height / 2 - 9, width: element.width - 16, height: 18, color: element.color || '#ffffff', fontSize: 12 }, fonts, { bold: true, fontSize: 12 });
+    if (element.width <= 90 && element.height >= 56) {
+      createText(button, { name: 'Button Icon', text: iconGlyph(element.icon), x: 0, y: 14, width: element.width, height: 18, color: element.color || '#ffffff', fontSize: 14 }, fonts, { bold: true, fontSize: 14 });
+      createText(button, { name: 'Button Label', text: element.text || element.name, x: 8, y: 38, width: element.width - 16, height: 16, color: element.color || '#ffffff', fontSize: 10 }, fonts, { bold: true, fontSize: 10 });
+    } else {
+      createText(button, { name: 'Button Label', text: iconGlyph(element.icon) + ' ' + (element.text || element.name), x: 8, y: element.height / 2 - 9, width: element.width - 16, height: 18, color: element.color || '#ffffff', fontSize: 12 }, fonts, { bold: true, fontSize: 12 });
+    }
     return;
   }
 
   if (element.type === 'card') {
     var card = createV2Frame(parent, element);
-    if (element.assetRef) drawAssetArt(card, assign(element, { x: 0, y: 0 }), fonts, { size: Math.min(element.width, 104), radius: valueOr(element.radius, 18) });
-    createText(card, { name: 'Card Title', text: element.text || element.name, x: 10, y: element.assetRef ? 112 : 14, width: element.width - 20, height: 34, color: element.color || '#101820', fontSize: 12 }, fonts, { bold: true, fontSize: 12 });
-    if (element.items && element.items[0]) createText(card, { name: 'Card Meta', text: element.items[0], x: 10, y: element.assetRef ? 142 : 50, width: element.width - 20, height: 14, color: '#667085', fontSize: 10 }, fonts, { fontSize: 10 });
+    var artSize = Math.min(element.width - 18, element.height > 148 ? 92 : 84);
+    if (element.assetRef) drawAssetArt(card, assign(element, { x: 9, y: 8 }), fonts, { size: artSize, radius: valueOr(element.radius, 18) });
+    createText(card, { name: 'Card Title', text: element.text || element.name, x: 10, y: element.assetRef ? artSize + 16 : 14, width: element.width - 20, height: 30, color: element.color || '#101820', fontSize: 11 }, fonts, { bold: true, fontSize: 11 });
+    if (element.items && element.items[0]) createText(card, { name: 'Card Meta', text: element.items[0], x: 10, y: element.assetRef ? artSize + 48 : 50, width: element.width - 20, height: 14, color: '#667085', fontSize: 9 }, fonts, { fontSize: 9 });
     var children = element.children || [];
     for (i = 0; i < children.length; i += 1) drawV2Element(card, children[i], fonts);
     return;

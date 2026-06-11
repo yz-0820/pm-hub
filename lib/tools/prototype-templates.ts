@@ -88,11 +88,22 @@ export const prototypeTemplates: Record<PrototypeTemplateId, PrototypeTemplate> 
 
 export function selectPrototypeTemplate(input: Pick<CreatePrototypeInput, 'pageType' | 'productContext' | 'keyContent' | 'instructions'>): PrototypeTemplate {
   const haystack = [input.pageType, input.productContext, input.keyContent, input.instructions].join(' ').toLowerCase();
+  const strongSignals: Partial<Record<PrototypeTemplateId, string[]>> = {
+    'mobile-media': ['音乐', 'music', '歌曲', '歌单', '播放器', '音频', '专辑', '电台', '听歌'],
+    'mobile-membership': ['会员', '订阅', '权益', '续费', '付费', '套餐'],
+    'mobile-dashboard': ['dashboard', '数据', '看板', '分析', '指标', '报表'],
+  };
   const scored = Object.values(prototypeTemplates).map((template) => ({
     template,
-    score: template.preferredKeywords.reduce((sum, keyword) => sum + (haystack.includes(keyword.toLowerCase()) ? 1 : 0), 0),
+    score:
+      template.preferredKeywords.reduce((sum, keyword) => sum + (haystack.includes(keyword.toLowerCase()) ? 1 : 0), 0) +
+      (strongSignals[template.id]?.some((keyword) => haystack.includes(keyword.toLowerCase())) ? 4 : 0),
   }));
-  scored.sort((a, b) => b.score - a.score);
+  scored.sort((a, b) => {
+    const scoreDiff = b.score - a.score;
+    if (scoreDiff !== 0) return scoreDiff;
+    return prototypeTemplates[a.template.id].id.localeCompare(prototypeTemplates[b.template.id].id);
+  });
   return scored[0]?.score ? scored[0].template : prototypeTemplates['mobile-home'];
 }
 

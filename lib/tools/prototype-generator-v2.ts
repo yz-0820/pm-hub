@@ -151,9 +151,9 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
             text: '飙升榜',
             items: modules.length ? modules.slice(0, 4) : ['晴天之后的海', '城市夜行', '华语新声热播'],
             x: 24,
-            y: 644,
+            y: 632,
             width: 342,
-            height: 98,
+            height: 82,
             background: '#ffffff',
             borderColor: '#d9f0e7',
             radius: 22,
@@ -166,9 +166,9 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
             icon: 'pause',
             assetRef: 'cover.green-wave',
             x: 24,
-            y: 706,
+            y: 724,
             width: 342,
-            height: 58,
+            height: 52,
             background: '#101820',
             color: '#ffffff',
             radius: 29,
@@ -180,9 +180,9 @@ function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
             items: ['首页', '发现', '听歌', '我的'],
             icon: 'home',
             x: 0,
-            y: 778,
+            y: 782,
             width: 390,
-            height: 66,
+            height: 62,
             background: '#ffffff',
             radius: 0,
             shadow: 'lg',
@@ -322,6 +322,18 @@ function fallbackCreateSpec(input: CreatePrototypeInput): PrototypeGenerationOut
     model: '',
     usedAI: false,
   };
+}
+
+function shouldUseStableFallback(spec: PrototypeSpec, expectedTemplateId: string) {
+  if (spec.version !== '2.0') return false;
+
+  const actualTemplateId = spec.frames[0]?.templateId;
+  const templateSensitiveIds = new Set(['mobile-media', 'mobile-membership', 'mobile-dashboard']);
+  if (templateSensitiveIds.has(expectedTemplateId) && actualTemplateId !== expectedTemplateId) {
+    return true;
+  }
+
+  return spec.frames.some((frame) => frame.validation?.some((warning) => warning.severity === 'error'));
 }
 
 function fallbackReviseSpec(base: PrototypeSpec, input: RevisePrototypeInput): PrototypeGenerationOutput {
@@ -525,6 +537,8 @@ export async function generatePrototypeFromInput(input: CreatePrototypeInput): P
       designSystemVersion: 'pmhub-prototype-v2' as const,
     };
     const spec = finalizeSpec(merged as PrototypeSpec);
+    if (shouldUseStableFallback(spec, template.id)) return fallback;
+
     return {
       prototypeSpec: spec,
       summary: `${spec.name} 高保真原型，包含 ${spec.frames[0]?.elements.length || 0} 个可编辑元素。`,

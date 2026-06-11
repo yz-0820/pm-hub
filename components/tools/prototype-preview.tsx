@@ -250,10 +250,11 @@ function PrototypeElementV2View({ element, frame, nested = false }: { element: P
   }
 
   if (element.type === 'button') {
+    const compactButton = element.width <= 90 && element.height >= 56;
     return (
-      <div className={`${positionClass} flex items-center justify-center gap-2 px-3 text-center text-sm font-semibold`} style={style}>
-        <span>{getIconGlyph(element.icon)}</span>
-        <span className="line-clamp-1">{element.text || element.name}</span>
+      <div className={`${positionClass} flex items-center justify-center gap-2 px-3 text-center font-semibold ${compactButton ? 'flex-col text-[10px]' : 'text-sm'}`} style={style}>
+        <span className={compactButton ? 'text-sm leading-none' : ''}>{getIconGlyph(element.icon)}</span>
+        <span className={compactButton ? 'line-clamp-1 leading-tight' : 'line-clamp-1'}>{element.text || element.name}</span>
       </div>
     );
   }
@@ -270,11 +271,16 @@ function PrototypeElementV2View({ element, frame, nested = false }: { element: P
   }
 
   if (element.type === 'card') {
+    const artSize = Math.min(element.width - 18, element.height > 148 ? 92 : 84);
     return (
-      <div className={`${positionClass} overflow-hidden border p-3`} style={{ ...style, background: element.background || theme.colors.surface, borderColor: element.borderColor || theme.colors.border }}>
-        {element.assetRef ? <AssetArt element={element} /> : null}
-        <div className="mt-2 line-clamp-2 text-xs font-semibold">{element.text || element.name}</div>
-        {element.items?.[0] ? <div className="mt-1 text-[10px]" style={{ color: theme.colors.textMuted }}>{element.items[0]}</div> : null}
+      <div className={`${positionClass} overflow-hidden border p-2.5`} style={{ ...style, background: element.background || theme.colors.surface, borderColor: element.borderColor || theme.colors.border }}>
+        {element.assetRef ? (
+          <div style={{ width: artSize, height: artSize }}>
+            <AssetArt element={{ ...element, width: artSize, height: artSize }} />
+          </div>
+        ) : null}
+        <div className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-tight">{element.text || element.name}</div>
+        {element.items?.[0] ? <div className="mt-0.5 truncate text-[9px]" style={{ color: theme.colors.textMuted }}>{element.items[0]}</div> : null}
         <V2Children element={element} frame={frame} />
       </div>
     );
