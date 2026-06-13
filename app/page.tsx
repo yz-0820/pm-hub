@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as ImageIcon, LayoutGrid, Sparkles, Briefcase, BookOpen, Wrench, GitBranch } from 'lucide-react';
 import { and, desc, eq, gte, lt, notLike, sql, inArray, or } from 'drizzle-orm';
@@ -13,6 +12,7 @@ import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
 import { ArticleCarousel } from '@/components/ui/article-carousel';
 import { HotEvents } from '@/components/ui/hot-events';
 import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
+import { FallbackImage } from '@/components/ui/fallback-image';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -27,6 +27,7 @@ type TodayPick = {
   imageUrl: string;
   score: number;
   kind: 'article' | 'career';
+  category: string;
 };
 
 function getBeijingTodayRange(now = new Date()) {
@@ -133,6 +134,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         imageUrl: resolveArticleCover(category, `${item.id}-${item.title}`, item.imageUrl),
         score: item.score,
         kind: 'article' as const,
+        category,
       }) : null;
     });
 
@@ -174,6 +176,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
           ),
           score: item.score,
           kind: 'career' as const,
+          category: item.category,
         }) : null;
       });
 
@@ -214,6 +217,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
           imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
           score: item.score,
           kind: 'article' as const,
+          category: item.category,
         });
       }
     }
@@ -283,6 +287,7 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
       title: item.title,
       href: item.originalUrl, // 使用外部链接
       imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
+      fallbackImageUrl: getArticleDefaultCover(item.category, `${item.id}-${item.title}`),
       category: item.category,
     }));
   } catch (error) {
@@ -331,6 +336,8 @@ async function getLatestCareerForCarousel(limit: number = 5) {
       title: item.title,
       href: item.originalUrl,
       imageUrl: resolveCareerCover(item.category, `${item.id}-${item.title}`, item.coverImage),
+      fallbackImageUrl: getCareerDefaultCover(item.category, `${item.id}-${item.title}`),
+      category: item.category,
     }));
   } catch (error) {
     console.error('Failed to load latest career carousel:', error);
@@ -457,7 +464,7 @@ export default async function HomePage() {
               <span className="text-primary">专业学习平台</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
-              汇聚专业资讯、职业发展、题库训练、PRD生成等多种功能，助力产品人持续成长
+              汇聚专业资讯、职业发展、题库训练、实用工具等多种功能，助力产品人持续成长
             </p>
           </div>
         </div>
@@ -580,8 +587,11 @@ export default async function HomePage() {
                         className="group flex min-h-[92px] items-center gap-4 rounded-2xl p-2.5 text-sm font-normal leading-6 text-foreground transition-colors hover:bg-primary/5 hover:text-primary sm:min-h-[104px] sm:text-base sm:leading-7"
                       >
                         <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-24 sm:w-32">
-                          <Image
+                          <FallbackImage
                             src={item.imageUrl}
+                            fallbackSrc={item.kind === 'article'
+                              ? getArticleDefaultCover(item.category, `${item.id}-${item.title}`)
+                              : getCareerDefaultCover(item.category, `${item.id}-${item.title}`)}
                             alt={item.title}
                             fill
                             sizes="128px"

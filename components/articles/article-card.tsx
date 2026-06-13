@@ -1,13 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import { Article } from '@/types';
 import { formatDate } from '@/lib/utils/date';
 import { categoryLabels } from '@/config/rss';
 import { ImageIcon } from 'lucide-react';
-import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
 import { getArticleDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
+import { FallbackImage } from '@/components/ui/fallback-image';
 
 interface ArticleCardProps {
   article: Article;
@@ -19,8 +18,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
   // 没有图片时使用分类相关的默认配图
   const fallbackCover = getArticleDefaultCover(article.category, article.id?.toString() || article.title);
   const sourceImageUrl = article.imageUrl && !isDefaultCoverImage(article.imageUrl) ? article.imageUrl : null;
-  const proxiedImageUrl = getProxiedImageUrl(sourceImageUrl);
-  const displayImageUrl = proxiedImageUrl || fallbackCover;
+  const displayImageUrl = sourceImageUrl || fallbackCover;
   const sourceName = simplifyArticleSourceName(article.sourceName);
 
   return (
@@ -35,8 +33,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
           {/* Image - 移动端全宽，桌面端左侧 */}
           <div className="relative overflow-hidden bg-muted w-full sm:w-48 md:w-64 lg:w-72 shrink-0 aspect-[16/9] sm:aspect-[4/3]">
             {displayImageUrl ? (
-              <Image
+              <FallbackImage
                 src={displayImageUrl}
+                fallbackSrc={fallbackCover}
                 alt={article.title}
                 fill
                 sizes="(max-width: 640px) 100vw, 256px"

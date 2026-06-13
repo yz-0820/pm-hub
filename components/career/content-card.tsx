@@ -17,9 +17,8 @@ import {
   AtSign,
   ImageIcon
 } from 'lucide-react';
-import Image from 'next/image';
 import { formatCareerDate } from '@/lib/utils/date';
-import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
+import { FallbackImage } from '@/components/ui/fallback-image';
 
 interface ContentCardProps {
   content: CareerContent;
@@ -119,11 +118,15 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const categoryLabel = categoryLabels[content.category] || '';
   const safeHref = getSafeExternalHref(content.originalUrl);
   if (!safeHref) return null;
-  const coverImage =
+  const fallbackCover = getCareerDefaultCover(
+    content.category,
+    content.originalId || content.originalUrl || content.title || String(content.id)
+  );
+  const sourceCover =
     content.coverImage && !isDefaultCoverImage(content.coverImage)
       ? content.coverImage
-      : getCareerDefaultCover(content.category, content.originalId || content.originalUrl || content.title || String(content.id));
-  const proxyCover = getProxiedImageUrl(coverImage);
+      : null;
+  const coverImage = sourceCover || fallbackCover;
   const hideSubtitle = content.contentType === 'video' || content.contentType === 'short_video';
 
   const formatNumber = (num: number): string => {
@@ -142,9 +145,10 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
         className="group flex items-start gap-3 rounded-xl border bg-white p-3 transition-all hover:shadow-md"
       >
         <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
-          {proxyCover ? (
-            <Image
-              src={proxyCover}
+          {coverImage ? (
+            <FallbackImage
+              src={coverImage}
+              fallbackSrc={fallbackCover}
               alt={displayTitle}
               fill
               className="object-cover transition-transform group-hover:scale-105"
@@ -186,9 +190,10 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
         className="group relative block overflow-hidden rounded-2xl border bg-white transition-all hover:shadow-lg"
       >
         <div className="relative aspect-[16/9] overflow-hidden">
-          {proxyCover ? (
-            <Image
-              src={proxyCover}
+          {coverImage ? (
+            <FallbackImage
+              src={coverImage}
+              fallbackSrc={fallbackCover}
               alt={displayTitle}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -275,9 +280,10 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
         <div className="flex flex-col sm:flex-row">
           {/* Image - 移动端全宽，桌面端左侧 */}
           <div className="relative overflow-hidden bg-muted w-full sm:w-48 md:w-64 lg:w-72 shrink-0 aspect-[16/9] sm:aspect-[4/3]">
-            {proxyCover ? (
-              <Image
-                src={proxyCover}
+            {coverImage ? (
+              <FallbackImage
+                src={coverImage}
+                fallbackSrc={fallbackCover}
                 alt={displayTitle}
                 fill
                 sizes="(max-width: 640px) 100vw, 256px"

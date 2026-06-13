@@ -113,6 +113,10 @@ export async function GET(request: NextRequest) {
     }
 
     const contentType = response.headers.get('content-type') || getContentType(ext);
+    if (contentType && !contentType.toLowerCase().startsWith('image/')) {
+      return NextResponse.json({ error: `Upstream content is not an image: ${contentType}` }, { status: 502 });
+    }
+
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 

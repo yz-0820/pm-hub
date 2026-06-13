@@ -20,7 +20,7 @@ export function Footer() {
                 <span className="text-xl font-bold">PM Hub</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                汇聚专业资讯、职业发展、题库训练、PRD生成等多种功能，助力产品人持续成长
+                汇聚专业资讯、职业发展、题库训练、实用工具等多种功能，助力产品人持续成长
               </p>
               <button
                 onClick={() => setShowAbout(true)}

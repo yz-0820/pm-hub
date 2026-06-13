@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import Image from 'next/image';
+import { FallbackImage } from '@/components/ui/fallback-image';
 
 interface CarouselItem {
   id: number;
   title: string;
   href: string;
   imageUrl: string;
+  fallbackImageUrl?: string;
   category?: string;
 }
 
@@ -62,8 +63,9 @@ export function ArticleCarousel({ items, autoplayDelay = 3500 }: ArticleCarousel
                 {...linkProps}
                 className="group relative block aspect-[21/9] overflow-hidden cursor-pointer">
                 {/* 背景图片 */}
-                <Image
+                <FallbackImage
                   src={item.imageUrl}
+                  fallbackSrc={item.fallbackImageUrl}
                   alt={item.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -35,6 +35,7 @@
     "articles:delete-product-discovery": "tsx scripts/prod/delete-product-discovery-articles.ts",
     "articles:reassess-tech": "tsx scripts/prod/reassess-tech-articles.ts",
     "articles:reassess-finance": "tsx scripts/prod/reassess-finance-articles.ts",
+    "articles:revalidate-images": "tsx scripts/prod/revalidate-article-images.ts",
     "test": "vitest run"
   },
   "dependencies": {
