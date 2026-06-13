@@ -11,7 +11,7 @@ type TechRelevanceResult = {
     positiveHits: Record<string, string[]>;
     negativeHits: string[];
     adHits: string[];
-    rejectedBy: 'negative' | 'ad' | 'finance' | 'product_release' | 'promo_deal' | null;
+    rejectedBy: 'negative' | 'ad' | 'finance' | 'product_release' | 'promo_deal' | 'low_value_hardware' | null;
     financeSignal?: string[];
     threshold: number;
   };
@@ -311,6 +311,74 @@ const GROUPS: Array<{ id: string; label: string; keywords: string[] }> = [
   },
 ];
 
+const LOW_VALUE_HARDWARE_TITLE_SIGNALS = [
+  '新机',
+  '入网',
+  '进网许可',
+  '入网许可',
+  '型号',
+  '认证',
+  '工信部',
+  '证件照',
+  '验证机',
+  '跑分',
+  '参数',
+  '配置',
+  '曝光',
+  '电池容量',
+  '大容量电池',
+  '通过认证',
+  '现身',
+];
+
+const LOW_VALUE_HARDWARE_SPEC_SIGNALS = [
+  'mah',
+  '英寸',
+  '分辨率',
+  '重量',
+  'mm',
+  'tft',
+  'oled',
+  'gb',
+  'tb',
+  '摄像头',
+  '处理器',
+  '屏幕',
+  '电池',
+  '刷新率',
+  '内存',
+  '尺寸',
+  '快充',
+  '核心',
+  '频率',
+  'hz',
+  'mp',
+];
+
+const HIGH_VALUE_TECH_SIGNALS = [
+  '芯片架构',
+  '操作系统',
+  '端侧 ai',
+  '端侧ai',
+  '系统级 ai',
+  '系统级ai',
+  '自研芯片',
+  '开发者生态',
+  '供应链',
+  '国产替代',
+  '技术路线',
+  '安全',
+  '标准',
+  '生态',
+  '算力',
+  '大模型',
+  '模型能力',
+  '平台能力',
+  '云计算',
+  '开源',
+  '数据库',
+];
+
 function normalizeText(value: unknown): string {
   if (typeof value !== 'string') return '';
   return value.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -344,6 +412,28 @@ function countOccurrences(text: string, token: string): number {
     idx = next + token.length;
   }
   return count;
+}
+
+export function detectLowValueHardwareArticle(title: string, body: string): { rejected: boolean; reason: string } {
+  const fullText = `${title}\n${body}`;
+  const titleHits = matchKeywords(title, LOW_VALUE_HARDWARE_TITLE_SIGNALS);
+  if (titleHits.length === 0) return { rejected: false, reason: '' };
+
+  const highValueHits = matchKeywords(fullText, HIGH_VALUE_TECH_SIGNALS);
+  if (highValueHits.length > 0) return { rejected: false, reason: '' };
+
+  const specHits = matchKeywords(fullText, LOW_VALUE_HARDWARE_SPEC_SIGNALS);
+  const hasPhoneContext = /手机|新机|荣耀|小米|华为|oppo|vivo|一加|红米|iphone|android|安卓/.test(fullText);
+  const hasCertificationContext = /入网|进网许可|认证|工信部|证件照|型号|验证机/.test(title);
+
+  if ((hasCertificationContext && specHits.length >= 1) || (hasPhoneContext && specHits.length >= 2)) {
+    return {
+      rejected: true,
+      reason: `low_value_hardware: ${titleHits.join(', ')}`,
+    };
+  }
+
+  return { rejected: false, reason: '' };
 }
 
 // 产品新闻关键词 - 如果文章包含这些词，说明是正常的产品新闻而非广告
@@ -523,6 +613,25 @@ export function evaluateTechRelevance(article: ParsedArticle): TechRelevanceResu
         negativeHits: [],
         adHits: [],
         rejectedBy: 'product_release',
+        threshold: TECH_THRESHOLD,
+      },
+    };
+  }
+
+  const lowValueHardware = detectLowValueHardwareArticle(title, body);
+  if (lowValueHardware.rejected) {
+    return {
+      passed: false,
+      score: 0,
+      topic: null,
+      meta: {
+        score: 0,
+        topic: null,
+        topics: [],
+        positiveHits: {},
+        negativeHits: [],
+        adHits: [lowValueHardware.reason],
+        rejectedBy: 'low_value_hardware',
         threshold: TECH_THRESHOLD,
       },
     };

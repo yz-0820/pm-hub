@@ -1,3 +1,5 @@
+import { detectLowValueHardwareArticle } from './tech-relevance';
+
 /**
  * IT之家 产品介绍/发售文章检测
  * 用于识别和过滤产品介绍、发售、上市类文章
@@ -161,6 +163,14 @@ export function detectITHomeProductLaunch(
   reason: string;
 } {
   // IT之家 的文章通常更短，标题更直接
-  // 使用相同的检测逻辑，但可以考虑未来添加 IT之家 特有的规则
+  // 在通用产品发布检测之外，额外拦截新机入网/型号认证/规格参数表这类低价值硬件快讯。
+  const lowValueHardware = detectLowValueHardwareArticle(title.toLowerCase(), body.toLowerCase());
+  if (lowValueHardware.rejected) {
+    return {
+      isProductLaunch: true,
+      reason: lowValueHardware.reason,
+    };
+  }
+
   return detectProductLaunch(title, body);
 }
