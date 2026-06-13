@@ -3,16 +3,15 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/layout/footer";
-
-const SITE_URL = process.env.SITE_URL || 'https://localhost:3000';
+import { SITE_NAME, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_URL } from "@/lib/site-meta";
 
 export const metadata: Metadata = {
   title: {
-    default: 'PM Hub - 产品经理专业资讯平台',
-    template: '%s | PM Hub',
+    default: `${SITE_NAME} - 产品经理专业资讯平台`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: '汇聚产品经理、人工智能、科技行业的高质量文章，助力产品人成长。',
-  keywords: ['产品经理', 'PM', '人工智能', '科技动态', '产品设计', '职场发展'],
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' }
@@ -22,14 +21,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'zh_CN',
     url: SITE_URL,
-    siteName: 'PM Hub',
-    title: 'PM Hub - 产品经理专业资讯平台',
-    description: '汇聚产品经理、人工智能、科技行业的高质量文章，助力产品人成长。',
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} - 产品经理专业资讯平台`,
+    description: SITE_DESCRIPTION,
   },
   twitter: {
     card: 'summary',
-    title: 'PM Hub - 产品经理专业资讯平台',
-    description: '汇聚产品经理、人工智能、科技行业的高质量文章，助力产品人成长。',
+    title: `${SITE_NAME} - 产品经理专业资讯平台`,
+    description: SITE_DESCRIPTION,
   },
   metadataBase: new URL(SITE_URL),
 };

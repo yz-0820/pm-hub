@@ -13,6 +13,35 @@ import { eq, sql } from 'drizzle-orm';
 import { FetchResult, ParsedArticle } from '@/types';
 import crypto from 'crypto';
 
+// RSS 抓取并发控制
+const CONCURRENT_LIMIT = 3;
+const REQUEST_DELAY_MS = 500; // 源之间的请求间隔
+
+async function withConcurrencyLimit<T>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<void>
+): Promise<void> {
+  const executing: Promise<void>[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const p = fn(items[i], i);
+    executing.push(p);
+    if (executing.length >= limit) {
+      await Promise.race(executing);
+      executing.splice(
+        0,
+        executing.length,
+        ...executing.filter((x) => x !== p)
+      );
+    }
+  }
+  await Promise.all(executing);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // 最早允许的文章发布时间：2026年1月1日 00:00:00 UTC
 const MIN_PUBLISH_DATE = new Date('2026-01-01T00:00:00.000Z');
 
@@ -76,8 +105,14 @@ function generateUniqueSlug(title: string, sourceId: string): string {
 
 export async function fetchAllRSS(): Promise<FetchResult[]> {
   const results: FetchResult[] = [];
-  
-  for (const source of rssSources.filter(s => s.enabled)) {
+  const enabledSources = rssSources.filter((s) => s.enabled);
+
+  await withConcurrencyLimit(enabledSources, CONCURRENT_LIMIT, async (source, index) => {
+    // 源之间添加间隔，避免同时发出大量请求
+    if (index > 0) {
+      await sleep(REQUEST_DELAY_MS);
+    }
+
     const result: FetchResult = {
       sourceId: source.id,
       sourceName: source.name,
@@ -87,12 +122,12 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
       rejectionReasons: {},
       errors: [],
     };
-    
+
     try {
       console.log(`Fetching: ${source.name}`);
       const parsedArticles = await parseRSSFeed(source.url);
       result.fetched = parsedArticles.length;
-      
+
       for (const article of parsedArticles) {
         try {
           // 检查是否已存在（按 originalUrl 去重）
@@ -401,8 +436,8 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
     }
     
     results.push(result);
-  }
-  
+  });
+
   return results;
 }
 

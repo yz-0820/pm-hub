@@ -13,6 +13,8 @@ import { ArticleCarousel } from '@/components/ui/article-carousel';
 import { HotEvents } from '@/components/ui/hot-events';
 import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
 import { FallbackImage } from '@/components/ui/fallback-image';
+import { Skeleton } from '@/components/ui/skeleton';
+import * as siteMeta from '@/lib/site-meta';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -426,6 +428,8 @@ export default async function HomePage() {
     getHotEvents(5),
   ]);
 
+
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -464,7 +468,7 @@ export default async function HomePage() {
               <span className="text-primary">专业学习平台</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
-              汇聚专业资讯、职业发展、题库训练、实用工具等多种功能，助力产品人持续成长
+              {siteMeta.SITE_DESCRIPTION}
             </p>
           </div>
         </div>
@@ -495,9 +499,16 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <ArticleCarousel items={latestArticles} autoplayDelay={3500} />
+                {latestArticles.length > 0 ? (
+                  <ArticleCarousel items={latestArticles} autoplayDelay={3500} />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <Skeleton className="h-48 rounded-2xl" />
+                    <Skeleton className="h-48 rounded-2xl hidden sm:block" />
+                  </div>
+                )}
 
-                <div className="grid grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   {Object.entries(categoryLabels).map(([key, { name }]) => {
                     const config = categoryConfig[key] || {
                       icon: Newspaper,
@@ -545,9 +556,16 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <ArticleCarousel items={latestCareer} autoplayDelay={3500} />
+                {latestCareer.length > 0 ? (
+                  <ArticleCarousel items={latestCareer} autoplayDelay={3500} />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <Skeleton className="h-48 rounded-2xl" />
+                    <Skeleton className="h-48 rounded-2xl hidden sm:block" />
+                  </div>
+                )}
 
-                <div className="grid grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   {resourceCategories.map((cat) => (
                     <Link
                       key={cat.id}
@@ -604,6 +622,15 @@ export default async function HomePage() {
                         </div>
                         <span className="line-clamp-2 min-w-0 flex-1">{item.title}</span>
                       </a>
+                    ))}
+                  </div>
+                ) : todayPicks === null ? (
+                  <div className="flex flex-1 flex-col gap-3">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="flex min-h-[92px] items-center gap-4 rounded-2xl p-2.5">
+                        <Skeleton className="h-20 w-28 shrink-0 rounded-xl sm:h-24 sm:w-32" />
+                        <Skeleton className="h-5 flex-1" />
+                      </div>
                     ))}
                   </div>
                 ) : (

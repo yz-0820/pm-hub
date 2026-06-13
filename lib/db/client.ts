@@ -14,7 +14,7 @@ if (!/^postgres(?:ql)?:\/\//i.test(connectionString)) {
 
 export const postgresClient = postgres(connectionString, {
   prepare: false,
-  max: 10,
+  max: 10,                  // 连接池最大连接数
   // 超时配置（单位：秒）
   connect_timeout: 30,      // 连接超时 30 秒
   idle_timeout: 20,         // 空闲连接超时 20 秒

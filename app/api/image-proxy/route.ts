@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import crypto from 'crypto';
 import { validateImageProxyUrl } from '@/lib/utils/image-proxy-validation';
@@ -7,6 +8,9 @@ import { validateImageProxyUrl } from '@/lib/utils/image-proxy-validation';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存
 
 function getCacheDir(): string {
+  if (process.env.VERCEL) {
+    return path.join(os.tmpdir(), 'pm-hub-image-cache');
+  }
   return path.join(process.cwd(), 'data', 'image-cache');
 }
 
@@ -63,17 +67,20 @@ export async function GET(request: NextRequest) {
   const parsedUrl = validation.url;
   const normalizedUrl = parsedUrl.toString();
 
-  // 确保缓存目录存在
   const cacheDir = getCacheDir();
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
+  let cacheEnabled = true;
+  try {
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+  } catch {
+    cacheEnabled = false;
   }
 
   const cachePath = getCachePath(normalizedUrl);
   const ext = path.extname(cachePath);
 
-  // 检查缓存
-  if (fs.existsSync(cachePath)) {
+  if (cacheEnabled && fs.existsSync(cachePath)) {
     try {
       const stat = fs.statSync(cachePath);
       const age = Date.now() - stat.mtimeMs;
@@ -124,10 +131,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Image too small' }, { status: 502 });
     }
 
-    // 写入缓存
-    try {
-      fs.writeFileSync(cachePath, buffer);
-    } catch {}
+    if (cacheEnabled) {
+      try {
+        fs.writeFileSync(cachePath, buffer);
+      } catch {}
+    }
 
     return new NextResponse(buffer, {
       headers: {

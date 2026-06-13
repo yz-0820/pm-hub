@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { articlesIndex } from '@/lib/search/client';
+import { searchArticles } from '@/lib/search/client';
 import { db } from '@/lib/db/client';
 import { articles, careerContents } from '@/lib/db/schema';
 import { eq, desc, ilike, or, and, notIlike, sql, inArray } from 'drizzle-orm';
@@ -38,15 +38,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ hits: [], totalHits: 0, page: 1, totalPages: 0 });
     }
 
-    // 优先使用 MeiliSearch
+    // 优先使用 MeiliSearch（带缓存和分页）
     try {
-      const meiliResult = await articlesIndex.search(query, {
-        limit,
-        offset,
-        attributesToRetrieve: ['id', 'title', 'summary', 'category', 'sourceName', 'publishedAt', 'imageUrl'],
-      });
+      const meiliResult = await searchArticles(query, { limit, offset });
 
-      if (meiliResult.estimatedTotalHits > 0) {
+      if ((meiliResult.estimatedTotalHits ?? 0) > 0) {
         const hits: SearchHit[] = meiliResult.hits.map((doc: Record<string, unknown>) => ({
           kind: 'article' as const,
           id: doc.id as number,
@@ -71,11 +67,12 @@ export async function GET(request: NextRequest) {
           }
         }
 
+        const totalHits = meiliResult.estimatedTotalHits ?? 0;
         return NextResponse.json({
           hits,
-          totalHits: meiliResult.estimatedTotalHits,
+          totalHits,
           page,
-          totalPages: Math.ceil(meiliResult.estimatedTotalHits / limit),
+          totalPages: Math.ceil(totalHits / limit),
         });
       }
     } catch {

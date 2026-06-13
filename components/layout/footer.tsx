@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { X, User, Mail } from 'lucide-react';
 import { PmHubLogo } from '@/components/brand/pm-hub-logo';
+import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/site-meta';
 
 export function Footer() {
   const [showAbout, setShowAbout] = useState(false);
@@ -17,10 +18,10 @@ export function Footer() {
             <div className="md:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <PmHubLogo className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold">PM Hub</span>
+                <span className="text-xl font-bold">{SITE_NAME}</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                汇聚专业资讯、职业发展、题库训练、实用工具等多种功能，助力产品人持续成长
+                {SITE_DESCRIPTION}
               </p>
               <button
                 onClick={() => setShowAbout(true)}
