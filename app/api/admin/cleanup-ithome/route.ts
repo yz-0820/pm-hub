@@ -11,17 +11,12 @@ import { db } from '@/lib/db/client';
 import { articles } from '@/lib/db/schema';
 import { eq, like } from 'drizzle-orm';
 import { detectITHomeProductLaunch } from '@/lib/rss/product-launch';
+import { verifyApiAuth } from '@/lib/utils/api-auth';
 
 export async function POST(request: NextRequest) {
-  // 验证 API Key
-  const authHeader = request.headers.get('authorization');
-  const apiKey = authHeader?.replace('Bearer ', '');
-  
-  if (apiKey !== process.env.API_KEY) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
+  const auth = verifyApiAuth(request);
+  if (!auth.success) {
+    return auth.response;
   }
 
   try {

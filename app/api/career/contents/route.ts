@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getContentList, invalidateContentCache } from '@/lib/career/cache';
 import { fetchAllCareerContents, fetchCareerContentsBySource } from '@/lib/career/fetcher';
 import { revalidatePath } from 'next/cache';
+import { verifyApiAuth } from '@/lib/utils/api-auth';
 
 // GET /api/career/contents - 获取内容列表
 export async function GET(request: NextRequest) {
@@ -49,22 +50,9 @@ export async function GET(request: NextRequest) {
 // POST /api/career/contents - 手动触发内容抓取
 export async function POST(request: NextRequest) {
   try {
-    // 验证API密钥
-    const authHeader = request.headers.get('authorization');
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { success: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    if (authHeader !== `Bearer ${apiKey}`) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const auth = verifyApiAuth(request);
+    if (!auth.success) {
+      return auth.response;
     }
 
     const body = await request.json().catch(() => ({}));

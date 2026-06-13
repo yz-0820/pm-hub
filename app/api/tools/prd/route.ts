@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generatePrd, prdInputSchema } from '@/lib/tools/prd-generator';
 import { checkRateLimit, getClientIdentifier } from '@/lib/utils/rate-limiter';
+import { sanitizePromptInputs } from '@/lib/utils/input-sanitizer';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +41,23 @@ export async function POST(request: NextRequest) {
           error: parsed.error.issues[0]?.message || '参数错误',
           issues: parsed.error.issues,
         },
+        { status: 400 }
+      );
+    }
+
+    // 输入安全过滤
+    const sanitizeResult = sanitizePromptInputs({
+      productName: parsed.data.productName,
+      background: parsed.data.background,
+      goals: parsed.data.goals,
+      users: parsed.data.users,
+      features: parsed.data.features,
+      constraints: parsed.data.constraints || '',
+      metrics: parsed.data.metrics || '',
+    });
+    if (sanitizeResult.blocked) {
+      return NextResponse.json(
+        { success: false, error: '输入包含不安全内容' },
         { status: 400 }
       );
     }

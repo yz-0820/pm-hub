@@ -13,6 +13,7 @@ import {
   savePrototypeVersion,
 } from '@/lib/tools/prototype-store';
 import { checkRateLimit, getClientIdentifier } from '@/lib/utils/rate-limiter';
+import { sanitizePromptInputs } from '@/lib/utils/input-sanitizer';
 
 export const runtime = 'nodejs';
 
@@ -119,6 +120,17 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // 输入安全过滤
+      const reviseSanitize = sanitizePromptInputs({
+        revisionInstruction: parsed.data.revisionInstruction,
+      });
+      if (reviseSanitize.blocked) {
+        return NextResponse.json(
+          { success: false, error: '输入包含不安全内容' },
+          { status: 400 }
+        );
+      }
+
       const generated = await revisePrototypeFromInput(base.prototypeSpec, parsed.data);
       const stored = await savePrototypeVersion({
         parentSpecId: base.specId,
@@ -140,6 +152,22 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { success: false, error: parsed.error.issues[0]?.message || '参数错误', issues: parsed.error.issues },
+        { status: 400 }
+      );
+    }
+
+    // 输入安全过滤
+    const createSanitize = sanitizePromptInputs({
+      name: parsed.data.name,
+      productContext: parsed.data.productContext,
+      targetUser: parsed.data.targetUser,
+      pageGoal: parsed.data.pageGoal,
+      keyContent: parsed.data.keyContent,
+      instructions: parsed.data.instructions || '',
+    });
+    if (createSanitize.blocked) {
+      return NextResponse.json(
+        { success: false, error: '输入包含不安全内容' },
         { status: 400 }
       );
     }

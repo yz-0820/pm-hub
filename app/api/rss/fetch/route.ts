@@ -4,25 +4,13 @@ import { db } from '@/lib/db/client';
 import { fetchLogs } from '@/lib/db/schema';
 import { createRSSFetchLogPayload } from '@/lib/rss/fetch-summary';
 import { revalidatePath } from 'next/cache';
+import { verifyApiAuth } from '@/lib/utils/api-auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // 验证API密钥
-    const authHeader = request.headers.get('authorization');
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    if (authHeader !== `Bearer ${apiKey}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const auth = verifyApiAuth(request);
+    if (!auth.success) {
+      return auth.response;
     }
 
     console.log('Starting manual RSS fetch...');

@@ -4,18 +4,13 @@ import { careerContents } from '@/lib/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { invalidateContentCache } from '@/lib/career/cache';
 import { revalidatePath } from 'next/cache';
+import { verifyApiAuth } from '@/lib/utils/api-auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    const apiKey = process.env.API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json({ success: false, error: 'Server configuration error' }, { status: 500 });
-    }
-
-    if (authHeader !== `Bearer ${apiKey}`) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    const auth = verifyApiAuth(request);
+    if (!auth.success) {
+      return auth.response;
     }
 
     const body = await request.json().catch(() => ({}));
