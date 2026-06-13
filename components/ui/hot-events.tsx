@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { Flame } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
 
 interface HotEvent {
   id: number;
@@ -14,7 +13,6 @@ interface HotEvent {
 
 interface HotEventsProps {
   events: HotEvent[];
-  className?: string;
 }
 
 function useRelativeTime(date: Date): string {
@@ -55,11 +53,11 @@ function EventItem({ event }: { event: HotEvent }) {
   );
 }
 
-export function HotEvents({ events, className }: HotEventsProps) {
+export function HotEvents({ events }: HotEventsProps) {
   if (events.length === 0) return null;
 
   return (
-    <div className={cn('mt-6 rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6', className)}>
+    <div className="mt-6 rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
       <div className="mb-4 flex items-center gap-2">
         <Flame className="h-5 w-5 text-red-500" />
         <h2 className="text-[22px] font-bold sm:text-2xl">近期热点</h2>

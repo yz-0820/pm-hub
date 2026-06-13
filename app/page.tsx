@@ -480,8 +480,9 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-muted/20 pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch lg:gap-x-8 lg:gap-y-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
-              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5 lg:col-start-1 lg:row-start-1 lg:h-full">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_28rem]">
+            <div className="flex flex-col gap-6">
+              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5">
                 <div className="flex items-start justify-between gap-4 mb-3 relative z-10">
                   <Link href="/articles" className="block group cursor-pointer">
                     <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
@@ -538,7 +539,7 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5 lg:col-start-1 lg:row-start-2 lg:h-full">
+              <div className="rounded-[28px] border bg-card/35 p-4 backdrop-blur-sm sm:p-5">
                 <div className="flex items-start justify-between gap-4 mb-3 relative z-10">
                   <a href="/career" className="block group cursor-pointer">
                     <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
@@ -584,9 +585,10 @@ export default async function HomePage() {
                   ))}
                 </div>
               </div>
+            </div>
 
-            <aside className="flex flex-col lg:col-start-2 lg:row-start-1 lg:h-full">
-              <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6 lg:h-full">
+            <aside className="flex flex-col lg:h-full">
+              <div className="flex flex-col rounded-[28px] border bg-card/45 p-5 backdrop-blur-sm sm:p-6">
                 <div className="mb-5 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-amber-500" />
                   <h2 className="text-[22px] font-bold sm:text-2xl">每日精选</h2>
@@ -637,8 +639,9 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
+              
+              <HotEvents events={hotEvents} />
             </aside>
-            <HotEvents events={hotEvents} className="lg:col-start-2 lg:row-start-2 lg:mt-0 lg:h-full" />
           </div>
         </div>
       </section>
