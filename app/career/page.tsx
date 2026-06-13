@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { and, desc, eq, gte, inArray, lt, notLike, or, sql, SQLWrapper } from 'drizzle-orm';
+import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
 
 export const revalidate = 0;
 
@@ -81,7 +82,7 @@ async function getCareerData(
   const seenTitles = new Set<string>();
   const uniqueIds: number[] = [];
   for (const content of allContents) {
-    const normalizedTitle = content.title.replace(/\s/g, '');
+    const normalizedTitle = normalizeCareerTitle(content.title);
     if (!seenTitles.has(normalizedTitle)) {
       seenTitles.add(normalizedTitle);
       uniqueIds.push(content.id);

@@ -1,4 +1,4 @@
-﻿import { fetchAllRSS } from '../../lib/rss/fetcher';
+﻿import './load-env';
 
 let running = true;
 process.on('SIGINT', () => { console.log('\n[Shutdown] Stopping...'); running = false; });
@@ -19,12 +19,29 @@ async function runOnce() {
   const startedAt = Date.now();
 
   try {
+    const { fetchAllRSS } = await import('../../lib/rss/fetcher');
+    const { db } = await import('../../lib/db/client');
+    const { fetchLogs } = await import('../../lib/db/schema');
+    const { createRSSFetchLogPayload } = await import('../../lib/rss/fetch-summary');
+    const logStartedAt = new Date();
     const results = await fetchAllRSS();
     const totalFetched = results.reduce((sum, r) => sum + r.fetched, 0);
     const totalNew = results.reduce((sum, r) => sum + r.newArticles, 0);
+    const totalRejected = results.reduce((sum, r) => sum + r.rejectedArticles, 0);
     const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
+    const logPayload = createRSSFetchLogPayload(results);
+
+    await db.insert(fetchLogs).values({
+      startedAt: logStartedAt,
+      completedAt: new Date(),
+      totalSources: results.length,
+      successfulSources: results.filter(r => r.errors.length === 0).length,
+      totalNewArticles: totalNew,
+      errors: JSON.stringify(logPayload),
+    });
+
     console.log(`[Fetch] Done in ${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
-    console.log(`[Fetch] Sources: ${results.length}, Fetched: ${totalFetched}, New: ${totalNew}, Errors: ${totalErrors}`);
+    console.log(`[Fetch] Sources: ${results.length}, Fetched: ${totalFetched}, New: ${totalNew}, Rejected: ${totalRejected}, Errors: ${totalErrors}`);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[Fetch] Error: ${msg}`);

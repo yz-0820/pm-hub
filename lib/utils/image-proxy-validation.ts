@@ -108,6 +108,8 @@ const ALLOWED_IMAGE_DOMAINS = new Set([
   '.cloudfront.net',
   'fastly.net',
   '.fastly.net',
+  'google.com',
+  '.google.com',
   'googleusercontent.com',
   '.googleusercontent.com',
   'ggpht.com',

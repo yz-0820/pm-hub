@@ -1,5 +1,4 @@
-﻿import { initContentSources, fetchAllCareerContents } from '../../lib/career/fetcher';
-import { invalidateContentCache, cleanExpiredCache, getCacheStats } from '../../lib/career/cache';
+﻿import './load-env';
 
 let running = true;
 process.on('SIGINT', () => { console.log('\n[Shutdown] Stopping...'); running = false; });
@@ -24,16 +23,20 @@ async function runOnce() {
   const startTime = Date.now();
 
   try {
+    const { initContentSources, fetchAllCareerContents } = await import('../../lib/career/fetcher');
+    const { invalidateContentCache, cleanExpiredCache, getCacheStats } = await import('../../lib/career/cache');
+
     await initContentSources();
     const results = await fetchAllCareerContents();
 
     const totalFetched = results.reduce((sum, r) => sum + r.fetched, 0);
     const totalNew = results.reduce((sum, r) => sum + r.newContents, 0);
     const totalUpdated = results.reduce((sum, r) => sum + r.updatedContents, 0);
+    const totalRejected = results.reduce((sum, r) => sum + r.rejectedContents, 0);
     const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
 
     console.log(`[Fetch] Done in ${((Date.now() - startTime) / 1000).toFixed(1)}s`);
-    console.log(`[Fetch] Sources: ${results.length}, Fetched: ${totalFetched}, New: ${totalNew}, Updated: ${totalUpdated}, Errors: ${totalErrors}`);
+    console.log(`[Fetch] Sources: ${results.length}, Fetched: ${totalFetched}, New: ${totalNew}, Updated: ${totalUpdated}, Rejected: ${totalRejected}, Errors: ${totalErrors}`);
 
     if (totalNew > 0 || totalUpdated > 0) {
       await invalidateContentCache();

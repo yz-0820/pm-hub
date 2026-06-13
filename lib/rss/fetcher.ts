@@ -57,6 +57,11 @@ function articleMatchesIncludeKeywords(article: ParsedArticle, includeKeywords?:
 }
 
 // 生成唯一的 slug，避免不同源的同名文章冲突
+function recordRejection(result: FetchResult, reason: string) {
+  result.rejectedArticles++;
+  result.rejectionReasons[reason] = (result.rejectionReasons[reason] || 0) + 1;
+}
+
 function generateUniqueSlug(title: string, sourceId: string): string {
   const baseSlug = generateSlug(title);
   // 如果基础 slug 为空（如纯中文标题被过滤掉），使用 hash
@@ -78,6 +83,8 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
       sourceName: source.name,
       fetched: 0,
       newArticles: 0,
+      rejectedArticles: 0,
+      rejectionReasons: {},
       errors: [],
     };
     
@@ -102,6 +109,7 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
 
           // 时间筛选：拒绝早于2026年1月1日的文章
           if (!isPublishDateValid(article.pubDate)) {
+            recordRejection(result, 'old_publish_date');
             console.log(`Skipped (old date: ${article.pubDate?.toISOString()}): "${article.title}"`);
             continue;
           }
@@ -113,11 +121,13 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             `${article.summary || ''} ${article.content || ''}`
           );
           if (promoPreCheck.isPromo) {
+            recordRejection(result, promoPreCheck.reason || 'promo_deal');
             console.log(`Skipped (promo/deal - universal block): "${article.title}"`);
             continue;
           }
 
           if (!articleMatchesIncludeKeywords(article, source.includeKeywords)) {
+            recordRejection(result, 'source_keyword_prefilter');
             console.log(`Skipped (source keyword prefilter): "${article.title}"`);
             continue;
           }
@@ -135,6 +145,7 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           ];
           const gamingHits = GAMING_KEYWORDS.filter(k => fullText.includes(k.toLowerCase()));
           if (gamingHits.length >= 2) {
+            recordRejection(result, 'gaming_entertainment');
             console.log(`Skipped (gaming/entertainment - universal block): "${article.title}"`);
             continue;
           }
@@ -147,6 +158,7 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
               `${article.summary || ''} ${article.content || ''}`
             );
             if (productLaunchCheck.isProductLaunch) {
+              recordRejection(result, productLaunchCheck.reason || 'ithome_product_launch');
               console.log(`Skipped (IT之家 product launch: ${productLaunchCheck.reason}): "${article.title}"`);
               continue;
             }
@@ -155,6 +167,7 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             relevanceScore = r.score;
             relevanceMeta = JSON.stringify(r.meta);
             if (!r.passed) {
+              recordRejection(result, r.meta.rejectedBy || 'low_pm_relevance');
               console.log(`Skipped (low PM relevance ${r.score}): "${article.title}"`);
               continue;
             }
@@ -202,6 +215,7 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           if (isProductRelease) {
             const isTopTier = TOP_TIER_BRANDS_FETCHER.some(b => fullText.includes(b.toLowerCase()));
             if (!isTopTier) {
+              recordRejection(result, 'non_top_tier_product_release');
               console.log(`Skipped (non-top-tier product release - universal block): "${article.title}"`);
               continue;
             }
@@ -223,12 +237,14 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
             if (aiR.meta.rejectedBy?.startsWith('promo_deal') || 
                 financeR.meta.rejectedBy?.startsWith('promo_deal') || 
                 techR.meta.rejectedBy === 'promo_deal') {
+              recordRejection(result, 'promo_deal');
               console.log(`Skipped (promo/deal article): "${article.title}"`);
               continue;
             }
 
             // 高优先级：游戏/娱乐行业检测 - 不是 AI 技术新闻
             if (aiR.meta.rejectedBy === 'gaming_entertainment') {
+              recordRejection(result, 'gaming_entertainment');
               console.log(`Skipped (gaming/entertainment news, not AI tech): "${article.title}"`);
               continue;
             }

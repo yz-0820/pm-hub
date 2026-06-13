@@ -47,6 +47,8 @@ export interface FetchResult {
   sourceName: string;
   fetched: number;
   newArticles: number;
+  rejectedArticles: number;
+  rejectionReasons: Record<string, number>;
   errors: string[];
 }
 

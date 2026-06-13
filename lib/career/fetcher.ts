@@ -7,7 +7,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { contentSources, getEnabledSources, getDefaultCover, isDefaultCoverImage } from '@/config/content-sources';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable, contentFetchLogs } from '@/lib/db/schema';
-import { and, desc, eq, gte, lt, notInArray, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, lt, notInArray, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 import { normalizeAll } from './platforms/normalizer';
 import { assessQuality, evaluateBestCategoryMatch, hasCareerRelevance } from './quality';
@@ -15,6 +15,11 @@ import { PlatformRawContent, NormalizedContent } from './platforms/types';
 import { fetchXiaohongshuFeed, fetchDouyinFeed, fetchBilibiliFeed } from './platforms/rsshub';
 import { validateExternalUrl } from './url-validator';
 import { extractMetaFromUrl } from './cover-extractor';
+import {
+  canUseCareerTitleFingerprint,
+  compareCareerDuplicateCandidates,
+  normalizeCareerTitle,
+} from './title-fingerprint';
 
 function isDefaultCoverUrl(url?: string | null): boolean {
   return isDefaultCoverImage(url);
@@ -48,6 +53,8 @@ export interface FetchResult {
   fetched: number;
   newContents: number;
   updatedContents: number;
+  rejectedContents: number;
+  rejectionReasons: Record<string, number>;
   errors: string[];
 }
 
@@ -499,13 +506,79 @@ async function isContentExists(originalUrl: string): Promise<boolean> {
 }
 
 // 保存内容到数据库
+type SaveContentResult = {
+  isNew: boolean;
+  isUpdated: boolean;
+  status?: string;
+  rejectionReasons?: string[];
+};
+
+function buildRejectionReasons(
+  contentStatus: string,
+  quality: ReturnType<typeof assessQuality>,
+  bestMatch: ReturnType<typeof evaluateBestCategoryMatch>,
+  urlValidation: { ok: boolean; reason?: string },
+  isHardReject: boolean,
+  isNonRelevant: boolean
+): string[] {
+  if (contentStatus !== 'rejected') return [];
+
+  const reasons: string[] = [];
+  if (!urlValidation.ok) reasons.push(urlValidation.reason ? `url_${urlValidation.reason}` : 'invalid_url');
+  if (isHardReject) reasons.push('hard_reject');
+  if (isNonRelevant) reasons.push('non_career_relevance');
+  if (!quality.passed) reasons.push(...quality.reasons);
+  if (!bestMatch.matched) {
+    if (bestMatch.matchScore < 75) reasons.push('category_match_score_low');
+    if (!bestMatch.coreMatched) reasons.push('category_core_missing');
+  }
+
+  return Array.from(new Set(reasons.length > 0 ? reasons : ['rejected']));
+}
+
+function recordCareerRejection(result: FetchResult, reasons: string[] = []) {
+  result.rejectedContents++;
+  const finalReasons = reasons.length > 0 ? reasons : ['rejected'];
+  for (const reason of finalReasons) {
+    result.rejectionReasons[reason] = (result.rejectionReasons[reason] || 0) + 1;
+  }
+}
+
+function selectBestDuplicate<T extends Parameters<typeof compareCareerDuplicateCandidates>[0]>(items: T[]): T | null {
+  return items.sort((a, b) => compareCareerDuplicateCandidates(b, a))[0] || null;
+}
+
+async function findSameTitleContent(title: string): Promise<Array<typeof careerContents.$inferSelect>> {
+  if (!canUseCareerTitleFingerprint(title)) return [];
+
+  const fingerprint = normalizeCareerTitle(title);
+  const candidates = await db.query.careerContents.findMany({
+    where: and(
+      inArray(careerContents.status, ['active', 'pending']),
+      sql`regexp_replace(lower(${careerContents.title}), '[[:space:][:punct:]，。！？；：“”‘’（）【】《》、·…—－]+', '', 'g') = ${fingerprint}`
+    ),
+  });
+
+  return candidates.filter((candidate) => normalizeCareerTitle(candidate.title) === fingerprint);
+}
+
+function pickMergedCover(
+  incomingCover: string | null | undefined,
+  desiredCover: string,
+  existingCover: string | null | undefined
+): string {
+  if (incomingCover && !isDefaultCoverUrl(incomingCover)) return incomingCover;
+  if (existingCover && !isDefaultCoverUrl(existingCover)) return existingCover;
+  return desiredCover;
+}
+
 async function saveContent(
   content: NormalizedContent,
   sourceId: string,
   sourceName: string,
   platform: string,
   category: string
-): Promise<{ isNew: boolean; isUpdated: boolean }> {
+): Promise<SaveContentResult> {
   const bestMatch = evaluateBestCategoryMatch(content);
   const matchPassed = bestMatch.matched;
   const quality = assessQuality(content);
@@ -569,14 +642,15 @@ async function saveContent(
         })
         .where(eq(careerContents.id, existing.id));
 
-      return { isNew: false, isUpdated: true };
+      return { isNew: false, isUpdated: true, status: 'archived' };
     }
 
-    return { isNew: false, isUpdated: false };
+    return { isNew: false, isUpdated: false, status: 'skipped' };
   }
 
   const contentStatus =
     (!urlValidation.ok || isHardReject) ? 'rejected' : (quality.passed && finalMatchPassed ? 'active' : isNonRelevant ? 'rejected' : 'pending');
+  const rejectionReasons = buildRejectionReasons(contentStatus, quality, bestMatch, urlValidation, isHardReject, isNonRelevant);
 
   const coverSeed = content.originalId || content.originalUrl || content.title;
   const desiredCover = content.coverImage || getDefaultCover(content.category, coverSeed);
@@ -622,7 +696,79 @@ async function saveContent(
       })
       .where(eq(careerContents.id, existing.id));
     
-    return { isNew: false, isUpdated: true };
+    return { isNew: false, isUpdated: true, status: contentStatus, rejectionReasons };
+  }
+
+  if (contentStatus === 'active' || contentStatus === 'pending') {
+    const sameTitleContents = await findSameTitleContent(content.title);
+    const existingSameTitle = selectBestDuplicate(sameTitleContents);
+
+    if (existingSameTitle) {
+      const incomingCandidate = {
+        qualityScore: quality.score,
+        matchScore: bestMatch.matchScore,
+        originalUrl: content.originalUrl,
+        description: content.description,
+        content: content.content,
+        publishedAt: content.publishedAt,
+      };
+      const shouldReplaceCanonical =
+        compareCareerDuplicateCandidates(incomingCandidate, existingSameTitle) > 0;
+      const nextCover = pickMergedCover(content.coverImage, desiredCover, existingSameTitle.coverImage);
+
+      if (shouldReplaceCanonical) {
+        await db.update(careerContents)
+          .set({
+            title: content.title,
+            description: content.description,
+            content: content.content,
+            sourceId,
+            sourceName,
+            platform,
+            originalUrl: content.originalUrl,
+            originalId: content.originalId,
+            author: content.author || sourceName,
+            authorId: content.authorId,
+            authorAvatar: content.authorAvatar,
+            contentType: content.contentType,
+            category: content.category,
+            tags: content.tags.length > 0 ? JSON.stringify(content.tags) : null,
+            coverImage: nextCover,
+            videoUrl: content.videoUrl,
+            videoDuration: content.videoDuration,
+            images: content.images.length > 0 ? JSON.stringify(content.images) : null,
+            viewCount: content.viewCount ?? existingSameTitle.viewCount,
+            likeCount: content.likeCount ?? existingSameTitle.likeCount,
+            commentCount: content.commentCount ?? existingSameTitle.commentCount,
+            shareCount: content.shareCount ?? existingSameTitle.shareCount,
+            status: contentStatus,
+            qualityScore: quality.score,
+            qualityReasons: quality.reasons.length > 0 ? JSON.stringify(quality.reasons) : null,
+            matchScore: bestMatch.matchScore,
+            matchKeywords: bestMatch.keywords.length > 0 ? JSON.stringify(bestMatch.keywords) : null,
+            matchCoreMatched: bestMatch.coreMatched,
+            matchCoreMissing: bestMatch.coreMissing.length > 0 ? JSON.stringify(bestMatch.coreMissing) : null,
+            publishedAt: content.publishedAt,
+            fetchedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(careerContents.id, existingSameTitle.id));
+      } else {
+        await db.update(careerContents)
+          .set({
+            coverImage: nextCover,
+            viewCount: content.viewCount ?? existingSameTitle.viewCount,
+            likeCount: content.likeCount ?? existingSameTitle.likeCount,
+            commentCount: content.commentCount ?? existingSameTitle.commentCount,
+            shareCount: content.shareCount ?? existingSameTitle.shareCount,
+            fetchedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(careerContents.id, existingSameTitle.id));
+      }
+
+      return { isNew: false, isUpdated: true, status: contentStatus, rejectionReasons };
+    }
   }
   
   // 插入新内容（NormalizedContent 已包含分类、封面和内容类型）
@@ -659,7 +805,7 @@ async function saveContent(
     fetchedAt: new Date(),
   });
   
-  return { isNew: true, isUpdated: false };
+  return { isNew: true, isUpdated: false, status: contentStatus, rejectionReasons };
 }
 
 // 更新内容源状态
@@ -694,8 +840,17 @@ async function logFetch(
   fetchedCount: number,
   newCount: number,
   updatedCount: number,
+  rejectedCount: number,
+  rejectionReasons: Record<string, number>,
   errors: string[]
 ) {
+  const logPayload = {
+    version: 1,
+    errors,
+    rejectedCount,
+    rejectionReasons,
+  };
+
   await db.insert(contentFetchLogs).values({
     sourceId,
     startedAt,
@@ -704,7 +859,7 @@ async function logFetch(
     newCount,
     updatedCount,
     errorCount: errors.length,
-    errors: errors.length > 0 ? JSON.stringify(errors) : null,
+    errors: errors.length > 0 || rejectedCount > 0 ? JSON.stringify(logPayload) : null,
   });
 }
 
@@ -716,6 +871,8 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
     fetched: 0,
     newContents: 0,
     updatedContents: 0,
+    rejectedContents: 0,
+    rejectionReasons: {},
     errors: [],
   };
   
@@ -830,10 +987,13 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
         if (filters.length > 0) {
           const fullText = `${content.title || ''} ${content.description || ''} ${content.content || ''}`.toLowerCase();
           const passed = filters.some((f) => fullText.includes(String(f).toLowerCase()));
-          if (!passed) continue;
+          if (!passed) {
+            recordCareerRejection(result, ['source_filter_miss']);
+            continue;
+          }
         }
 
-        const { isNew, isUpdated } = await saveContent(
+        const { isNew, isUpdated, status, rejectionReasons } = await saveContent(
           content,
           source.sourceId,
           source.sourceName,
@@ -843,6 +1003,7 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
         
         if (isNew) result.newContents++;
         if (isUpdated) result.updatedContents++;
+        if (status === 'rejected') recordCareerRejection(result, rejectionReasons);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         console.error(`[${source.sourceName}] Error saving content:`, errorMsg);
@@ -869,6 +1030,8 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
     result.fetched,
     result.newContents,
     result.updatedContents,
+    result.rejectedContents,
+    result.rejectionReasons,
     result.errors
   );
   
@@ -915,6 +1078,8 @@ export async function fetchAllCareerContents(): Promise<FetchResult[]> {
       fetched: 0,
       newContents: 0,
       updatedContents: 1,
+      rejectedContents: 0,
+      rejectionReasons: {},
       errors: [],
     });
   }

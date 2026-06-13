@@ -3,6 +3,9 @@ import { revalidatePath } from 'next/cache';
 import { fetchAllRSS } from '@/lib/rss/fetcher';
 import { fetchAllCareerContents } from '@/lib/career/fetcher';
 import { invalidateContentCache } from '@/lib/career/cache';
+import { db } from '@/lib/db/client';
+import { fetchLogs } from '@/lib/db/schema';
+import { createRSSFetchLogPayload } from '@/lib/rss/fetch-summary';
 
 export const runtime = 'nodejs';
 
@@ -12,6 +15,7 @@ type JobSummary = {
   fetched: number;
   newItems: number;
   updatedItems?: number;
+  rejectedItems?: number;
   errors: string[];
 };
 
@@ -59,12 +63,23 @@ export async function GET(request: NextRequest) {
   };
 
   try {
+    const rssStartedAt = new Date();
     const results = await fetchAllRSS();
     rss.success = true;
     rss.sources = results.length;
     rss.fetched = results.reduce((sum, r) => sum + r.fetched, 0);
     rss.newItems = results.reduce((sum, r) => sum + r.newArticles, 0);
+    rss.rejectedItems = results.reduce((sum, r) => sum + r.rejectedArticles, 0);
     rss.errors = results.flatMap((r) => r.errors.map((error) => `${r.sourceName}: ${error}`));
+
+    await db.insert(fetchLogs).values({
+      startedAt: rssStartedAt,
+      completedAt: new Date(),
+      totalSources: results.length,
+      successfulSources: results.filter((r) => r.errors.length === 0).length,
+      totalNewArticles: rss.newItems,
+      errors: JSON.stringify(createRSSFetchLogPayload(results)),
+    });
   } catch (error) {
     rss.errors.push(error instanceof Error ? error.message : String(error));
   }
@@ -76,6 +91,7 @@ export async function GET(request: NextRequest) {
     career.fetched = results.reduce((sum, r) => sum + r.fetched, 0);
     career.newItems = results.reduce((sum, r) => sum + r.newContents, 0);
     career.updatedItems = results.reduce((sum, r) => sum + r.updatedContents, 0);
+    career.rejectedItems = results.reduce((sum, r) => sum + r.rejectedContents, 0);
     career.errors = results.flatMap((r) => r.errors.map((error) => `${r.sourceName}: ${error}`));
 
     if (career.newItems > 0 || (career.updatedItems ?? 0) > 0) {

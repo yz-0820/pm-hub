@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
     const totalFetched = results.reduce((sum, r) => sum + r.fetched, 0);
     const totalNew = results.reduce((sum, r) => sum + r.newContents, 0);
     const totalUpdated = results.reduce((sum, r) => sum + r.updatedContents, 0);
+    const totalRejected = results.reduce((sum, r) => sum + r.rejectedContents, 0);
     const hasErrors = results.some(r => r.errors.length > 0);
 
     // 如果有新内容，使缓存失效
@@ -100,12 +101,15 @@ export async function POST(request: NextRequest) {
         totalFetched,
         totalNew,
         totalUpdated,
+        totalRejected,
         hasErrors,
         results: results.map(r => ({
           source: r.sourceName,
           fetched: r.fetched,
           newContents: r.newContents,
           updatedContents: r.updatedContents,
+          rejectedContents: r.rejectedContents,
+          rejectionReasons: r.rejectionReasons,
           errors: r.errors,
         })),
       },

@@ -12,6 +12,7 @@ import { PM_THRESHOLD } from '@/lib/rss/pm-relevance';
 import { TECH_THRESHOLD } from '@/lib/rss/tech-relevance';
 import { ArticleCarousel } from '@/components/ui/article-carousel';
 import { HotEvents } from '@/components/ui/hot-events';
+import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -59,6 +60,41 @@ function getArticleCategoryThreshold(category: string) {
   return null;
 }
 
+function getArticleCategoryConditions(category: string, start: Date, end: Date) {
+  const threshold = getArticleCategoryThreshold(category);
+  const conditions = [
+    eq(articles.category, category),
+    gte(articles.publishedAt, start),
+    lt(articles.publishedAt, end),
+  ];
+
+  if (threshold !== null) {
+    conditions.push(gte(articles.relevanceScore, threshold));
+  }
+
+  return conditions;
+}
+
+function getPickUrlKey(href: string) {
+  return href.trim().toLowerCase();
+}
+
+function getPickTitleKey(title: string) {
+  return normalizeCareerTitle(title);
+}
+
+function addUniqueTodayPick(picks: TodayPick[], pick: TodayPick | null) {
+  if (!pick) return false;
+  const urlKey = getPickUrlKey(pick.href);
+  const titleKey = getPickTitleKey(pick.title);
+  const exists = picks.some((item) => (
+    getPickUrlKey(item.href) === urlKey || getPickTitleKey(item.title) === titleKey
+  ));
+  if (exists) return false;
+  picks.push(pick);
+  return true;
+}
+
 function resolveArticleCover(category: string, seed: string, imageUrl?: string | null) {
   return imageUrl && !isDefaultCoverImage(imageUrl)
     ? imageUrl
@@ -76,17 +112,6 @@ async function getTodayPicks(): Promise<TodayPick[]> {
 
   try {
     const articlePromises = todayArticleCategories.map(async (category) => {
-      const threshold = getArticleCategoryThreshold(category);
-      const conditions = [
-        eq(articles.category, category),
-        gte(articles.publishedAt, start),
-        lt(articles.publishedAt, end),
-      ];
-
-      if (threshold !== null) {
-        conditions.push(gte(articles.relevanceScore, threshold));
-      }
-
       const rows = await db
         .select({
           id: articles.id,
@@ -96,7 +121,7 @@ async function getTodayPicks(): Promise<TodayPick[]> {
           score: articles.relevanceScore,
         })
         .from(articles)
-        .where(and(...conditions))
+        .where(and(...getArticleCategoryConditions(category, start, end)))
         .orderBy(desc(articles.relevanceScore), desc(articles.publishedAt), desc(articles.id))
         .limit(1);
 
@@ -157,10 +182,43 @@ async function getTodayPicks(): Promise<TodayPick[]> {
       careerPromise,
     ]);
 
-    const picks: Array<TodayPick | null> = [...articlePicks, careerPick];
-    return picks.filter(
-      (item): item is TodayPick => item !== null
-    ).sort((a, b) => {
+    const picks: TodayPick[] = [];
+    for (const pick of [...articlePicks, careerPick]) {
+      addUniqueTodayPick(picks, pick);
+    }
+
+    if (picks.length < 5) {
+      const fallbackRows = await db
+        .select({
+          id: articles.id,
+          title: articles.title,
+          href: articles.originalUrl,
+          category: articles.category,
+          imageUrl: articles.imageUrl,
+          score: articles.relevanceScore,
+          publishedAt: articles.publishedAt,
+        })
+        .from(articles)
+        .where(or(...todayArticleCategories.map((category) => (
+          and(...getArticleCategoryConditions(category, start, end))
+        ))))
+        .orderBy(desc(articles.relevanceScore), desc(articles.publishedAt), desc(articles.id))
+        .limit(50);
+
+      for (const item of fallbackRows) {
+        if (picks.length >= 5) break;
+        addUniqueTodayPick(picks, {
+          id: item.id,
+          title: item.title,
+          href: item.href,
+          imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
+          score: item.score,
+          kind: 'article' as const,
+        });
+      }
+    }
+
+    return picks.sort((a, b) => {
       const scoreDiff = b.score - a.score;
       if (scoreDiff !== 0) return scoreDiff;
 
@@ -235,7 +293,20 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
 
 async function getLatestCareerForCarousel(limit: number = 5) {
   try {
-    // 从 careerContents 获取最新的职业发展内容（与 /career 页面一致）
+    // 先获取最近的文章 URL 和标题，用于去重
+    const recentArticles = await db
+      .select({
+        originalUrl: articles.originalUrl,
+        title: articles.title,
+      })
+      .from(articles)
+      .orderBy(desc(articles.publishedAt))
+      .limit(100);
+
+    const articleUrls = new Set(recentArticles.map((a) => a.originalUrl.trim().toLowerCase()));
+    const articleTitles = new Set(recentArticles.map((a) => normalizeCareerTitle(a.title)));
+
+    // 从 careerContents 获取最新的职业发展内容，排除与 articles 重复的内容
     const results = await db
       .select({
         id: careerContents.id,
@@ -247,12 +318,18 @@ async function getLatestCareerForCarousel(limit: number = 5) {
       .from(careerContents)
       .where(eq(careerContents.status, 'active'))
       .orderBy(desc(careerContents.publishedAt))
-      .limit(limit);
+      .limit(limit * 3);
 
-    return results.map((item) => ({
+    const uniqueResults = results.filter((item) => {
+      const urlKey = item.originalUrl.trim().toLowerCase();
+      const titleKey = normalizeCareerTitle(item.title);
+      return !articleUrls.has(urlKey) && !articleTitles.has(titleKey);
+    });
+
+    return uniqueResults.slice(0, limit).map((item) => ({
       id: item.id,
       title: item.title,
-      href: item.originalUrl, // 使用外部链接
+      href: item.originalUrl,
       imageUrl: resolveCareerCover(item.category, `${item.id}-${item.title}`, item.coverImage),
     }));
   } catch (error) {

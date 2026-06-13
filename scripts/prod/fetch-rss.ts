@@ -1,9 +1,11 @@
 ﻿import './load-env';
-import { fetchAllRSS } from '@/lib/rss/fetcher';
-import { db } from '@/lib/db/client';
-import { fetchLogs } from '@/lib/db/schema';
 
 async function main() {
+  const { fetchAllRSS } = await import('@/lib/rss/fetcher');
+  const { db } = await import('@/lib/db/client');
+  const { fetchLogs } = await import('@/lib/db/schema');
+  const { createRSSFetchLogPayload } = await import('@/lib/rss/fetch-summary');
+
   console.log('Starting RSS fetch job...');
   const startedAt = new Date();
   
@@ -13,6 +15,8 @@ async function main() {
     const totalSources = results.length;
     const successfulSources = results.filter(r => r.errors.length === 0).length;
     const totalNewArticles = results.reduce((sum, r) => sum + r.newArticles, 0);
+    const totalRejectedArticles = results.reduce((sum, r) => sum + r.rejectedArticles, 0);
+    const logPayload = createRSSFetchLogPayload(results);
     
     // 记录日志
     await db.insert(fetchLogs).values({
@@ -21,16 +25,17 @@ async function main() {
       totalSources,
       successfulSources,
       totalNewArticles,
-      errors: JSON.stringify(results.filter(r => r.errors.length > 0)),
+      errors: JSON.stringify(logPayload),
     });
     
     console.log('RSS fetch completed:');
     console.log(`- Total sources: ${totalSources}`);
     console.log(`- Successful: ${successfulSources}`);
     console.log(`- New articles: ${totalNewArticles}`);
+    console.log(`- Rejected articles: ${totalRejectedArticles}`);
     
     results.forEach(r => {
-      console.log(`  ${r.sourceName}: ${r.newArticles} new articles`);
+      console.log(`  ${r.sourceName}: ${r.newArticles} new, ${r.rejectedArticles} rejected`);
     });
     
     process.exit(0);
