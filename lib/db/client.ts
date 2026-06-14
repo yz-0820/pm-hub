@@ -2,25 +2,77 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL;
+type PostgresClient = ReturnType<typeof createPostgresClient>;
+type DatabaseClient = ReturnType<typeof createDbClient>;
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL is required. Configure a Neon/Postgres connection string.');
+let cachedPostgresClient: PostgresClient | null = null;
+let cachedDb: DatabaseClient | null = null;
+
+function getConnectionString() {
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error('DATABASE_URL is required. Configure a Neon/Postgres connection string.');
+  }
+
+  if (!/^postgres(?:ql)?:\/\//i.test(connectionString)) {
+    throw new Error('DATABASE_URL must be a postgres:// or postgresql:// connection string.');
+  }
+
+  return connectionString;
 }
 
-if (!/^postgres(?:ql)?:\/\//i.test(connectionString)) {
-  throw new Error('DATABASE_URL must be a postgres:// or postgresql:// connection string.');
+function createPostgresClient() {
+  return postgres(getConnectionString(), {
+    prepare: false,
+    max: 10,
+    connect_timeout: 30,
+    idle_timeout: 20,
+    max_lifetime: 60,
+  });
 }
 
-export const postgresClient = postgres(connectionString, {
-  prepare: false,
-  max: 10,                  // 连接池最大连接数
-  // 超时配置（单位：秒）
-  connect_timeout: 30,      // 连接超时 30 秒
-  idle_timeout: 20,         // 空闲连接超时 20 秒
-  max_lifetime: 60,         // 连接最大生命周期 60 秒
+function createDbClient() {
+  return drizzle(getPostgresClient(), { schema });
+}
+
+export function getPostgresClient() {
+  if (!cachedPostgresClient) {
+    cachedPostgresClient = createPostgresClient();
+  }
+
+  return cachedPostgresClient;
+}
+
+export function getDb() {
+  if (!cachedDb) {
+    cachedDb = createDbClient();
+  }
+
+  return cachedDb;
+}
+
+const postgresClientTarget = ((...args: unknown[]) => {
+  const client = getPostgresClient() as unknown as (...queryArgs: unknown[]) => unknown;
+  return client(...args);
+}) as unknown as PostgresClient;
+
+export const postgresClient = new Proxy(postgresClientTarget, {
+  get(_target, prop) {
+    const client = getPostgresClient() as unknown as Record<PropertyKey, unknown>;
+    const value = client[prop];
+
+    return typeof value === 'function' ? value.bind(client) : value;
+  },
 });
 
-export const db = drizzle(postgresClient, { schema });
+export const db = new Proxy({} as DatabaseClient, {
+  get(_target, prop) {
+    const client = getDb() as unknown as Record<PropertyKey, unknown>;
+    const value = client[prop];
+
+    return typeof value === 'function' ? value.bind(client) : value;
+  },
+});
 
 export { schema };

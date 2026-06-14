@@ -1,24 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import crypto from 'crypto';
 import { validateImageProxyUrl } from '@/lib/utils/image-proxy-validation';
 
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存
-
-function getCacheDir(): string {
-  if (process.env.VERCEL) {
-    return path.join(os.tmpdir(), 'pm-hub-image-cache');
-  }
-  return path.join(process.cwd(), 'data', 'image-cache');
-}
-
-function getCachePath(url: string): string {
-  const hash = crypto.createHash('md5').update(url).digest('hex');
-  const ext = getExtension(url);
-  return path.join(getCacheDir(), `${hash}${ext}`);
-}
+const CACHE_TTL_SECONDS = 24 * 60 * 60;
 
 function getExtension(url: string): string {
   try {
@@ -55,54 +38,36 @@ function normalizeUpstreamImageUrl(url: string): string {
   return `${base}@1280w_720h_1c`;
 }
 
+function getRuntimeCache(): Cache | null {
+  const runtimeCaches = globalThis.caches as (CacheStorage & { default?: Cache }) | undefined;
+  return runtimeCaches?.default ?? null;
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const imageUrl = request.nextUrl.searchParams.get('url');
-
   const finalUrl = imageUrl ? normalizeUpstreamImageUrl(imageUrl) : null;
 
   const validation = validateImageProxyUrl(finalUrl);
   if (!validation.ok) return NextResponse.json({ error: validation.error }, { status: 400 });
+
   const parsedUrl = validation.url;
   const normalizedUrl = parsedUrl.toString();
+  const ext = getExtension(normalizedUrl);
+  const cache = getRuntimeCache();
+  const cacheUrl = new URL(request.url);
+  cacheUrl.searchParams.set('url', normalizedUrl);
+  const cacheRequest = new Request(cacheUrl.toString(), { method: 'GET' });
 
-  const cacheDir = getCacheDir();
-  let cacheEnabled = true;
-  try {
-    if (!fs.existsSync(cacheDir)) {
-      fs.mkdirSync(cacheDir, { recursive: true });
-    }
-  } catch {
-    cacheEnabled = false;
+  if (cache) {
+    const cached = await cache.match(cacheRequest);
+    if (cached) return cached;
   }
 
-  const cachePath = getCachePath(normalizedUrl);
-  const ext = path.extname(cachePath);
-
-  if (cacheEnabled && fs.existsSync(cachePath)) {
-    try {
-      const stat = fs.statSync(cachePath);
-      const age = Date.now() - stat.mtimeMs;
-      if (age < CACHE_TTL && stat.size > 100) {
-        const contentType = getContentType(ext);
-        const buffer = fs.readFileSync(cachePath);
-        return new NextResponse(buffer, {
-          headers: {
-            'Content-Type': contentType,
-            'Cache-Control': 'public, max-age=86400',
-            'Content-Length': buffer.length.toString(),
-          },
-        });
-      }
-    } catch {}
-  }
-
-  // 代理请求图片
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
-
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     const response = await fetch(normalizedUrl, {
       signal: controller.signal,
       headers: {
@@ -125,25 +90,23 @@ export async function GET(request: NextRequest) {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    if (buffer.length < 100) {
+    if (arrayBuffer.byteLength < 100) {
       return NextResponse.json({ error: 'Image too small' }, { status: 502 });
     }
 
-    if (cacheEnabled) {
-      try {
-        fs.writeFileSync(cachePath, buffer);
-      } catch {}
-    }
-
-    return new NextResponse(buffer, {
+    const proxied = new NextResponse(arrayBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=86400',
-        'Content-Length': buffer.length.toString(),
+        'Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
+        'Content-Length': arrayBuffer.byteLength.toString(),
       },
     });
+
+    if (cache) {
+      await cache.put(cacheRequest, proxied.clone());
+    }
+
+    return proxied;
   } catch (error: unknown) {
     if (error instanceof Error && error.name === 'AbortError') {
       return NextResponse.json({ error: 'Image fetch timeout' }, { status: 504 });

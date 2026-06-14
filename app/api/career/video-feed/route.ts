@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import { readFile } from 'fs/promises';
+import videoLinks from '@/data/career-video-links.json';
 
 type VideoLink = {
   platform: 'bilibili' | 'douyin' | 'xiaohongshu';
@@ -64,9 +63,7 @@ export async function GET(req: Request) {
   const platform = u.searchParams.get('platform');
   const siteUrl = getSiteUrl();
 
-  const filePath = path.join(process.cwd(), 'data', 'career-video-links.json');
-  const raw = await readFile(filePath, 'utf8');
-  const list = JSON.parse(raw) as VideoLink[];
+  const list = videoLinks as VideoLink[];
 
   const filtered = list.filter((item) => {
     const p = item.platform || guessPlatform(item.url);
