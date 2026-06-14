@@ -36,74 +36,87 @@ function normalizeTimestamp(value: unknown): Date | null {
 }
 
 async function getArticles(page: number, category?: string) {
-  const offset = (page - 1) * ARTICLES_PER_PAGE;
-  
-  const allowedCategories = Object.keys(categoryLabels);
-  if (category && !allowedCategories.includes(category)) {
-    return { articles: [], totalPages: 0, totalCount: 0, latestPublishedAt: null as Date | null, latestFetchedAt: null as Date | null };
-  }
-
-  const whereClause = category
-    ? category === 'tech'
-      ? and(eq(articles.category, category), gte(articles.relevanceScore, TECH_THRESHOLD))
-      : category === 'finance'
-        ? and(eq(articles.category, category), gte(articles.relevanceScore, FINANCE_THRESHOLD))
-        : category === 'product-management'
-          ? and(eq(articles.category, category), gte(articles.relevanceScore, PM_THRESHOLD))
-          : eq(articles.category, category)
-    : and(
-        inArray(articles.category, allowedCategories),
-        and(
-          or(ne(articles.category, 'tech'), gte(articles.relevanceScore, TECH_THRESHOLD)),
-          or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD)),
-          or(ne(articles.category, 'product-management'), gte(articles.relevanceScore, PM_THRESHOLD))
-        )
-      );
-
-  // 先按标题去重：对每个title只保留一条记录（取最小id）
-  // 使用规范化标题（去除空格差异）作为分组依据
-  // 再按发布时间排序分页
-  const dedupResults = await db
-    .select({
-      id: sql<number>`MIN(${articles.id})`.as('id'),
-    })
-    .from(articles)
-    .where(whereClause)
-    .groupBy(sql`REPLACE(${articles.title}, ' ', '')`)
-    .orderBy(desc(sql`MAX(${articles.publishedAt})`));
-
-  const totalCount = dedupResults.length;
-  const totalPages = Math.ceil(totalCount / ARTICLES_PER_PAGE);
-
-  // 分页取 ID
-  const paginatedIds = dedupResults.slice(offset, offset + ARTICLES_PER_PAGE).map((r) => r.id);
-
-  // 根据 ID 获取完整文章数据
-  const articlesList =
-    paginatedIds.length > 0
-      ? await db
-          .select()
-          .from(articles)
-          .where(inArray(articles.id, paginatedIds))
-          .orderBy(desc(articles.publishedAt))
-      : [];
-
-  const latestPublishedResult = await db
-    .select({ latest: sql<Date | null>`max(${articles.publishedAt})` })
-    .from(articles)
-    .where(whereClause);
-
-  const latestFetchResult = await db
-    .select({ latest: sql<Date | null>`max(${rssSourceStatus.lastFetchAt})` })
-    .from(rssSourceStatus);
-
-  return {
-    articles: articlesList,
-    totalPages,
-    totalCount,
-    latestPublishedAt: normalizeTimestamp(latestPublishedResult[0]?.latest ?? null),
-    latestFetchedAt: normalizeTimestamp(latestFetchResult[0]?.latest ?? null),
+  const emptyResult = {
+    articles: [],
+    totalPages: 0,
+    totalCount: 0,
+    latestPublishedAt: null as Date | null,
+    latestFetchedAt: null as Date | null,
   };
+
+  try {
+    const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+    const allowedCategories = Object.keys(categoryLabels);
+    if (category && !allowedCategories.includes(category)) {
+      return emptyResult;
+    }
+
+    const whereClause = category
+      ? category === 'tech'
+        ? and(eq(articles.category, category), gte(articles.relevanceScore, TECH_THRESHOLD))
+        : category === 'finance'
+          ? and(eq(articles.category, category), gte(articles.relevanceScore, FINANCE_THRESHOLD))
+          : category === 'product-management'
+            ? and(eq(articles.category, category), gte(articles.relevanceScore, PM_THRESHOLD))
+            : eq(articles.category, category)
+      : and(
+          inArray(articles.category, allowedCategories),
+          and(
+            or(ne(articles.category, 'tech'), gte(articles.relevanceScore, TECH_THRESHOLD)),
+            or(ne(articles.category, 'finance'), gte(articles.relevanceScore, FINANCE_THRESHOLD)),
+            or(ne(articles.category, 'product-management'), gte(articles.relevanceScore, PM_THRESHOLD))
+          )
+        );
+
+    // 先按标题去重：对每个title只保留一条记录（取最小id）
+    // 使用规范化标题（去除空格差异）作为分组依据
+    // 再按发布时间排序分页
+    const dedupResults = await db
+      .select({
+        id: sql<number>`MIN(${articles.id})`.as('id'),
+      })
+      .from(articles)
+      .where(whereClause)
+      .groupBy(sql`REPLACE(${articles.title}, ' ', '')`)
+      .orderBy(desc(sql`MAX(${articles.publishedAt})`));
+
+    const totalCount = dedupResults.length;
+    const totalPages = Math.ceil(totalCount / ARTICLES_PER_PAGE);
+
+    // 分页取 ID
+    const paginatedIds = dedupResults.slice(offset, offset + ARTICLES_PER_PAGE).map((r) => r.id);
+
+    // 根据 ID 获取完整文章数据
+    const articlesList =
+      paginatedIds.length > 0
+        ? await db
+            .select()
+            .from(articles)
+            .where(inArray(articles.id, paginatedIds))
+            .orderBy(desc(articles.publishedAt))
+        : [];
+
+    const latestPublishedResult = await db
+      .select({ latest: sql<Date | null>`max(${articles.publishedAt})` })
+      .from(articles)
+      .where(whereClause);
+
+    const latestFetchResult = await db
+      .select({ latest: sql<Date | null>`max(${rssSourceStatus.lastFetchAt})` })
+      .from(rssSourceStatus);
+
+    return {
+      articles: articlesList,
+      totalPages,
+      totalCount,
+      latestPublishedAt: normalizeTimestamp(latestPublishedResult[0]?.latest ?? null),
+      latestFetchedAt: normalizeTimestamp(latestFetchResult[0]?.latest ?? null),
+    };
+  } catch (error) {
+    console.error('Failed to load articles page data:', error);
+    return emptyResult;
+  }
 }
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
