@@ -1,9 +1,11 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { neon } from '@neondatabase/serverless';
+import { drizzle as drizzleNeonHttp } from 'drizzle-orm/neon-http';
+import { drizzle as drizzlePostgresJs } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
 type PostgresClient = ReturnType<typeof createPostgresClient>;
-type DatabaseClient = ReturnType<typeof createDbClient>;
+type DatabaseClient = ReturnType<typeof createPostgresJsDbClient>;
 
 let cachedPostgresClient: PostgresClient | null = null;
 let cachedDb: DatabaseClient | null = null;
@@ -32,8 +34,28 @@ function createPostgresClient() {
   });
 }
 
+function createPostgresJsDbClient() {
+  return drizzlePostgresJs(getPostgresClient(), { schema });
+}
+
+function createNeonHttpDbClient() {
+  return drizzleNeonHttp(neon(getConnectionString()), { schema }) as unknown as DatabaseClient;
+}
+
+function shouldUseNeonHttp() {
+  const configuredDriver = process.env.DATABASE_DRIVER;
+  if (configuredDriver === 'neon-http') return true;
+  if (configuredDriver === 'postgres-js') return false;
+
+  return globalThis.navigator?.userAgent?.includes('Cloudflare-Workers') ?? false;
+}
+
 function createDbClient() {
-  return drizzle(getPostgresClient(), { schema });
+  if (shouldUseNeonHttp()) {
+    return createNeonHttpDbClient();
+  }
+
+  return createPostgresJsDbClient();
 }
 
 export function getPostgresClient() {
