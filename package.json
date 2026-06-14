@@ -13,7 +13,10 @@
     "dev:local": "node scripts/prod/dev-runner.cjs local",
     "dev:schedulers": "node scripts/prod/dev-runner.cjs schedulers",
     "dev:all": "node scripts/prod/dev-runner.cjs local",
-    "build": "next build --webpack",
+    "build": "opennextjs-cloudflare build",
+    "build:next": "next build --webpack",
+    "deploy": "opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
@@ -59,6 +62,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.19.11",
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
@@ -71,6 +75,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.22.3",
     "typescript": "^5",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "wrangler": "^4.100.0"
   }
 }
