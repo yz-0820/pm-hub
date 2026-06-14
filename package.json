@@ -15,7 +15,7 @@
     "dev:all": "node scripts/prod/dev-runner.cjs local",
     "build": "opennextjs-cloudflare build",
     "build:next": "next build --webpack",
-    "deploy": "opennextjs-cloudflare deploy",
+    "deploy": "opennextjs-cloudflare deploy --config wrangler.jsonc",
     "preview": "opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "eslint",
