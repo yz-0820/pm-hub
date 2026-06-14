@@ -10,11 +10,6 @@ import {
   Eye, 
   Heart, 
   Play,
-  Rss,
-  BookOpen,
-  MessageSquare,
-  MessageCircle,
-  AtSign,
   ImageIcon
 } from 'lucide-react';
 import { formatCareerDate } from '@/lib/utils/date';
@@ -26,16 +21,6 @@ interface ContentCardProps {
 }
 
 // 平台图标映射
-const platformIcons: Record<string, React.ComponentType<{ className?: string; color?: string }>> = {
-  xiaohongshu: BookOpen,
-  douyin: Video,
-  bilibili: Play,
-  zhihu: MessageCircle,
-  wechat: MessageSquare,
-  rss: Rss,
-  weibo: AtSign,
-};
-
 // 内容类型图标映射
 const contentTypeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   article: FileText,
@@ -55,10 +40,10 @@ const categoryLabels: Record<string, string> = {
 
 // 分类颜色映射
 const categoryColors: Record<string, string> = {
-  communication: 'bg-blue-50 text-blue-600 border-blue-100',
-  productivity: 'bg-green-50 text-green-600 border-green-100',
-  teamwork: 'bg-purple-50 text-purple-600 border-purple-100',
-  leadership: 'bg-amber-50 text-amber-600 border-amber-100',
+  communication: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+  productivity: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+  teamwork: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+  leadership: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
 };
 
 function getSafeExternalHref(url: string): string | null {
@@ -112,10 +97,10 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
   const platform = platformLabels[content.platform] || { name: displaySourceName, color: '#666', icon: 'Rss' };
   const displayTitle = content.title;
   
-  const PlatformIcon = platformIcons[content.platform] || Rss;
   const TypeIcon = contentTypeIcons[content.contentType] || FileText;
   
   const categoryLabel = categoryLabels[content.category] || '';
+  const categoryColor = categoryColors[content.category] || 'bg-emerald-50 text-emerald-700 border border-emerald-100';
   const safeHref = getSafeExternalHref(content.originalUrl);
   if (!safeHref) return null;
   const fallbackCover = getCareerDefaultCover(
@@ -169,7 +154,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
           </h3>
           <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
             <span className="flex items-center gap-1">
-              <PlatformIcon className="h-3 w-3" color={platform.color} />
               {displaySourceName}
             </span>
             <span>·</span>
@@ -220,11 +204,10 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
               className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium backdrop-blur-sm"
               style={{ color: platform.color }}
             >
-              <PlatformIcon className="h-3 w-3" />
               {displaySourceName}
             </span>
             {categoryLabel && (
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-600`}>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${categoryColor}`}>
                 {categoryLabel}
               </span>
             )}
@@ -316,7 +299,7 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
             {/* Meta row */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {categoryLabel && (
-                <span className="inline-block px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-full shrink-0">
+                <span className={`inline-block px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-medium rounded-full shrink-0 ${categoryColor}`}>
                   {categoryLabel}
                 </span>
               )}
@@ -324,7 +307,6 @@ export function ContentCard({ content, variant = 'default' }: ContentCardProps) 
                 className="flex items-center gap-1 text-xs text-muted-foreground shrink-0 max-w-[120px] sm:max-w-none truncate"
                 title={displaySourceName}
               >
-                <PlatformIcon className="h-3 w-3 shrink-0" color={platform.color} />
                 <span className="truncate">{displaySourceName}</span>
               </span>
               <span className="text-muted-foreground/40">·</span>

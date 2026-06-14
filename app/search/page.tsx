@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,8 @@ import { Pagination } from '@/components/articles/pagination';
 import { formatDate } from '@/lib/utils/date';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategoryLabels } from '@/config/resource-categories';
-import { getProxiedImageUrl } from '@/lib/utils/image-proxy';
+import { getArticleDefaultCover, getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
+import { FallbackImage } from '@/components/ui/fallback-image';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
 
 type SearchHit =
@@ -170,7 +170,10 @@ function SearchResultCard({ hit }: { hit: SearchHit }) {
   const categoryLabel = isCareer
     ? resourceCategoryLabels[hit.category]?.name || hit.category
     : categoryLabels[hit.category]?.name || hit.category;
-  const proxiedImageUrl = getProxiedImageUrl(hit.imageUrl);
+  const fallbackCover = isCareer
+    ? getCareerDefaultCover(hit.category, `${hit.id}-${hit.title}`)
+    : getArticleDefaultCover(hit.category, `${hit.id}-${hit.title}`);
+  const sourceImageUrl = hit.imageUrl && !isDefaultCoverImage(hit.imageUrl) ? hit.imageUrl : null;
   const sourceName = simplifyArticleSourceName(hit.sourceName);
   const scopeLabel = isCareer ? '职业发展' : '专业资讯';
 
@@ -181,20 +184,25 @@ function SearchResultCard({ hit }: { hit: SearchHit }) {
       rel="noopener noreferrer"
       className="group flex gap-4 p-4 rounded-xl border bg-card hover:shadow-md transition-all"
     >
-      {proxiedImageUrl && (
-        <div className="relative w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden">
-          <Image
-            src={proxiedImageUrl}
-            alt={hit.title}
-            fill
-            className="object-cover"
-          />
-        </div>
-      )}
+      <div className="relative w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+        <FallbackImage
+          src={sourceImageUrl || fallbackCover}
+          fallbackSrc={fallbackCover}
+          alt={hit.title}
+          fill
+          className="object-cover"
+          sizes="128px"
+          referrerPolicy="no-referrer"
+        />
+      </div>
       
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
+          <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+            isCareer
+              ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+              : 'text-primary bg-primary/10'
+          }`}>
             {scopeLabel} · {categoryLabel}
           </span>
           <span className="text-xs text-muted-foreground">{sourceName}</span>
