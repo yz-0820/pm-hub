@@ -3,7 +3,7 @@ import { Lightbulb, Cpu, LineChart, Bot, Newspaper, Code2, FileText, Image as Im
 import { and, desc, eq, gte, lt, notLike, sql, inArray, or } from 'drizzle-orm';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategories } from '@/config/resource-categories';
-import { getArticleDefaultCover, getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
+import { getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
 import { db } from '@/lib/db/client';
 import { articles, careerContents } from '@/lib/db/schema';
 import { FINANCE_THRESHOLD } from '@/lib/rss/finance-relevance';
@@ -15,6 +15,7 @@ import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
 import { FallbackImage } from '@/components/ui/fallback-image';
 import { Skeleton } from '@/components/ui/skeleton';
 import * as siteMeta from '@/lib/site-meta';
+import { resolveArticleDisplayImage } from '@/lib/utils/article-cover';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -27,6 +28,7 @@ type TodayPick = {
   title: string;
   href: string;
   imageUrl: string;
+  fallbackImageUrl: string;
   score: number;
   kind: 'article' | 'career';
   category: string;
@@ -98,12 +100,6 @@ function addUniqueTodayPick(picks: TodayPick[], pick: TodayPick | null) {
   return true;
 }
 
-function resolveArticleCover(category: string, seed: string, imageUrl?: string | null) {
-  return imageUrl && !isDefaultCoverImage(imageUrl)
-    ? imageUrl
-    : getArticleDefaultCover(category, seed);
-}
-
 function resolveCareerCover(category: string, seed: string, imageUrl?: string | null) {
   return imageUrl && !isDefaultCoverImage(imageUrl)
     ? imageUrl
@@ -129,15 +125,25 @@ async function getTodayPicks(): Promise<TodayPick[]> {
         .limit(1);
 
       const item = rows[0];
-      return item ? ({
+      if (!item) return null;
+
+      const cover = resolveArticleDisplayImage({
+        id: item.id,
+        title: item.title,
+        category,
+        imageUrl: item.imageUrl,
+      });
+
+      return {
         id: item.id,
         title: item.title,
         href: item.href,
-        imageUrl: resolveArticleCover(category, `${item.id}-${item.title}`, item.imageUrl),
+        imageUrl: cover.imageUrl,
+        fallbackImageUrl: cover.fallbackImageUrl,
         score: item.score,
         kind: 'article' as const,
         category,
-      }) : null;
+      };
     });
 
     const careerScore = sql<number>`${careerContents.qualityScore} * 0.5 + ${careerContents.matchScore} * 0.5`;
@@ -167,7 +173,14 @@ async function getTodayPicks(): Promise<TodayPick[]> {
       )
       .then((rows) => {
         const item = rows[getStableIndex(`${beijingDate}:career`, rows.length)];
-        return item ? ({
+        if (!item) return null;
+
+        const fallbackImageUrl = getCareerDefaultCover(
+          item.category,
+          item.originalId || item.href || item.title || String(item.id)
+        );
+
+        return {
           id: item.id,
           title: item.title,
           href: item.href,
@@ -176,10 +189,11 @@ async function getTodayPicks(): Promise<TodayPick[]> {
             item.originalId || item.href || item.title || String(item.id),
             item.coverImage
           ),
+          fallbackImageUrl,
           score: item.score,
           kind: 'career' as const,
           category: item.category,
-        }) : null;
+        };
       });
 
     const [articlePicks, careerPick] = await Promise.all([
@@ -212,11 +226,19 @@ async function getTodayPicks(): Promise<TodayPick[]> {
 
       for (const item of fallbackRows) {
         if (picks.length >= 5) break;
+        const cover = resolveArticleDisplayImage({
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          imageUrl: item.imageUrl,
+        });
+
         addUniqueTodayPick(picks, {
           id: item.id,
           title: item.title,
           href: item.href,
-          imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
+          imageUrl: cover.imageUrl,
+          fallbackImageUrl: cover.fallbackImageUrl,
           score: item.score,
           kind: 'article' as const,
           category: item.category,

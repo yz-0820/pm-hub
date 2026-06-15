@@ -10,9 +10,9 @@ import { Pagination } from '@/components/articles/pagination';
 import { formatDate } from '@/lib/utils/date';
 import { categoryLabels } from '@/config/rss';
 import { resourceCategoryLabels } from '@/config/resource-categories';
-import { getArticleDefaultCover, getCareerDefaultCover, isDefaultCoverImage } from '@/config/default-covers';
 import { FallbackImage } from '@/components/ui/fallback-image';
 import { simplifyArticleSourceName } from '@/lib/utils/source-name';
+import { resolveArticleDisplayImage, resolveCareerDisplayImage } from '@/lib/utils/article-cover';
 
 type SearchHit =
   | {
@@ -170,10 +170,9 @@ function SearchResultCard({ hit }: { hit: SearchHit }) {
   const categoryLabel = isCareer
     ? resourceCategoryLabels[hit.category]?.name || hit.category
     : categoryLabels[hit.category]?.name || hit.category;
-  const fallbackCover = isCareer
-    ? getCareerDefaultCover(hit.category, `${hit.id}-${hit.title}`)
-    : getArticleDefaultCover(hit.category, `${hit.id}-${hit.title}`);
-  const sourceImageUrl = hit.imageUrl && !isDefaultCoverImage(hit.imageUrl) ? hit.imageUrl : null;
+  const resolvedCover = isCareer
+    ? resolveCareerDisplayImage(hit)
+    : resolveArticleDisplayImage(hit);
   const sourceName = simplifyArticleSourceName(hit.sourceName);
   const scopeLabel = isCareer ? '职业发展' : '专业资讯';
 
@@ -186,8 +185,8 @@ function SearchResultCard({ hit }: { hit: SearchHit }) {
     >
       <div className="relative w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
         <FallbackImage
-          src={sourceImageUrl || fallbackCover}
-          fallbackSrc={fallbackCover}
+          src={resolvedCover.imageUrl}
+          fallbackSrc={resolvedCover.fallbackImageUrl}
           alt={hit.title}
           fill
           className="object-cover"
