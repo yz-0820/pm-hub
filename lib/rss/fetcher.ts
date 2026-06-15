@@ -46,16 +46,16 @@ function sleep(ms: number): Promise<void> {
 const MIN_PUBLISH_DATE = new Date('2026-01-01T00:00:00.000Z');
 
 // 分类对应的默认图片（使用 Unsplash 的免费图片）
-const CATEGORY_DEFAULT_IMAGES: Record<string, string> = {
-  'product-management': 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&h=400&fit=crop',
-  'tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
-  'ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
-  'finance': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+const CATEGORY_DEFAULT_IMAGES: Record<string, null> = {
+  'product-management': null,
+  tech: null,
+  ai: null,
+  finance: null,
 };
 
 // 获取分类对应的默认图片
-function getDefaultImageForCategory(category: string): string {
-  return CATEGORY_DEFAULT_IMAGES[category] || CATEGORY_DEFAULT_IMAGES['tech'];
+function getDefaultImageForCategory(category: string): null {
+  return CATEGORY_DEFAULT_IMAGES[category] ?? null;
 }
 
 // 检查文章发布时间是否在允许范围内
@@ -355,19 +355,19 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
           }
 
           // 处理图片：无图片或图片无效时使用分类默认图片
-          let finalImageUrl = article.imageUrl;
+          let finalImageUrl: string | null = article.imageUrl || null;
           
           if (!finalImageUrl) {
             // 无图片，使用默认图片
             finalImageUrl = getDefaultImageForCategory(source.category);
-            console.log(`Using default image for "${article.title}"`);
+            console.log(`No image found for "${article.title}", display layer will use category fallback`);
           } else {
             // 有图片，验证可用性
             const imageCheck = await validateImageUrl(finalImageUrl);
             if (!imageCheck.valid) {
               // 图片无效，使用默认图片
               finalImageUrl = getDefaultImageForCategory(source.category);
-              console.log(`Image invalid, using default for "${article.title}"`);
+              console.log(`Image invalid for "${article.title}", display layer will use category fallback`);
             }
           }
 

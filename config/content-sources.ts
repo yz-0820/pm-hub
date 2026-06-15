@@ -834,51 +834,53 @@ export function generateContentKey(platform: string, originalId: string): string
 
 // 默认封面图
 export const defaultCoverImages: Record<string, string> = {
-  communication: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-  productivity: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=400&fit=crop',
-  teamwork: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=400&fit=crop',
-  leadership: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop',
-  all: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=400&fit=crop',
+  communication: '/covers/articles/pm-1.svg',
+  productivity: '/covers/articles/pm-2.svg',
+  teamwork: '/covers/articles/ai-2.svg',
+  leadership: '/covers/articles/finance-1.svg',
+  all: '/covers/fallback.svg',
 };
 
 export const defaultCoverImageSets: Record<string, string[]> = {
   communication: [
     defaultCoverImages.communication,
-    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&h=400&fit=crop',
+    '/covers/articles/tech-2.svg',
   ],
   productivity: [
     defaultCoverImages.productivity,
-    'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&h=400&fit=crop',
+    '/covers/articles/finance-2.svg',
   ],
   teamwork: [
     defaultCoverImages.teamwork,
-    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&h=400&fit=crop',
+    '/covers/articles/pm-1.svg',
   ],
   leadership: [
     defaultCoverImages.leadership,
-    'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop',
+    '/covers/articles/tech-1.svg',
   ],
   all: [
     defaultCoverImages.all,
-    'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=400&fit=crop',
+    '/covers/articles/pm-1.svg',
+    '/covers/articles/tech-1.svg',
+    '/covers/articles/ai-1.svg',
+    '/covers/articles/finance-1.svg',
   ],
 };
 
-const defaultCoverImageValues = new Set(Object.values(defaultCoverImageSets).flat());
+const legacyDefaultCoverImageValues = [
+  'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=400&fit=crop',
+];
+
+const defaultCoverImageValues = new Set([
+  ...Object.values(defaultCoverImageSets).flat(),
+  ...legacyDefaultCoverImageValues,
+]);
 
 function stableImageIndex(seed: string, size: number): number {
   if (size <= 1) return 0;

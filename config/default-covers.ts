@@ -79,6 +79,29 @@ export const articleDefaultCovers: Record<string, string[]> = {
 };
 
 // ========== 职业分类默认配图（扩展版） ==========
+const localArticleDefaultCovers: Record<string, string[]> = {
+  'product-management': [
+    '/covers/articles/pm-1.svg',
+    '/covers/articles/pm-2.svg',
+    '/covers/articles/tech-2.svg',
+  ],
+  tech: [
+    '/covers/articles/tech-1.svg',
+    '/covers/articles/tech-2.svg',
+    '/covers/articles/ai-2.svg',
+  ],
+  ai: [
+    '/covers/articles/ai-1.svg',
+    '/covers/articles/ai-2.svg',
+    '/covers/articles/tech-1.svg',
+  ],
+  finance: [
+    '/covers/articles/finance-1.svg',
+    '/covers/articles/finance-2.svg',
+    '/covers/articles/pm-2.svg',
+  ],
+};
+
 export const careerDefaultCovers: Record<string, string[]> = {
   communication: [
     'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
@@ -143,9 +166,41 @@ export const careerDefaultCovers: Record<string, string[]> = {
 };
 
 // 所有默认封面图的集合（用于判断是否为默认封面）
+const localCareerDefaultCovers: Record<string, string[]> = {
+  communication: [
+    '/covers/articles/pm-1.svg',
+    '/covers/articles/tech-2.svg',
+  ],
+  productivity: [
+    '/covers/articles/pm-2.svg',
+    '/covers/articles/finance-2.svg',
+  ],
+  teamwork: [
+    '/covers/articles/pm-1.svg',
+    '/covers/articles/ai-2.svg',
+  ],
+  leadership: [
+    '/covers/articles/finance-1.svg',
+    '/covers/articles/tech-1.svg',
+  ],
+  all: [
+    '/covers/articles/pm-1.svg',
+    '/covers/articles/pm-2.svg',
+    '/covers/articles/tech-1.svg',
+    '/covers/articles/tech-2.svg',
+    '/covers/articles/ai-1.svg',
+    '/covers/articles/ai-2.svg',
+    '/covers/articles/finance-1.svg',
+    '/covers/articles/finance-2.svg',
+  ],
+};
+
 export const allDefaultCoverValues = new Set([
   ...Object.values(articleDefaultCovers).flat(),
   ...Object.values(careerDefaultCovers).flat(),
+  ...Object.values(localArticleDefaultCovers).flat(),
+  ...Object.values(localCareerDefaultCovers).flat(),
+  '/covers/fallback.svg',
   'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
 ]);
 
@@ -169,16 +224,16 @@ function uniqueCovers(covers: string[]): string[] {
  * 获取文章分类的默认封面
  */
 export function getArticleDefaultCover(category: string, seed = ''): string {
-  const covers = uniqueCovers(articleDefaultCovers[category] || articleDefaultCovers['product-management']);
-  return covers[stableImageIndex(seed || category, covers.length)] || covers[0];
+  const covers = uniqueCovers(localArticleDefaultCovers[category] || localArticleDefaultCovers['product-management']);
+  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.svg';
 }
 
 /**
  * 获取职业分类的默认封面
  */
 export function getCareerDefaultCover(category: string, seed = ''): string {
-  const covers = uniqueCovers(careerDefaultCovers[category] || careerDefaultCovers.all);
-  return covers[stableImageIndex(seed || category, covers.length)] || careerDefaultCovers.all[0];
+  const covers = uniqueCovers(localCareerDefaultCovers[category] || localCareerDefaultCovers.all);
+  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.svg';
 }
 
 /**

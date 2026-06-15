@@ -61,9 +61,13 @@ export async function GET(request: NextRequest) {
           const rows = await db.query.articles.findMany({
             where: (articles, { inArray }) => inArray(articles.id, ids),
           });
-          const urlMap = new Map(rows.map(r => [r.id, r.originalUrl]));
+          const articleMap = new Map(rows.map(r => [r.id, r]));
           for (const hit of hits) {
-            hit.originalUrl = urlMap.get(hit.id) || '';
+            const row = articleMap.get(hit.id);
+            hit.originalUrl = row?.originalUrl || '';
+            hit.imageUrl = row?.imageUrl || null;
+            hit.category = row?.category || hit.category;
+            hit.sourceName = row?.sourceName || hit.sourceName;
           }
         }
 

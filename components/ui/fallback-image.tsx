@@ -13,6 +13,8 @@ type FallbackImageProps = Omit<ImageProps, 'src' | 'alt' | 'onError'> & {
   fallbackClassName?: string;
 };
 
+const FINAL_FALLBACK_SRC = '/covers/fallback.svg';
+
 function toDisplaySrc(value?: string | null) {
   return getProxiedImageUrl(value);
 }
@@ -33,7 +35,7 @@ export function FallbackImage({
     srcs: new Set(),
   }));
   const failedSrcs = failedState.key === imageKey ? failedState.srcs : new Set<string>();
-  const candidates = Array.from(new Set([primary, fallbackImage].filter((value): value is string => !!value)));
+  const candidates = Array.from(new Set([primary, fallbackImage, FINAL_FALLBACK_SRC].filter((value): value is string => !!value)));
   const activeSrc = candidates.find((candidate) => !failedSrcs.has(candidate));
 
   if (!activeSrc) {

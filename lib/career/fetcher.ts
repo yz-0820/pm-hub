@@ -4,7 +4,7 @@
  */
 
 import { XMLParser } from 'fast-xml-parser';
-import { contentSources, getEnabledSources, getDefaultCover, isDefaultCoverImage } from '@/config/content-sources';
+import { contentSources, getEnabledSources, isDefaultCoverImage } from '@/config/content-sources';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable, contentFetchLogs } from '@/lib/db/schema';
 import { and, desc, eq, gte, inArray, lt, notInArray, sql } from 'drizzle-orm';
@@ -564,9 +564,9 @@ async function findSameTitleContent(title: string): Promise<Array<typeof careerC
 
 function pickMergedCover(
   incomingCover: string | null | undefined,
-  desiredCover: string,
+  desiredCover: string | null,
   existingCover: string | null | undefined
-): string {
+): string | null {
   if (incomingCover && !isDefaultCoverUrl(incomingCover)) return incomingCover;
   if (existingCover && !isDefaultCoverUrl(existingCover)) return existingCover;
   return desiredCover;
@@ -652,8 +652,7 @@ async function saveContent(
     (!urlValidation.ok || isHardReject) ? 'rejected' : (quality.passed && finalMatchPassed ? 'active' : isNonRelevant ? 'rejected' : 'pending');
   const rejectionReasons = buildRejectionReasons(contentStatus, quality, bestMatch, urlValidation, isHardReject, isNonRelevant);
 
-  const coverSeed = content.originalId || content.originalUrl || content.title;
-  const desiredCover = content.coverImage || getDefaultCover(content.category, coverSeed);
+  const desiredCover = content.coverImage && !isDefaultCoverUrl(content.coverImage) ? content.coverImage : null;
 
   const existing = await db.query.careerContents.findFirst({
     where: eq(careerContents.originalUrl, content.originalUrl),
