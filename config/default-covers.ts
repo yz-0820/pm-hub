@@ -81,24 +81,24 @@ export const articleDefaultCovers: Record<string, string[]> = {
 // ========== 职业分类默认配图（扩展版） ==========
 const localArticleDefaultCovers: Record<string, string[]> = {
   'product-management': [
-    '/covers/articles/pm-1.svg',
-    '/covers/articles/pm-2.svg',
-    '/covers/articles/tech-2.svg',
+    '/covers/articles/pm-1.jpg',
+    '/covers/articles/pm-2.jpg',
+    '/covers/career/productivity-1.jpg',
   ],
   tech: [
-    '/covers/articles/tech-1.svg',
-    '/covers/articles/tech-2.svg',
-    '/covers/articles/ai-2.svg',
+    '/covers/articles/tech-1.jpg',
+    '/covers/articles/tech-2.jpg',
+    '/covers/articles/ai-2.jpg',
   ],
   ai: [
-    '/covers/articles/ai-1.svg',
-    '/covers/articles/ai-2.svg',
-    '/covers/articles/tech-1.svg',
+    '/covers/articles/ai-1.jpg',
+    '/covers/articles/ai-2.jpg',
+    '/covers/articles/tech-1.jpg',
   ],
   finance: [
-    '/covers/articles/finance-1.svg',
-    '/covers/articles/finance-2.svg',
-    '/covers/articles/pm-2.svg',
+    '/covers/articles/finance-1.jpg',
+    '/covers/articles/finance-2.jpg',
+    '/covers/articles/pm-2.jpg',
   ],
 };
 
@@ -168,39 +168,56 @@ export const careerDefaultCovers: Record<string, string[]> = {
 // 所有默认封面图的集合（用于判断是否为默认封面）
 const localCareerDefaultCovers: Record<string, string[]> = {
   communication: [
-    '/covers/articles/pm-1.svg',
-    '/covers/articles/tech-2.svg',
+    '/covers/career/communication-1.jpg',
+    '/covers/articles/pm-2.jpg',
   ],
   productivity: [
-    '/covers/articles/pm-2.svg',
-    '/covers/articles/finance-2.svg',
+    '/covers/career/productivity-1.jpg',
+    '/covers/articles/pm-1.jpg',
   ],
   teamwork: [
-    '/covers/articles/pm-1.svg',
-    '/covers/articles/ai-2.svg',
+    '/covers/career/teamwork-1.jpg',
+    '/covers/career/communication-1.jpg',
   ],
   leadership: [
-    '/covers/articles/finance-1.svg',
-    '/covers/articles/tech-1.svg',
+    '/covers/career/leadership-1.jpg',
+    '/covers/articles/finance-1.jpg',
   ],
   all: [
-    '/covers/articles/pm-1.svg',
-    '/covers/articles/pm-2.svg',
-    '/covers/articles/tech-1.svg',
-    '/covers/articles/tech-2.svg',
-    '/covers/articles/ai-1.svg',
-    '/covers/articles/ai-2.svg',
-    '/covers/articles/finance-1.svg',
-    '/covers/articles/finance-2.svg',
+    '/covers/articles/pm-1.jpg',
+    '/covers/articles/pm-2.jpg',
+    '/covers/articles/tech-1.jpg',
+    '/covers/articles/tech-2.jpg',
+    '/covers/articles/ai-1.jpg',
+    '/covers/articles/ai-2.jpg',
+    '/covers/articles/finance-1.jpg',
+    '/covers/articles/finance-2.jpg',
+    '/covers/career/communication-1.jpg',
+    '/covers/career/productivity-1.jpg',
+    '/covers/career/teamwork-1.jpg',
+    '/covers/career/leadership-1.jpg',
   ],
 };
+
+const legacyLocalSvgDefaultCoverValues = [
+  '/covers/fallback.svg',
+  '/covers/articles/pm-1.svg',
+  '/covers/articles/pm-2.svg',
+  '/covers/articles/tech-1.svg',
+  '/covers/articles/tech-2.svg',
+  '/covers/articles/ai-1.svg',
+  '/covers/articles/ai-2.svg',
+  '/covers/articles/finance-1.svg',
+  '/covers/articles/finance-2.svg',
+];
 
 export const allDefaultCoverValues = new Set([
   ...Object.values(articleDefaultCovers).flat(),
   ...Object.values(careerDefaultCovers).flat(),
   ...Object.values(localArticleDefaultCovers).flat(),
   ...Object.values(localCareerDefaultCovers).flat(),
-  '/covers/fallback.svg',
+  ...legacyLocalSvgDefaultCoverValues,
+  '/covers/fallback.jpg',
   'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
 ]);
 
@@ -225,7 +242,7 @@ function uniqueCovers(covers: string[]): string[] {
  */
 export function getArticleDefaultCover(category: string, seed = ''): string {
   const covers = uniqueCovers(localArticleDefaultCovers[category] || localArticleDefaultCovers['product-management']);
-  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.svg';
+  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.jpg';
 }
 
 /**
@@ -233,7 +250,7 @@ export function getArticleDefaultCover(category: string, seed = ''): string {
  */
 export function getCareerDefaultCover(category: string, seed = ''): string {
   const covers = uniqueCovers(localCareerDefaultCovers[category] || localCareerDefaultCovers.all);
-  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.svg';
+  return covers[stableImageIndex(seed || category, covers.length)] || '/covers/fallback.jpg';
 }
 
 /**

@@ -13,7 +13,7 @@ type FallbackImageProps = Omit<ImageProps, 'src' | 'alt' | 'onError'> & {
   fallbackClassName?: string;
 };
 
-const FINAL_FALLBACK_SRC = '/covers/fallback.svg';
+const FINAL_FALLBACK_SRC = '/covers/fallback.jpg';
 
 function toDisplaySrc(value?: string | null) {
   return getProxiedImageUrl(value);

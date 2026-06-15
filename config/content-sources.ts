@@ -834,36 +834,36 @@ export function generateContentKey(platform: string, originalId: string): string
 
 // 默认封面图
 export const defaultCoverImages: Record<string, string> = {
-  communication: '/covers/articles/pm-1.svg',
-  productivity: '/covers/articles/pm-2.svg',
-  teamwork: '/covers/articles/ai-2.svg',
-  leadership: '/covers/articles/finance-1.svg',
-  all: '/covers/fallback.svg',
+  communication: '/covers/career/communication-1.jpg',
+  productivity: '/covers/career/productivity-1.jpg',
+  teamwork: '/covers/career/teamwork-1.jpg',
+  leadership: '/covers/career/leadership-1.jpg',
+  all: '/covers/fallback.jpg',
 };
 
 export const defaultCoverImageSets: Record<string, string[]> = {
   communication: [
     defaultCoverImages.communication,
-    '/covers/articles/tech-2.svg',
+    '/covers/articles/pm-2.jpg',
   ],
   productivity: [
     defaultCoverImages.productivity,
-    '/covers/articles/finance-2.svg',
+    '/covers/articles/pm-1.jpg',
   ],
   teamwork: [
     defaultCoverImages.teamwork,
-    '/covers/articles/pm-1.svg',
+    '/covers/career/communication-1.jpg',
   ],
   leadership: [
     defaultCoverImages.leadership,
-    '/covers/articles/tech-1.svg',
+    '/covers/articles/finance-1.jpg',
   ],
   all: [
     defaultCoverImages.all,
-    '/covers/articles/pm-1.svg',
-    '/covers/articles/tech-1.svg',
-    '/covers/articles/ai-1.svg',
-    '/covers/articles/finance-1.svg',
+    '/covers/articles/pm-1.jpg',
+    '/covers/articles/tech-1.jpg',
+    '/covers/articles/ai-1.jpg',
+    '/covers/articles/finance-1.jpg',
   ],
 };
 
@@ -875,6 +875,15 @@ const legacyDefaultCoverImageValues = [
   'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=400&fit=crop',
   'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
   'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=400&fit=crop',
+  '/covers/fallback.svg',
+  '/covers/articles/pm-1.svg',
+  '/covers/articles/pm-2.svg',
+  '/covers/articles/tech-1.svg',
+  '/covers/articles/tech-2.svg',
+  '/covers/articles/ai-1.svg',
+  '/covers/articles/ai-2.svg',
+  '/covers/articles/finance-1.svg',
+  '/covers/articles/finance-2.svg',
 ];
 
 const defaultCoverImageValues = new Set([

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Technology cover">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0f2fe"/><stop offset="1" stop-color="#eef2ff"/></linearGradient></defs>
-  <rect width="1200" height="630" fill="url(#g)"/>
-  <rect x="420" y="150" width="360" height="330" rx="46" fill="#fff" opacity=".8"/>
-  <rect x="500" y="230" width="200" height="170" rx="30" fill="#2563eb" opacity=".18"/>
-  <path d="M500 120v80M600 120v80M700 120v80M500 430v80M600 430v80M700 430v80M330 250h90M330 330h90M780 250h90M780 330h90" stroke="#2563eb" stroke-width="26" stroke-linecap="round" opacity=".72"/>
-  <circle cx="600" cy="316" r="54" fill="#0ea5e9" opacity=".75"/>
-</svg>
