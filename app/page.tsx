@@ -284,14 +284,19 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
       .orderBy(desc(articles.publishedAt))
       .limit(limit);
 
-    return results.map((item) => ({
-      id: item.id,
-      title: item.title,
-      href: item.originalUrl, // 使用外部链接
-      imageUrl: resolveArticleCover(item.category, `${item.id}-${item.title}`, item.imageUrl),
-      fallbackImageUrl: getArticleDefaultCover(item.category, `${item.id}-${item.title}`),
-      category: item.category,
-    }));
+    return results.map((item) => {
+      const fallbackCover = getArticleDefaultCover(item.category, `${item.id}-${item.title}`);
+      const sourceImageUrl = item.imageUrl && !isDefaultCoverImage(item.imageUrl) ? item.imageUrl : null;
+      const displayImageUrl = sourceImageUrl || fallbackCover;
+      return {
+        id: item.id,
+        title: item.title,
+        href: item.originalUrl, // 使用外部链接
+        imageUrl: displayImageUrl,
+        fallbackImageUrl: fallbackCover,
+        category: item.category,
+      };
+    });
   } catch (error) {
     console.error('Failed to load latest articles carousel:', error);
     return [];
@@ -333,14 +338,19 @@ async function getLatestCareerForCarousel(limit: number = 5) {
       return !articleUrls.has(urlKey) && !articleTitles.has(titleKey);
     });
 
-    return uniqueResults.slice(0, limit).map((item) => ({
-      id: item.id,
-      title: item.title,
-      href: item.originalUrl,
-      imageUrl: resolveCareerCover(item.category, `${item.id}-${item.title}`, item.coverImage),
-      fallbackImageUrl: getCareerDefaultCover(item.category, `${item.id}-${item.title}`),
-      category: item.category,
-    }));
+    return uniqueResults.slice(0, limit).map((item) => {
+      const fallbackCover = getCareerDefaultCover(item.category, `${item.id}-${item.title}`);
+      const sourceImageUrl = item.coverImage && !isDefaultCoverImage(item.coverImage) ? item.coverImage : null;
+      const displayImageUrl = sourceImageUrl || fallbackCover;
+      return {
+        id: item.id,
+        title: item.title,
+        href: item.originalUrl,
+        imageUrl: displayImageUrl,
+        fallbackImageUrl: fallbackCover,
+        category: item.category,
+      };
+    });
   } catch (error) {
     console.error('Failed to load latest career carousel:', error);
     return [];
