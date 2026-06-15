@@ -29,6 +29,7 @@ const trainingModules = [
 const toolModules = [
   { href: '/tools/prd', label: 'PRD 生成' },
   { href: '/tools/prototype', label: '原型生成' },
+  { href: '/tools/flowchart', label: '流程图生成' },
 ];
 
 export function Header() {

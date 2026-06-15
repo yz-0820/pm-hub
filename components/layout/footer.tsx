@@ -98,6 +98,9 @@ export function Footer() {
                 <li>
                   <Link href="/tools/prototype" className="hover:text-primary">原型生成</Link>
                 </li>
+                <li>
+                  <Link href="/tools/flowchart" className="hover:text-primary">流程图生成</Link>
+                </li>
               </ul>
             </div>
 
