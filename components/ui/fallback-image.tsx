@@ -27,7 +27,12 @@ export function FallbackImage({
 }: FallbackImageProps) {
   const primary = toDisplaySrc(src);
   const fallbackImage = toDisplaySrc(fallbackSrc);
-  const [failedSrcs, setFailedSrcs] = useState<Set<string>>(() => new Set());
+  const imageKey = `${primary || ''}\n${fallbackImage || ''}`;
+  const [failedState, setFailedState] = useState<{ key: string; srcs: Set<string> }>(() => ({
+    key: imageKey,
+    srcs: new Set(),
+  }));
+  const failedSrcs = failedState.key === imageKey ? failedState.srcs : new Set<string>();
   const candidates = Array.from(new Set([primary, fallbackImage].filter((value): value is string => !!value)));
   const activeSrc = candidates.find((candidate) => !failedSrcs.has(candidate));
 
@@ -47,7 +52,11 @@ export function FallbackImage({
       src={activeSrc}
       alt={alt}
       onError={() => {
-        setFailedSrcs((current) => new Set(current).add(activeSrc));
+        setFailedState((current) => {
+          const nextSrcs = current.key === imageKey ? new Set(current.srcs) : new Set<string>();
+          nextSrcs.add(activeSrc);
+          return { key: imageKey, srcs: nextSrcs };
+        });
       }}
     />
   );

@@ -307,15 +307,18 @@ async function getLatestArticlesForCarousel(limit: number = 5) {
       .limit(limit);
 
     return results.map((item) => {
-      const fallbackCover = getArticleDefaultCover(item.category, `${item.id}-${item.title}`);
-      const sourceImageUrl = item.imageUrl && !isDefaultCoverImage(item.imageUrl) ? item.imageUrl : null;
-      const displayImageUrl = sourceImageUrl || fallbackCover;
+      const cover = resolveArticleDisplayImage({
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        imageUrl: item.imageUrl,
+      });
       return {
         id: item.id,
         title: item.title,
         href: item.originalUrl, // 使用外部链接
-        imageUrl: displayImageUrl,
-        fallbackImageUrl: fallbackCover,
+        imageUrl: cover.imageUrl,
+        fallbackImageUrl: cover.fallbackImageUrl,
         category: item.category,
       };
     });
@@ -639,9 +642,7 @@ export default async function HomePage() {
                         <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-24 sm:w-32">
                           <FallbackImage
                             src={item.imageUrl}
-                            fallbackSrc={item.kind === 'article'
-                              ? getArticleDefaultCover(item.category, `${item.id}-${item.title}`)
-                              : getCareerDefaultCover(item.category, `${item.id}-${item.title}`)}
+                            fallbackSrc={item.fallbackImageUrl}
                             alt={item.title}
                             fill
                             sizes="128px"
