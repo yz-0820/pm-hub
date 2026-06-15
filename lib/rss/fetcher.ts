@@ -4,7 +4,7 @@ import { validateImageUrl } from './image-validator';
 import { evaluateTechRelevance, TECH_THRESHOLD } from './tech-relevance';
 import { evaluateFinanceRelevance, FINANCE_THRESHOLD } from './finance-relevance';
 import { evaluateAIRelevance, AI_THRESHOLD } from './ai-relevance';
-import { evaluatePMRelevance, PM_THRESHOLD } from './pm-relevance';
+import { evaluatePMRelevance } from './pm-relevance';
 import { detectPromoDeal } from './promo-deal';
 import { detectITHomeProductLaunch } from './product-launch';
 import { db } from '@/lib/db/client';

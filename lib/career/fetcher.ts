@@ -576,8 +576,7 @@ async function saveContent(
   content: NormalizedContent,
   sourceId: string,
   sourceName: string,
-  platform: string,
-  category: string
+  platform: string
 ): Promise<SaveContentResult> {
   const bestMatch = evaluateBestCategoryMatch(content);
   const matchPassed = bestMatch.matched;
@@ -996,8 +995,7 @@ async function fetchSource(source: typeof contentSources[0]): Promise<FetchResul
           content,
           source.sourceId,
           source.sourceName,
-          source.platform,
-          source.category
+          source.platform
         );
         
         if (isNew) result.newContents++;
