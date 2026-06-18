@@ -51,6 +51,7 @@ const ALLOWED_IMAGE_DOMAINS = new Set([
   '.segmentfault.com',
   'juejin.cn',
   '.juejin.cn',
+  'image.woshipm.com',
   'mmbiz.qpic.cn',
   'mp.weixin.qq.com',
   // 国际平台

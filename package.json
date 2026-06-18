@@ -39,6 +39,7 @@
     "articles:reassess-tech": "tsx scripts/prod/reassess-tech-articles.ts",
     "articles:reassess-finance": "tsx scripts/prod/reassess-finance-articles.ts",
     "articles:revalidate-images": "tsx scripts/prod/revalidate-article-images.ts",
+    "articles:backfill-woshipm-images": "tsx scripts/prod/backfill-woshipm-article-images.ts",
     "content:decode-title-entities": "tsx scripts/prod/decode-title-entities.ts",
     "test": "vitest run"
   },
