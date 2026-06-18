@@ -7,7 +7,7 @@
  *   npx tsx scripts/prod/audit-article-quality.ts --apply   # 执行修复和删除
  */
 
-import 'dotenv/config';
+import './load-env';
 import { db } from '@/lib/db/client';
 import { articles } from '@/lib/db/schema';
 import { rssSources } from '@/config/rss';
