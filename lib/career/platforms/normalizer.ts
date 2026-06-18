@@ -1,6 +1,7 @@
 import { PlatformRawContent, NormalizedContent } from './types';
 import { autoClassify } from '@/config/content-sources';
 import crypto from 'crypto';
+import { decodePlainText } from '@/lib/utils/html-entities';
 
 // 生成唯一内容ID
 export function generateContentId(platform: string, originalId: string): string {
@@ -36,7 +37,7 @@ export function normalizeContent(raw: PlatformRawContent): NormalizedContent {
   const primaryImage = raw.media?.coverUrl || raw.media?.images?.[0] || '';
 
   return {
-    title: raw.title.trim(),
+    title: decodePlainText(raw.title),
     description: raw.description || '',
     content: raw.content || raw.description || '',
     sourceId: raw.sourceId,

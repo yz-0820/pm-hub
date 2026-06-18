@@ -39,6 +39,7 @@
     "articles:reassess-tech": "tsx scripts/prod/reassess-tech-articles.ts",
     "articles:reassess-finance": "tsx scripts/prod/reassess-finance-articles.ts",
     "articles:revalidate-images": "tsx scripts/prod/revalidate-article-images.ts",
+    "content:decode-title-entities": "tsx scripts/prod/decode-title-entities.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -51,6 +52,7 @@
     "embla-carousel-react": "^8.6.0",
     "fast-xml-parser": "^5.8.0",
     "framer-motion": "^12.40.0",
+    "he": "^1.2.0",
     "lucide-react": "^1.16.0",
     "meilisearch": "^0.58.0",
     "next": "^16.2.6",
@@ -66,6 +68,7 @@
     "@opennextjs/cloudflare": "^1.19.11",
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/he": "^1.2.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

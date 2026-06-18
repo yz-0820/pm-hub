@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { decodeHtmlEntities } from './html-entities';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,5 +12,5 @@ export function truncate(str: string, length: number): string {
 }
 
 export function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '');
+  return decodeHtmlEntities(html.replace(/<[^>]*>/g, ''));
 }

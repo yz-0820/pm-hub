@@ -79,27 +79,15 @@ export const articleDefaultCovers: Record<string, string[]> = {
 };
 
 // ========== 职业分类默认配图（扩展版） ==========
+function buildLocalCoverSet(scope: 'articles' | 'career', category: string, count: number): string[] {
+  return Array.from({ length: count }, (_, index) => `/covers/${scope}/${category}/${index + 1}.jpg`);
+}
+
 const localArticleDefaultCovers: Record<string, string[]> = {
-  'product-management': [
-    '/covers/articles/pm-1.jpg',
-    '/covers/articles/pm-2.jpg',
-    '/covers/career/productivity-1.jpg',
-  ],
-  tech: [
-    '/covers/articles/tech-1.jpg',
-    '/covers/articles/tech-2.jpg',
-    '/covers/articles/ai-2.jpg',
-  ],
-  ai: [
-    '/covers/articles/ai-1.jpg',
-    '/covers/articles/ai-2.jpg',
-    '/covers/articles/tech-1.jpg',
-  ],
-  finance: [
-    '/covers/articles/finance-1.jpg',
-    '/covers/articles/finance-2.jpg',
-    '/covers/articles/pm-2.jpg',
-  ],
+  'product-management': buildLocalCoverSet('articles', 'product-management', 3),
+  tech: buildLocalCoverSet('articles', 'tech', 3),
+  ai: buildLocalCoverSet('articles', 'ai', 3),
+  finance: buildLocalCoverSet('articles', 'finance', 3),
 };
 
 export const careerDefaultCovers: Record<string, string[]> = {
@@ -166,40 +154,19 @@ export const careerDefaultCovers: Record<string, string[]> = {
 };
 
 // 所有默认封面图的集合（用于判断是否为默认封面）
-const localCareerDefaultCovers: Record<string, string[]> = {
-  communication: [
-    '/covers/career/communication-1.jpg',
-    '/covers/articles/pm-2.jpg',
-  ],
-  productivity: [
-    '/covers/career/productivity-1.jpg',
-    '/covers/articles/pm-1.jpg',
-  ],
-  teamwork: [
-    '/covers/career/teamwork-1.jpg',
-    '/covers/career/communication-1.jpg',
-  ],
-  leadership: [
-    '/covers/career/leadership-1.jpg',
-    '/covers/articles/finance-1.jpg',
-  ],
-  all: [
-    '/covers/articles/pm-1.jpg',
-    '/covers/articles/pm-2.jpg',
-    '/covers/articles/tech-1.jpg',
-    '/covers/articles/tech-2.jpg',
-    '/covers/articles/ai-1.jpg',
-    '/covers/articles/ai-2.jpg',
-    '/covers/articles/finance-1.jpg',
-    '/covers/articles/finance-2.jpg',
-    '/covers/career/communication-1.jpg',
-    '/covers/career/productivity-1.jpg',
-    '/covers/career/teamwork-1.jpg',
-    '/covers/career/leadership-1.jpg',
-  ],
+const localCareerCategoryCovers: Record<string, string[]> = {
+  communication: buildLocalCoverSet('career', 'communication', 2),
+  productivity: buildLocalCoverSet('career', 'productivity', 2),
+  teamwork: buildLocalCoverSet('career', 'teamwork', 2),
+  leadership: buildLocalCoverSet('career', 'leadership', 2),
 };
 
-const legacyLocalSvgDefaultCoverValues = [
+const localCareerDefaultCovers: Record<string, string[]> = {
+  ...localCareerCategoryCovers,
+  all: Object.values(localCareerCategoryCovers).flat(),
+};
+
+const legacyLocalDefaultCoverValues = [
   '/covers/fallback.svg',
   '/covers/articles/pm-1.svg',
   '/covers/articles/pm-2.svg',
@@ -209,6 +176,18 @@ const legacyLocalSvgDefaultCoverValues = [
   '/covers/articles/ai-2.svg',
   '/covers/articles/finance-1.svg',
   '/covers/articles/finance-2.svg',
+  '/covers/articles/pm-1.jpg',
+  '/covers/articles/pm-2.jpg',
+  '/covers/articles/tech-1.jpg',
+  '/covers/articles/tech-2.jpg',
+  '/covers/articles/ai-1.jpg',
+  '/covers/articles/ai-2.jpg',
+  '/covers/articles/finance-1.jpg',
+  '/covers/articles/finance-2.jpg',
+  '/covers/career/communication-1.jpg',
+  '/covers/career/productivity-1.jpg',
+  '/covers/career/teamwork-1.jpg',
+  '/covers/career/leadership-1.jpg',
 ];
 
 export const allDefaultCoverValues = new Set([
@@ -216,7 +195,7 @@ export const allDefaultCoverValues = new Set([
   ...Object.values(careerDefaultCovers).flat(),
   ...Object.values(localArticleDefaultCovers).flat(),
   ...Object.values(localCareerDefaultCovers).flat(),
-  ...legacyLocalSvgDefaultCoverValues,
+  ...legacyLocalDefaultCoverValues,
   '/covers/fallback.jpg',
   'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=400&fit=crop',
 ]);

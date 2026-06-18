@@ -834,36 +834,24 @@ export function generateContentKey(platform: string, originalId: string): string
 
 // 默认封面图
 export const defaultCoverImages: Record<string, string> = {
-  communication: '/covers/career/communication-1.jpg',
-  productivity: '/covers/career/productivity-1.jpg',
-  teamwork: '/covers/career/teamwork-1.jpg',
-  leadership: '/covers/career/leadership-1.jpg',
+  communication: '/covers/career/communication/1.jpg',
+  productivity: '/covers/career/productivity/1.jpg',
+  teamwork: '/covers/career/teamwork/1.jpg',
+  leadership: '/covers/career/leadership/1.jpg',
   all: '/covers/fallback.jpg',
 };
 
 export const defaultCoverImageSets: Record<string, string[]> = {
-  communication: [
-    defaultCoverImages.communication,
-    '/covers/articles/pm-2.jpg',
-  ],
-  productivity: [
-    defaultCoverImages.productivity,
-    '/covers/articles/pm-1.jpg',
-  ],
-  teamwork: [
-    defaultCoverImages.teamwork,
-    '/covers/career/communication-1.jpg',
-  ],
-  leadership: [
-    defaultCoverImages.leadership,
-    '/covers/articles/finance-1.jpg',
-  ],
+  communication: ['/covers/career/communication/1.jpg', '/covers/career/communication/2.jpg'],
+  productivity: ['/covers/career/productivity/1.jpg', '/covers/career/productivity/2.jpg'],
+  teamwork: ['/covers/career/teamwork/1.jpg', '/covers/career/teamwork/2.jpg'],
+  leadership: ['/covers/career/leadership/1.jpg', '/covers/career/leadership/2.jpg'],
   all: [
     defaultCoverImages.all,
-    '/covers/articles/pm-1.jpg',
-    '/covers/articles/tech-1.jpg',
-    '/covers/articles/ai-1.jpg',
-    '/covers/articles/finance-1.jpg',
+    '/covers/career/communication/1.jpg',
+    '/covers/career/productivity/1.jpg',
+    '/covers/career/teamwork/1.jpg',
+    '/covers/career/leadership/1.jpg',
   ],
 };
 
@@ -884,6 +872,18 @@ const legacyDefaultCoverImageValues = [
   '/covers/articles/ai-2.svg',
   '/covers/articles/finance-1.svg',
   '/covers/articles/finance-2.svg',
+  '/covers/articles/pm-1.jpg',
+  '/covers/articles/pm-2.jpg',
+  '/covers/articles/tech-1.jpg',
+  '/covers/articles/tech-2.jpg',
+  '/covers/articles/ai-1.jpg',
+  '/covers/articles/ai-2.jpg',
+  '/covers/articles/finance-1.jpg',
+  '/covers/articles/finance-2.jpg',
+  '/covers/career/communication-1.jpg',
+  '/covers/career/productivity-1.jpg',
+  '/covers/career/teamwork-1.jpg',
+  '/covers/career/leadership-1.jpg',
 ];
 
 const defaultCoverImageValues = new Set([

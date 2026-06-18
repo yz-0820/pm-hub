@@ -1,5 +1,6 @@
 import Parser from 'rss-parser';
 import { ParsedArticle } from '@/types';
+import { decodePlainText } from '@/lib/utils/html-entities';
 
 interface RSSParserItem {
   title?: string;
@@ -58,13 +59,13 @@ export async function parseRSSFeed(feedUrl: string): Promise<ParsedArticle[]> {
     const feed = await rssParser.parseURL(feedUrl);
     
     return feed.items.map((item) => ({
-      title: item.title || '无标题',
+      title: decodePlainText(item.title || '无标题'),
       link: item.link || '',
       pubDate: item.pubDate ? new Date(item.pubDate) : new Date(),
       content: item['content:encoded'] || item.content,
       summary: item.summary || item.contentSnippet || '',
-      author: item.author || item.creator,
-      categories: item.categories || [],
+      author: item.author || item.creator ? decodePlainText(item.author || item.creator || '') : undefined,
+      categories: (item.categories || []).map(decodePlainText),
       imageUrl: extractImageUrl(item),
     }));
   } catch (error) {

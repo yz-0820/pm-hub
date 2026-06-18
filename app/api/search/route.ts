@@ -65,6 +65,8 @@ export async function GET(request: NextRequest) {
           for (const hit of hits) {
             const row = articleMap.get(hit.id);
             hit.originalUrl = row?.originalUrl || '';
+            hit.title = row?.title || hit.title;
+            hit.summary = row?.summary || hit.summary;
             hit.imageUrl = row?.imageUrl || null;
             hit.category = row?.category || hit.category;
             hit.sourceName = row?.sourceName || hit.sourceName;
