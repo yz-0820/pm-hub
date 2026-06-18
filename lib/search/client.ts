@@ -66,7 +66,7 @@ export async function searchArticles(
 export async function initSearchIndex() {
   try {
     // 配置索引设置
-    await articlesIndex.updateSettings({
+    const task = articlesIndex.updateSettings({
       searchableAttributes: ['title', 'summary', 'content', 'author'],
       filterableAttributes: ['category', 'sourceId', 'publishedAt'],
       sortableAttributes: ['publishedAt', 'createdAt'],
@@ -79,8 +79,14 @@ export async function initSearchIndex() {
         'exactness',
       ],
     });
+    const result = await task.waitTask();
+    if (result.status !== 'succeeded') {
+      const detail = 'error' in result && result.error ? `: ${result.error.message}` : '';
+      throw new Error(`Meilisearch task ${result.uid} ended with status ${result.status}${detail}`);
+    }
     console.log('Search index initialized successfully');
   } catch (error) {
     console.error('Failed to initialize search index:', error);
+    throw error;
   }
 }

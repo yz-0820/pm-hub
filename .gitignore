@@ -43,6 +43,7 @@ yarn-error.log*
 
 # image cache
 /data/image-cache/
+/data/meilisearch/
 /data/*.db
 /data/sqlite.db
 /data/sqlite.db-shm

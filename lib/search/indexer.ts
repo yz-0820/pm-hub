@@ -46,10 +46,18 @@ export async function indexArticles(articles: Article[]) {
   if (articles.length === 0) return;
   
   try {
-    await articlesIndex.addDocuments(articles.map(toSearchableArticle));
+    const task = articlesIndex.addDocuments(articles.map(toSearchableArticle), {
+      primaryKey: 'id',
+    });
+    const result = await task.waitTask();
+    if (result.status !== 'succeeded') {
+      const detail = 'error' in result && result.error ? `: ${result.error.message}` : '';
+      throw new Error(`Meilisearch task ${result.uid} ended with status ${result.status}${detail}`);
+    }
     console.log(`Indexed ${articles.length} articles`);
   } catch (error) {
     console.error('Failed to index articles:', error);
+    throw error;
   }
 }
 
@@ -64,9 +72,15 @@ export async function removeArticleFromIndex(articleId: number) {
 
 export async function clearIndex() {
   try {
-    await articlesIndex.deleteAllDocuments();
+    const task = articlesIndex.deleteAllDocuments();
+    const result = await task.waitTask();
+    if (result.status !== 'succeeded') {
+      const detail = 'error' in result && result.error ? `: ${result.error.message}` : '';
+      throw new Error(`Meilisearch task ${result.uid} ended with status ${result.status}${detail}`);
+    }
     console.log('Cleared search index');
   } catch (error) {
     console.error('Failed to clear index:', error);
+    throw error;
   }
 }

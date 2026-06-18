@@ -1,9 +1,12 @@
 ﻿import { db } from '@/lib/db/client';
-import { articles } from '@/lib/db/schema';
-import { indexArticles, clearIndex } from '@/lib/search/indexer';
-import { initSearchIndex } from '@/lib/search/client';
+import './load-env';
 
 async function main() {
+  const [{ indexArticles, clearIndex }, { initSearchIndex }] = await Promise.all([
+    import('@/lib/search/indexer'),
+    import('@/lib/search/client'),
+  ]);
+
   console.log('Building search index...');
   
   try {

@@ -7,6 +7,7 @@ import { evaluateAIRelevance, AI_THRESHOLD } from './ai-relevance';
 import { evaluatePMRelevance } from './pm-relevance';
 import { detectPromoDeal } from './promo-deal';
 import { detectITHomeProductLaunch } from './product-launch';
+import { stripSourceBoilerplate } from './content-sanitizer';
 import {
   evaluateContentQuality,
   enrichContentFromUrl,
@@ -134,6 +135,9 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
 
       for (const article of parsedArticles) {
         try {
+          article.summary = stripSourceBoilerplate(source.id, article.summary);
+          article.content = stripSourceBoilerplate(source.id, article.content);
+
           // 检查是否已存在（按 originalUrl 去重）
           const existing = await db.query.articles.findFirst({
             where: eq(articles.originalUrl, article.link),
