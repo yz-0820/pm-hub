@@ -7,6 +7,10 @@ import { evaluateAIRelevance, AI_THRESHOLD } from './ai-relevance';
 import { evaluatePMRelevance } from './pm-relevance';
 import { detectPromoDeal } from './promo-deal';
 import { detectITHomeProductLaunch } from './product-launch';
+import {
+  evaluateContentQuality,
+  enrichContentFromUrl,
+} from './content-quality';
 import { db } from '@/lib/db/client';
 import { articles, rssSourceStatus } from '@/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -352,6 +356,35 @@ export async function fetchAllRSS(): Promise<FetchResult[]> {
               }
               continue;
             }
+          }
+
+          // ========== 内容质量审查门 ==========
+          const profile = source.contentProfile || 'article';
+          const rawContent = `${article.summary || ''} ${article.content || ''}`.trim();
+          let qualityCheck = evaluateContentQuality(article.title || '', rawContent, profile);
+
+          // 长文源短摘要：尝试原文补全
+          if (!qualityCheck.passed && profile === 'article' && source.enrichmentHosts && source.enrichmentHosts.length > 0) {
+            const enrichmentResult = await enrichContentFromUrl(article.link, source.enrichmentHosts);
+            if (enrichmentResult) {
+              // 使用补全后的内容重新评估
+              article.content = enrichmentResult.content;
+              article.summary = enrichmentResult.summary;
+              qualityCheck = evaluateContentQuality(article.title || '', enrichmentResult.content, profile);
+              if (qualityCheck.passed) {
+                qualityCheck.enriched = true;
+              } else {
+                qualityCheck.reason = `content_enrichment_failed: ${qualityCheck.reason}`;
+              }
+            } else {
+              qualityCheck.reason = `content_enrichment_failed: ${qualityCheck.reason}`;
+            }
+          }
+
+          if (!qualityCheck.passed) {
+            recordRejection(result, qualityCheck.reason || 'content_quality_failed');
+            console.log(`Skipped (content quality: ${qualityCheck.reason}): "${article.title}"`);
+            continue;
           }
 
           // 处理图片：无图片或图片无效时使用分类默认图片

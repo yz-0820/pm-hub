@@ -7,6 +7,10 @@ export interface RSSSource {
   weight: number;
   enabled: boolean;
   includeKeywords?: string[];
+  /** 内容类型：article（长文）或 newsflash（快讯），默认 article */
+  contentProfile?: 'article' | 'newsflash';
+  /** 允许原文补全的主机列表 */
+  enrichmentHosts?: string[];
 }
 
 const RSSHUB_BASE_URL = (process.env.RSSHUB_BASE_URL || 'https://rss.terrychan.me').replace(/\/$/, '');
@@ -98,6 +102,7 @@ export const rssSources: RSSSource[] = [
     language: 'zh',
     weight: 10,
     enabled: true,
+    contentProfile: 'newsflash',
   },
   {
     id: '36kr-hot',
@@ -161,6 +166,7 @@ export const rssSources: RSSSource[] = [
     language: 'zh',
     weight: 8,
     enabled: true,
+    enrichmentHosts: ['sspai.com', 'www.sspai.com'],
   },
 
   // ===== 中文源 - 人工智能 =====
@@ -190,6 +196,7 @@ export const rssSources: RSSSource[] = [
     language: 'zh',
     weight: 9,
     enabled: true,
+    enrichmentHosts: ['www.qbitai.com', 'qbitai.com'],
   },
   {
     id: 'jiqiren',
@@ -231,6 +238,7 @@ export const rssSources: RSSSource[] = [
     weight: 8,
     enabled: true,
     includeKeywords: US_STOCK_INCLUDE_KEYWORDS,
+    contentProfile: 'newsflash',
   },
   {
     id: 'wallstreetcn',
