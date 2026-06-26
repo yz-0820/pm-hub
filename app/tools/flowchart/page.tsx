@@ -24,7 +24,7 @@ export default function FlowchartGeneratorPage() {
             </div>
             <h1 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl">AI 流程图生成</h1>
             <p className="text-muted-foreground">
-              用自然语言生成、修改和优化流程图、架构图与业务流程图。当前工具由 PM Hub 包装承载，绘图能力由独立部署的流程图应用提供。
+              用自然语言生成、修改和优化流程图、架构图与业务流程图。
             </p>
           </div>
 
