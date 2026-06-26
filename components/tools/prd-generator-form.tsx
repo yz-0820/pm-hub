@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowRight, Check, Clipboard, Download, FileText, Loader2, Sparkles } from 'lucide-react';
+import { ArrowRight, Download, FileText, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -171,7 +171,6 @@ export function PrdGeneratorForm() {
   const [result, setResult] = useState('');
   const [statusText, setStatusText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const canSubmit = useMemo(() => {
     return Boolean(form.background.trim());
@@ -189,7 +188,6 @@ export function PrdGeneratorForm() {
 
     setIsGenerating(true);
     setStatusText('正在生成结构化 PRD');
-    setCopied(false);
 
     try {
       const res = await fetch('/api/tools/prd', {
@@ -212,13 +210,6 @@ export function PrdGeneratorForm() {
     }
   };
 
-  const handleCopy = async () => {
-    if (!result) return;
-    await navigator.clipboard.writeText(result);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
-  };
-
   const documentTitle = form.productName.trim() || 'PRD';
 
   const handleGeneratePrototype = () => {
@@ -226,7 +217,7 @@ export function PrdGeneratorForm() {
     try {
       window.localStorage.setItem('pmhub:prototype-draft', result);
     } catch {
-      // 跳转仍然可用；用户也可以手动复制 PRD。
+      // 跳转仍然可用；用户也可以手动使用文档内容。
     }
     window.location.href = '/tools/prototype?from=prd';
   };
@@ -336,16 +327,12 @@ export function PrdGeneratorForm() {
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
             <h2 className="text-lg font-semibold">PRD 编辑器</h2>
-            <p className="text-xs text-muted-foreground">生成后可继续编辑文档，再复制、下载或进入原型生成。</p>
+            <p className="text-xs text-muted-foreground">生成后可继续编辑文档，再下载或进入原型生成。</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="outline" onClick={handleGeneratePrototype} disabled={!result}>
               <ArrowRight className="h-4 w-4" />
-              基于这份 PRD 生成原型
-            </Button>
-            <Button variant="outline" onClick={handleCopy} disabled={!result}>
-              {copied ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}
-              {copied ? '已复制' : '复制'}
+              去生成原型
             </Button>
             <Button variant="outline" onClick={handleDownloadMarkdown} disabled={!result}>
               <Download className="h-4 w-4" />
@@ -366,7 +353,7 @@ export function PrdGeneratorForm() {
           />
         ) : (
           <div className="flex-1 min-h-[600px] rounded-lg border border-dashed bg-background/60 flex items-center justify-center px-6 text-center text-sm text-muted-foreground">
-            输入一个粗略想法即可生成结构化 PRD。文档会显示在这里，可继续编辑、复制、下载，或作为下一步原型生成的输入。
+            输入一个粗略想法即可生成结构化 PRD。文档会显示在这里，可继续编辑、下载，或作为下一步原型生成的输入。
           </div>
         )}
       </section>
