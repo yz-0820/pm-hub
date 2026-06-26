@@ -21,9 +21,9 @@ export default function PrototypeGeneratorPage() {
               <PenTool className="h-4 w-4" />
               <span>原型生成</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">高保真 Figma 原型生成</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">把需求变成可视化页面原型</h1>
             <p className="text-muted-foreground">
-              输入页面需求并生成高保真原型预览，满意后复制导入码到 Figma 插件中生成可编辑图层。
+              粘贴 PRD 或页面需求，生成高保真预览和 Figma 可编辑图层。
             </p>
           </div>
         </div>

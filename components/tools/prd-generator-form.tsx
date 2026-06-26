@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Clipboard, Download, FileText, Loader2, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Clipboard, Download, FileText, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -174,13 +174,7 @@ export function PrdGeneratorForm() {
   const [copied, setCopied] = useState(false);
 
   const canSubmit = useMemo(() => {
-    return Boolean(
-      form.productName.trim() &&
-        form.background.trim() &&
-        form.goals.trim() &&
-        form.users.trim() &&
-        form.features.trim()
-    );
+    return Boolean(form.background.trim());
   }, [form]);
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
@@ -189,12 +183,12 @@ export function PrdGeneratorForm() {
 
   const handleSubmit = async () => {
     if (!canSubmit || isGenerating) {
-      setStatusText('请先补全必填信息');
+      setStatusText('请先描述你的产品想法或需求');
       return;
     }
 
     setIsGenerating(true);
-    setStatusText('正在生成 PRD');
+    setStatusText('正在生成结构化 PRD');
     setCopied(false);
 
     try {
@@ -227,6 +221,16 @@ export function PrdGeneratorForm() {
 
   const documentTitle = form.productName.trim() || 'PRD';
 
+  const handleGeneratePrototype = () => {
+    if (!result) return;
+    try {
+      window.localStorage.setItem('pmhub:prototype-draft', result);
+    } catch {
+      // 跳转仍然可用；用户也可以手动复制 PRD。
+    }
+    window.location.href = '/tools/prototype?from=prd';
+  };
+
   const handleDownloadMarkdown = () => {
     if (!result) return;
     const blob = new Blob([result], { type: 'text/markdown;charset=utf-8' });
@@ -258,14 +262,22 @@ export function PrdGeneratorForm() {
             <FileText className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">需求信息</h2>
-            <p className="text-xs text-muted-foreground">带 * 为必填项</p>
+            <h2 className="text-lg font-semibold">想法 Brief</h2>
+            <p className="text-xs text-muted-foreground">只需先写清楚想法，其他信息可以后补。</p>
           </div>
         </div>
 
         <div className="space-y-5">
+          <TextareaField
+            label="一句话/一段话描述你的产品想法或需求 *"
+            value={form.background}
+            onChange={(value) => updateField('background', value)}
+            placeholder="例如：我想做一个会员续费提醒功能，帮助用户在到期前看到权益、续费优惠和一键续费入口，减少流失。"
+            minHeight="min-h-40"
+          />
+
           <label className="block">
-            <span className="text-sm font-medium">产品或功能名称 *</span>
+            <span className="text-sm font-medium">产品或功能名称（可选）</span>
             <Input
               value={form.productName}
               onChange={(event) => updateField('productName', event.target.value)}
@@ -275,29 +287,21 @@ export function PrdGeneratorForm() {
           </label>
 
           <TextareaField
-            label="背景与问题 *"
-            value={form.background}
-            onChange={(value) => updateField('background', value)}
-            placeholder="说明业务背景、当前问题、用户痛点或机会点"
-            minHeight="min-h-32"
-          />
-
-          <TextareaField
-            label="目标 *"
+            label="目标（可选）"
             value={form.goals}
             onChange={(value) => updateField('goals', value)}
             placeholder="说明业务目标、用户目标或本次迭代希望达成的结果"
           />
 
           <TextareaField
-            label="目标用户 *"
+            label="目标用户（可选）"
             value={form.users}
             onChange={(value) => updateField('users', value)}
             placeholder="说明用户角色、使用场景和关键差异"
           />
 
           <TextareaField
-            label="核心功能点 *"
+            label="核心功能点（可选）"
             value={form.features}
             onChange={(value) => updateField('features', value)}
             placeholder="逐行填写功能点、流程、规则或优先级"
@@ -305,14 +309,14 @@ export function PrdGeneratorForm() {
           />
 
           <TextareaField
-            label="约束条件"
+            label="约束条件（可选）"
             value={form.constraints}
             onChange={(value) => updateField('constraints', value)}
             placeholder="技术、合规、资源、权限、数据等约束"
           />
 
           <TextareaField
-            label="成功指标"
+            label="成功指标（可选）"
             value={form.metrics}
             onChange={(value) => updateField('metrics', value)}
             placeholder="例如：转化率、留存率、处理时长、满意度"
@@ -322,7 +326,7 @@ export function PrdGeneratorForm() {
             <p className="text-xs text-muted-foreground min-h-4">{statusText}</p>
             <Button onClick={handleSubmit} disabled={isGenerating || !canSubmit}>
               {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              生成 PRD
+              生成结构化 PRD
             </Button>
           </div>
         </div>
@@ -331,9 +335,14 @@ export function PrdGeneratorForm() {
       <section className="xl:col-span-3 rounded-lg border bg-card/70 p-5 min-h-[720px] flex flex-col">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-lg font-semibold">生成结果</h2>
+            <h2 className="text-lg font-semibold">PRD 编辑器</h2>
+            <p className="text-xs text-muted-foreground">生成后可继续编辑文档，再复制、下载或进入原型生成。</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button variant="outline" onClick={handleGeneratePrototype} disabled={!result}>
+              <ArrowRight className="h-4 w-4" />
+              基于这份 PRD 生成原型
+            </Button>
             <Button variant="outline" onClick={handleCopy} disabled={!result}>
               {copied ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}
               {copied ? '已复制' : '复制'}
@@ -357,7 +366,7 @@ export function PrdGeneratorForm() {
           />
         ) : (
           <div className="flex-1 min-h-[600px] rounded-lg border border-dashed bg-background/60 flex items-center justify-center px-6 text-center text-sm text-muted-foreground">
-            生成后的 PRD 会显示在这里，可直接编辑、复制或下载。
+            输入一个粗略想法即可生成结构化 PRD。文档会显示在这里，可继续编辑、复制、下载，或作为下一步原型生成的输入。
           </div>
         )}
       </section>

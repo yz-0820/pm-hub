@@ -37,12 +37,16 @@ function conciseText(value: string | undefined, fallback: string, maxLength: num
   return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
 }
 
+function getPrototypeTitle(input: CreatePrototypeInput) {
+  return conciseText(input.name, conciseText(input.instructions, '页面原型', 28), 40);
+}
+
 function element(type: PrototypeV2Element['type'], patch: Omit<PrototypeV2Element, 'type'>): PrototypeV2Element {
   return { type, ...patch };
 }
 
 function createMediaFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2 {
-  const title = input.name || 'Music+';
+  const title = getPrototypeTitle(input);
   const modules = splitModules(input.keyContent, 5);
   const cards = modules.length >= 3 ? modules.slice(0, 3) : ['每日推荐', '私人雷达', '热播榜单'];
 
@@ -202,7 +206,7 @@ function createGenericFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2
   const template = selectPrototypeTemplate(input);
   const modules = splitModules(input.keyContent, isWide ? 6 : 4);
   const displayModules = modules.length ? modules : ['核心信息', '关键操作', '状态反馈'];
-  const title = input.name;
+  const title = getPrototypeTitle(input);
 
   if (!isWide && template.id === 'mobile-media') return createMediaFallbackSpec(input);
 
@@ -210,7 +214,7 @@ function createGenericFallbackSpec(input: CreatePrototypeInput): PrototypeSpecV2
     element('card', {
       name: `Feature Card ${index + 1}`,
       text: module,
-      items: index === 0 ? [input.targetUser.slice(0, 40)] : undefined,
+      items: index === 0 ? [conciseText(input.targetUser, '目标用户与核心场景', 40)] : undefined,
       icon: index === 0 ? 'sparkles' : index === 1 ? 'chart' : 'star',
       assetRef: index === 0 ? 'cover.blueprint' : index === 1 ? 'illustration.empty-state' : 'cover.green-wave',
       x: margin + (isWide ? index % 2 : 0) * ((contentWidth - 16) / 2 + 16),
@@ -507,14 +511,14 @@ export async function generatePrototypeFromInput(input: CreatePrototypeInput): P
   const fallback = fallbackCreateSpec(input);
   const template = selectPrototypeTemplate(input);
   const user = [
-    `原型名称：${input.name}`,
+    `原型名称：${input.name || '未提供'}`,
     `平台：${input.platform}`,
     `页面类型：${input.pageType}`,
     `推荐模板：${template.id} - ${template.description}`,
-    `产品背景：${input.productContext}`,
-    `目标用户：${input.targetUser}`,
-    `页面目标：${input.pageGoal}`,
-    `关键模块：${input.keyContent}`,
+    `产品背景：${input.productContext || '未提供'}`,
+    `目标用户：${input.targetUser || '未提供'}`,
+    `页面目标：${input.pageGoal || '未提供'}`,
+    `关键模块：${input.keyContent || '未提供'}`,
     `生成说明：${input.instructions}`,
     `是否提供参考图：${input.hasReferenceImage ? '是，仅作布局和风格参考' : '否'}`,
     input.referenceImageSummary ? `参考图视觉摘要：${input.referenceImageSummary}` : '',

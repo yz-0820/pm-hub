@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element -- local object URL preview cannot use next/image optimization */
-import { ChangeEvent, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, Clipboard, Loader2, RefreshCw, Sparkles, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PrototypePlatform, PrototypeSpec } from '@/lib/tools/prototype-spec';
@@ -78,15 +78,26 @@ export function PrototypeGeneratorForm() {
     ? selectedVersion.prototypeSpec.frames.reduce((sum, frame) => sum + (frame.validation?.length || 0), 0)
     : 0;
 
-  const canCreate = Boolean(
-    name.trim() &&
-      productContext.trim() &&
-      targetUser.trim() &&
-      pageGoal.trim() &&
-      keyContent.trim() &&
-      instructions.trim() &&
-      !isGenerating
-  );
+  useEffect(() => {
+    const search = new URLSearchParams(window.location.search);
+    if (search.get('from') !== 'prd') return;
+
+    const timeout = window.setTimeout(() => {
+      try {
+        const draft = window.localStorage.getItem('pmhub:prototype-draft');
+        if (!draft) return;
+        setInstructions((current) => current.trim() ? current : draft);
+        setStatusText('已带入上一份 PRD，可直接生成页面原型或继续补充细节');
+        window.localStorage.removeItem('pmhub:prototype-draft');
+      } catch {
+        // 忽略本地存储不可用场景；用户仍可手动粘贴。
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  const canCreate = Boolean(instructions.trim() && !isGenerating);
 
   const canRevise = Boolean(selectedVersion && revisionInstruction.trim() && !isGenerating);
 
@@ -126,7 +137,7 @@ export function PrototypeGeneratorForm() {
 
   const handleCreate = async () => {
     if (!canCreate) {
-      setStatusText('请先填写必填信息');
+      setStatusText('请先描述你想生成的页面');
       return;
     }
 
@@ -143,7 +154,7 @@ export function PrototypeGeneratorForm() {
     if (referenceImage) formData.append('referenceImage', referenceImage);
 
     setIsGenerating(true);
-    setStatusText('正在生成高保真原型结构');
+    setStatusText('正在生成页面原型');
     setCopied(false);
 
     try {
@@ -204,14 +215,24 @@ export function PrototypeGeneratorForm() {
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">原型信息</h2>
-            <p className="text-xs text-muted-foreground">填写页面需求，生成高保真预览和 Figma 可编辑图层。</p>
+            <h2 className="text-lg font-semibold">页面 Brief</h2>
+            <p className="text-xs text-muted-foreground">可以粘贴 PRD、页面需求或用户流程，其余信息都可选。</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <label className="block">
-            <span className="text-sm font-medium">原型名称 *</span>
+            <span className="text-sm font-medium">描述你想生成的页面 *</span>
+            <textarea
+              value={instructions}
+              onChange={(event) => setInstructions(event.target.value)}
+              placeholder="例如：生成一个会员续费提醒页面，包含到期提示、权益对比、优惠说明和一键续费按钮；希望整体像移动端高保真设计稿。也可以直接粘贴 PRD / 用户流程。"
+              className="mt-2 w-full min-h-40 rounded-lg border border-input bg-background px-3 py-2 text-sm leading-relaxed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium">原型名称（可选）</span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
@@ -222,7 +243,7 @@ export function PrototypeGeneratorForm() {
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="text-sm font-medium">平台类型 *</span>
+              <span className="text-sm font-medium">平台类型（默认移动端）</span>
               <select value={platform} onChange={(event) => setPlatform(event.target.value as PrototypePlatform)} className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                 {platformOptions.map((item) => (
                   <option key={item.value} value={item.value}>{item.label}</option>
@@ -230,7 +251,7 @@ export function PrototypeGeneratorForm() {
               </select>
             </label>
             <label className="block">
-              <span className="text-sm font-medium">页面类型 *</span>
+              <span className="text-sm font-medium">页面类型（默认首页）</span>
               <select value={pageType} onChange={(event) => setPageType(event.target.value)} className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                 {pageTypes.map((item) => (
                   <option key={item} value={item}>{item}</option>
@@ -240,28 +261,23 @@ export function PrototypeGeneratorForm() {
           </div>
 
           <label className="block">
-            <span className="text-sm font-medium">产品背景 *</span>
+            <span className="text-sm font-medium">产品背景（可选）</span>
             <textarea value={productContext} onChange={(event) => setProductContext(event.target.value)} placeholder="描述产品、业务场景和当前问题" className="mt-2 w-full min-h-24 rounded-lg border border-input bg-background px-3 py-2 text-sm leading-relaxed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium">目标用户 *</span>
+            <span className="text-sm font-medium">目标用户（可选）</span>
             <input value={targetUser} onChange={(event) => setTargetUser(event.target.value)} placeholder="例如：经常听歌的年轻用户" className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium">页面目标 *</span>
+            <span className="text-sm font-medium">页面目标（可选）</span>
             <input value={pageGoal} onChange={(event) => setPageGoal(event.target.value)} placeholder="例如：提升推荐内容点击和播放转化" className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium">关键模块 *</span>
+            <span className="text-sm font-medium">关键模块（可选）</span>
             <textarea value={keyContent} onChange={(event) => setKeyContent(event.target.value)} placeholder="例如：搜索、推荐横幅、快捷入口、歌单卡片、排行榜、底部播放器" className="mt-2 w-full min-h-24 rounded-lg border border-input bg-background px-3 py-2 text-sm leading-relaxed" />
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-medium">生成说明 *</span>
-            <textarea value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="例如：做成类似音乐 App 的高保真移动端页面，绿色品牌感，视觉要丰富但信息清晰" className="mt-2 w-full min-h-24 rounded-lg border border-input bg-background px-3 py-2 text-sm leading-relaxed" />
           </label>
 
           <div>
@@ -290,7 +306,7 @@ export function PrototypeGeneratorForm() {
             <p className="text-xs text-muted-foreground min-h-4">{statusText}</p>
             <Button onClick={handleCreate} disabled={!canCreate}>
               {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              生成原型
+              生成页面原型
             </Button>
           </div>
         </div>
@@ -355,7 +371,7 @@ export function PrototypeGeneratorForm() {
           </div>
         ) : (
           <div className="flex flex-1 min-h-[600px] items-center justify-center rounded-lg border border-dashed bg-background/60 px-6 text-center text-sm text-muted-foreground">
-            填写左侧信息后，这里会展示可导入 Figma 的高保真原型预览。
+            描述一个页面，或从 PRD 页带入需求后，这里会展示网页内高保真预览、Figma 导入码和后续修改入口。
           </div>
         )}
       </section>

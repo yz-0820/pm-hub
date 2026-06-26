@@ -188,14 +188,14 @@ export const prototypeSpecSchema = z.union([prototypeSpecV1Schema, prototypeSpec
 
 export const createPrototypeInputSchema = z.object({
   mode: z.literal('create'),
-  name: z.string().trim().min(1, '请填写原型名称').max(80),
-  platform: prototypePlatformSchema,
-  pageType: z.string().trim().min(1, '请选择页面类型').max(80),
-  productContext: z.string().trim().min(1, '请填写产品背景').max(2000),
-  targetUser: z.string().trim().min(1, '请填写目标用户').max(1000),
-  pageGoal: z.string().trim().min(1, '请填写页面目标').max(1000),
-  keyContent: z.string().trim().min(1, '请填写关键模块').max(2000),
-  instructions: z.string().trim().min(1, '请填写生成说明').max(2000),
+  name: z.string().trim().max(80).optional().default(''),
+  platform: prototypePlatformSchema.optional().default('mobile'),
+  pageType: z.string().trim().max(80).optional().default('首页'),
+  productContext: z.string().trim().max(2000).optional().default(''),
+  targetUser: z.string().trim().max(1000).optional().default(''),
+  pageGoal: z.string().trim().max(1000).optional().default(''),
+  keyContent: z.string().trim().max(2000).optional().default(''),
+  instructions: z.string().trim().min(1, '请描述你想生成的页面').max(2000),
   hasReferenceImage: z.boolean().optional().default(false),
   referenceImageSummary: z.string().trim().max(1200).optional(),
 });

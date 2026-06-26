@@ -16,6 +16,12 @@ import { FallbackImage } from '@/components/ui/fallback-image';
 import { Skeleton } from '@/components/ui/skeleton';
 import * as siteMeta from '@/lib/site-meta';
 import { resolveArticleDisplayImage } from '@/lib/utils/article-cover';
+import {
+  HOT_EVENT_CATEGORIES,
+  HOT_EVENT_ENTITIES,
+  HOT_EVENT_TRIGGER_TERMS,
+  isHotEventCandidate,
+} from '@/lib/home/hot-events';
 
 export const revalidate = 60; // 1分钟ISR
 
@@ -382,38 +388,18 @@ async function getLatestCareerForCarousel(limit: number = 5) {
   }
 }
 
-// 知名公司/品牌列表 - 用于 Hot Events 过滤
-const HOT_EVENT_KEYWORDS = [
-  '发布会', '大会', '峰会', '论坛', '财报', '营收', '季报', '年报',
-  '上线', '发布', '推出', '开测', '公测', '融资', '收购', '并购',
-  'IPO', '上市', '监管', '政策', '法规', '禁令', '批准',
-];
-
-const HOT_EVENT_COMPANIES = [
-  '苹果', 'Apple', '谷歌', 'Google', '微软', 'Microsoft', '亚马逊', 'Amazon',
-  'Meta', 'Facebook', '特斯拉', 'Tesla', '英伟达', 'NVIDIA', 'AMD', '英特尔', 'Intel',
-  'OpenAI', 'ChatGPT', 'Anthropic', 'Claude', 'Space X', 'SpaceX',
-  '字节跳动', '抖音', 'TikTok', '腾讯', '微信', 'QQ', '阿里巴巴', '淘宝', '天猫',
-  '百度', '美团', '滴滴', '小米', '华为', 'OPPO', 'vivo', '京东', '拼多多', '网易',
-  '快手', 'B站', '哔哩哔哩', '知乎', '小红书', '微博', '携程', '饿了么',
-  'Salesforce', 'Oracle', 'IBM', 'SAP', 'Adobe', 'Zoom', 'Slack', 'Shopify',
-  'Netflix', '网飞', 'Spotify', 'Uber', 'Airbnb', 'PayPal', 'Stripe', 'Square',
-  '标普', '纳斯达克', '纳指',
-];
-
 async function getHotEvents(limit: number = 5) {
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
 
-    // 构建关键词 ILIKE 条件
-    const keywordConditions = HOT_EVENT_KEYWORDS.map(kw =>
+    // 构建事件词 ILIKE 条件
+    const triggerConditions = HOT_EVENT_TRIGGER_TERMS.map(kw =>
       sql`LOWER(${articles.title}) LIKE ${'%' + kw.toLowerCase() + '%'}`
     );
 
-    // 构建公司 ILIKE 条件
-    const companyConditions = HOT_EVENT_COMPANIES.map(company =>
-      sql`LOWER(${articles.title}) LIKE ${'%' + company.toLowerCase() + '%'}`
+    // 构建知名公司/品牌/金融机构 ILIKE 条件
+    const entityConditions = HOT_EVENT_ENTITIES.map(entity =>
+      sql`LOWER(${articles.title}) LIKE ${'%' + entity.toLowerCase() + '%'}`
     );
 
     const results = await db
@@ -421,15 +407,16 @@ async function getHotEvents(limit: number = 5) {
         id: articles.id,
         title: articles.title,
         originalUrl: articles.originalUrl,
+        category: articles.category,
         publishedAt: articles.publishedAt,
       })
       .from(articles)
       .where(
         and(
           gte(articles.publishedAt, thirtyDaysAgo),
-          inArray(articles.category, articleCategories),
-          or(...keywordConditions),
-          or(...companyConditions),
+          inArray(articles.category, HOT_EVENT_CATEGORIES),
+          or(...triggerConditions),
+          or(...entityConditions),
         )
       )
       .orderBy(desc(articles.publishedAt))
@@ -438,6 +425,7 @@ async function getHotEvents(limit: number = 5) {
     // 去重（完全相同的标题）
     const seen = new Set<string>();
     const unique = results.filter(item => {
+      if (!isHotEventCandidate(item)) return false;
       if (seen.has(item.title)) return false;
       seen.add(item.title);
       return true;

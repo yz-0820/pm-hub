@@ -21,9 +21,9 @@ export default function PrdGeneratorPage() {
               <FileText className="h-4 w-4" />
               <span>PRD 生成</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">AI 产品需求文档生成</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">把模糊想法整理成结构化 PRD</h1>
             <p className="text-muted-foreground">
-              输入需求背景、目标用户和功能点，生成一份 Markdown 格式的产品需求文档。
+              输入一段产品想法，生成可继续编辑和下载的结构化 PRD。
             </p>
           </div>
         </div>

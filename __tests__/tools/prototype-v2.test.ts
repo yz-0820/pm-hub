@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { generatePrototypeFromInput } from '@/lib/tools/prototype-generator-v2';
 import { isPrototypeAssetRef } from '@/lib/tools/prototype-assets';
 import { selectPrototypeTemplate } from '@/lib/tools/prototype-templates';
-import { validatePrototypeSpec } from '@/lib/tools/prototype-spec';
+import { createPrototypeInputSchema, validatePrototypeSpec } from '@/lib/tools/prototype-spec';
 import { validatePrototypeSpecV2 } from '@/lib/tools/prototype-validator';
 
 describe('prototype spec v2', () => {
@@ -126,5 +126,20 @@ describe('prototype spec v2', () => {
     if (output.prototypeSpec.version !== '2.0') throw new Error('Expected v2 output');
     expect(output.prototypeSpec.frames[0]?.templateId).toBe('mobile-media');
     expect(output.prototypeSpec.frames[0]?.elements.some((element) => element.type === 'mediaPlayer')).toBe(true);
+  });
+
+  it('accepts a single required page description for create input', async () => {
+    const parsed = createPrototypeInputSchema.parse({
+      mode: 'create',
+      instructions: '生成一个会员续费提醒移动端页面，包含到期提示、权益对比、优惠说明和一键续费按钮。',
+    });
+
+    expect(parsed.platform).toBe('mobile');
+    expect(parsed.pageType).toBe('首页');
+    expect(parsed.name).toBe('');
+
+    const output = await generatePrototypeFromInput(parsed);
+    expect(output.prototypeSpec.version).toBe('2.0');
+    expect(output.prototypeSpec.name).toContain('会员续费提醒');
   });
 });

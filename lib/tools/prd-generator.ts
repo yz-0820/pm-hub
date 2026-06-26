@@ -2,11 +2,11 @@ import { z } from 'zod';
 import { getDeepSeekEnv } from '@/lib/env/server';
 
 export const prdInputSchema = z.object({
-  productName: z.string().trim().min(1, '请填写产品或功能名称').max(80),
-  background: z.string().trim().min(1, '请填写背景与问题').max(3000),
-  goals: z.string().trim().min(1, '请填写目标').max(2000),
-  users: z.string().trim().min(1, '请填写目标用户').max(1200),
-  features: z.string().trim().min(1, '请填写核心功能点').max(3000),
+  productName: z.string().trim().max(80).optional().default(''),
+  background: z.string().trim().min(1, '请描述你的产品想法或需求').max(3000),
+  goals: z.string().trim().max(2000).optional().default(''),
+  users: z.string().trim().max(1200).optional().default(''),
+  features: z.string().trim().max(3000).optional().default(''),
   constraints: z.string().trim().max(1500).optional().default(''),
   metrics: z.string().trim().max(1500).optional().default(''),
 });
@@ -20,6 +20,10 @@ export type PrdGenerationResult = {
 };
 
 function fallbackGenerate(input: PrdInput): PrdGenerationResult {
+  const productName = input.productName || '产品想法';
+  const goals = input.goals || '待确认';
+  const users = input.users || '待确认';
+  const features = input.features || '待确认';
   const constraints = input.constraints || '待补充';
   const metrics = input.metrics || '待补充';
 
@@ -27,30 +31,30 @@ function fallbackGenerate(input: PrdInput): PrdGenerationResult {
     model: '',
     usedAI: false,
     content: [
-      `# ${input.productName} 产品需求文档`,
+      `# ${productName} 产品需求文档`,
       '',
       '## 1. 背景与问题',
       input.background,
       '',
       '## 2. 目标',
-      input.goals
+      goals
         .split(/\r?\n/)
         .map((item) => item.trim())
         .filter(Boolean)
         .map((item) => `- ${item}`)
-        .join('\n') || `- ${input.goals}`,
+        .join('\n') || `- ${goals}`,
       '',
       '## 3. 目标用户与场景',
-      input.users,
+      users,
       '',
       '## 4. 需求范围',
       '### 4.1 核心功能',
-      input.features
+      features
         .split(/\r?\n/)
         .map((item) => item.trim())
         .filter(Boolean)
         .map((item, index) => `${index + 1}. ${item}`)
-        .join('\n') || input.features,
+        .join('\n') || features,
       '',
       '### 4.2 暂不包含',
       '- 需要结合资源、排期和业务优先级进一步确认。',
@@ -98,11 +102,11 @@ export async function generatePrd(input: PrdInput): Promise<PrdGenerationResult>
   ].join('\n');
 
   const user = [
-    `产品或功能名称：${input.productName}`,
-    `背景：${input.background}`,
-    `目标：${input.goals}`,
-    `目标用户：${input.users}`,
-    `核心功能点：${input.features}`,
+    `产品或功能名称：${input.productName || '未提供'}`,
+    `产品想法或需求描述：${input.background}`,
+    `目标：${input.goals || '未提供'}`,
+    `目标用户：${input.users || '未提供'}`,
+    `核心功能点：${input.features || '未提供'}`,
     `约束条件：${input.constraints || '未提供'}`,
     `成功指标：${input.metrics || '未提供'}`,
   ].join('\n\n');
