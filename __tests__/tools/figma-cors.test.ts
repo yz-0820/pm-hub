@@ -18,5 +18,6 @@ describe('Figma import CORS', () => {
   it('rejects unknown browser origins and production localhost', () => {
     expect(isFigmaImportOriginAllowed('https://attacker.example', productionEnv)).toBe(false);
     expect(isFigmaImportOriginAllowed('http://localhost:3000', productionEnv)).toBe(false);
+    expect(isFigmaImportOriginAllowed('null', productionEnv)).toBe(false);
   });
 });

@@ -2,7 +2,7 @@
 title: '按优先级修复 PM Hub 工程可靠性问题'
 type: 'refactor'
 created: '2026-07-13'
-status: 'in-review'
+status: 'done'
 baseline_commit: 'eedd2a42f9167d8fe43c8e675eb943e3780b4752'
 context:
   - '_bmad-output/project-context.md'
@@ -68,6 +68,8 @@ context:
 
 ## Spec Change Log
 
+- 2026-07-13：完成三层代码复审；补齐迁移幂等日志、搜索零命中回退与有界分页、代理 IP 信任边界、动态年度审计和 CORS `null` 边界测试。
+
 ## Design Notes
 
 共享限流优先复用现有 PostgreSQL，避免为单一能力引入新的基础设施。仓库体积修复只停止跟踪 `.tools`，不重写历史；如需真正缩小既有 Git 历史，必须另行批准。超大文件只抽取本次新增或修改的纯逻辑，以控制回归面。
@@ -79,4 +81,57 @@ context:
 - `npm run lint` -- ESLint 零错误。
 - `npx tsc --noEmit --incremental false` -- 类型检查通过。
 - `npm run build` -- Node 22 生产构建成功。
-- `git grep -n -E "sqlite|node:20|Access-Control-Allow-Origin.*\\*" -- ':!README.md'` -- 无现行错误配置。
+- `git grep -n -E "node:20|Access-Control-Allow-Origin.*\\*" -- Dockerfile docker-compose.yml drizzle.config.ts app lib scripts/prod ':!scripts/prod/import-sqlite-to-postgres.ts'` -- 无现行错误配置。
+- `git grep -n '"dialect": "sqlite"' -- drizzle.config.ts lib/db/migrations/meta` -- 迁移配置和元数据均为 PostgreSQL。
+
+## Suggested Review Order
+
+**部署与迁移**
+
+- 统一 Node 22 镜像
+  [`Dockerfile:2`](../../Dockerfile#L2)
+
+- 编排外部 PostgreSQL
+  [`docker-compose.yml:1`](../../docker-compose.yml#L1)
+
+- 锁定幂等迁移
+  [`migrate.ts:22`](../../scripts/prod/migrate.ts#L22)
+
+**搜索正确性**
+
+- 统一跨类型分页
+  [`route.ts:14`](../../app/api/search/route.ts#L14)
+
+- 规范时间并合并
+  [`results.ts:14`](../../lib/search/results.ts#L14)
+
+- 保证候选时间顺序
+  [`client.ts:59`](../../lib/search/client.ts#L59)
+
+**安全与共享状态**
+
+- PostgreSQL 原子限流
+  [`rate-limiter.ts:51`](../../lib/utils/rate-limiter.ts#L51)
+
+- 收紧代理身份来源
+  [`rate-limiter.ts:87`](../../lib/utils/rate-limiter.ts#L87)
+
+- 精确校验 Figma 来源
+  [`figma-cors.ts:27`](../../lib/tools/figma-cors.ts#L27)
+
+**年度与质量门禁**
+
+- 动态计算 UTC 年度
+  [`year-range.ts:3`](../../lib/career/year-range.ts#L3)
+
+- 固化 Node 22 CI
+  [`ci.yml:12`](../../.github/workflows/ci.yml#L12)
+
+- 记录真实运行方式
+  [`README.md:1`](../../README.md#L1)
+
+- 覆盖搜索合并边界
+  [`results.test.ts:18`](../../__tests__/search/results.test.ts#L18)
+
+- 覆盖 CORS 拒绝边界
+  [`figma-cors.test.ts:4`](../../__tests__/tools/figma-cors.test.ts#L4)

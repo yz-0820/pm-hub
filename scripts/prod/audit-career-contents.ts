@@ -9,24 +9,23 @@
  * 4. 输出审计报告
  */
 
-import 'dotenv/config';
+import './load-env';
 import { db } from '@/lib/db/client';
 import { careerContents } from '@/lib/db/schema';
 import { eq, and, gte, lt } from 'drizzle-orm';
 import { hasCareerRelevance, evaluateBestCategoryMatch } from '@/lib/career/quality';
+import { getUtcYearRange } from '@/lib/career/year-range';
 import { NormalizedContent } from '@/lib/career/platforms/types';
-
-const YEAR_START = new Date('2026-01-01T00:00:00.000Z');
-const YEAR_END = new Date('2027-01-01T00:00:00.000Z');
 
 async function auditCareerContents() {
   console.log('开始审计 career_contents...\n');
 
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
   const allContents = await db.query.careerContents.findMany({
     where: and(
       eq(careerContents.status, 'active'),
-      gte(careerContents.publishedAt, YEAR_START),
-      lt(careerContents.publishedAt, YEAR_END)
+      gte(careerContents.publishedAt, yearStart),
+      lt(careerContents.publishedAt, yearEnd)
     ),
   });
 

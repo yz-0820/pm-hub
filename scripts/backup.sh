@@ -10,9 +10,10 @@ mkdir -p "$BACKUP_DIR"
 
 # PostgreSQL backups are managed by the database provider. This script only
 # preserves the local Meilisearch index, which can also be rebuilt from Postgres.
+echo "PostgreSQL is not backed up by this script; verify provider-managed backups separately."
 if [ -d "$PROJECT_DIR/data/meilisearch" ]; then
   tar -czf "$BACKUP_DIR/meilisearch-$DATE.tar.gz" -C "$PROJECT_DIR/data" meilisearch
 fi
 
 find "$BACKUP_DIR" -name "meilisearch-*.tar.gz" -mtime +30 -delete
-echo "Backup completed: $BACKUP_DIR"
+echo "Meilisearch backup completed: $BACKUP_DIR"
