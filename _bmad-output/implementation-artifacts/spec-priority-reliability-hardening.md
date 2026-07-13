@@ -2,7 +2,7 @@
 title: '按优先级修复 PM Hub 工程可靠性问题'
 type: 'refactor'
 created: '2026-07-13'
-status: 'in-progress'
+status: 'in-review'
 baseline_commit: 'eedd2a42f9167d8fe43c8e675eb943e3780b4752'
 context:
   - '_bmad-output/project-context.md'
@@ -49,15 +49,15 @@ context:
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] 统一 Node 22、PostgreSQL/Neon 和部署脚本，移除硬编码密钥与 SQLite 现行路径。
-- [ ] 修复搜索时间戳、跨类型合并和分页回退逻辑，并添加单元测试。
-- [ ] 修复 ESLint 配置，新增 GitHub Actions 的测试、Lint、类型检查和构建门禁。
-- [ ] 将职业数据的 2026 年区间改为动态当前年，并覆盖跨年测试。
-- [ ] 让开发启动器不依赖已提交 `.tools`，忽略并停止跟踪仓库内运行时文件。
-- [ ] 使用 PostgreSQL 原子计数实现多实例限流；将 Figma CORS 和插件域名收紧到配置域。
-- [ ] 为上述关键路径和鉴权/API 边界补充高价值测试。
-- [ ] 仅对本次触及的超大逻辑做小型纯函数抽取，并引入轻量结构化日志入口，不全量改写日志。
-- [ ] 更新 README，使配置、运行、测试和部署说明与代码一致。
+- [x] 统一 Node 22、PostgreSQL/Neon 和部署脚本，移除硬编码密钥与 SQLite 现行路径。
+- [x] 修复搜索时间戳、跨类型合并和分页回退逻辑，并添加单元测试。
+- [x] 修复 ESLint 配置，新增 GitHub Actions 的测试、Lint、类型检查和构建门禁。
+- [x] 将职业数据的 2026 年区间改为动态当前年，并覆盖跨年测试。
+- [x] 让开发启动器不依赖已提交 `.tools`，忽略并停止跟踪仓库内运行时文件。
+- [x] 使用 PostgreSQL 原子计数实现多实例限流；将 Figma CORS 和插件域名收紧到配置域。
+- [x] 为上述关键路径和鉴权/API 边界补充高价值测试。
+- [x] 仅对本次触及的超大逻辑做小型纯函数抽取，并引入轻量结构化日志入口，不全量改写日志。
+- [x] 更新 README，使配置、运行、测试和部署说明与代码一致。
 
 **Acceptance Criteria:**
 - 全仓不再有作为现行运行路径的 SQLite 配置或硬编码生产密钥。

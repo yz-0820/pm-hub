@@ -1,7 +1,7 @@
-﻿import Database from 'better-sqlite3';
-
-const dbPath = process.env.DATABASE_URL || './data/sqlite.db';
-const sqlite = new Database(dbPath);
+import './load-env';
+import { count, eq } from 'drizzle-orm';
+import { db } from '../../lib/db/client';
+import { trainingQuestions } from '../../lib/db/schema';
 
 function logoUrlFor(questionKey: string): string {
   const s2 = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
@@ -286,60 +286,42 @@ const seedQuestions = [
   },
 ] as const;
 
-function ensureTables() {
-  sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS training_questions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      question_key TEXT NOT NULL UNIQUE,
-      title TEXT NOT NULL,
-      logo_url TEXT,
-      prompt TEXT NOT NULL,
-      industry TEXT NOT NULL,
-      product_type TEXT NOT NULL,
-      difficulty TEXT NOT NULL DEFAULT 'intermediate',
-      reference_points TEXT,
-      is_active INTEGER NOT NULL DEFAULT 1,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
-    )
-  `);
-}
+async function seed() {
+  for (const question of seedQuestions) {
+    const values = {
+      questionKey: question.question_key,
+      title: question.title,
+      logoUrl: logoUrlFor(question.question_key),
+      prompt: question.prompt,
+      industry: question.industry,
+      productType: question.product_type,
+      difficulty: question.difficulty,
+      referencePoints: question.reference_points,
+      isActive: true,
+      updatedAt: new Date(),
+    };
 
-function seed() {
-  ensureTables();
-  const columns = sqlite.prepare(`PRAGMA table_info(training_questions)`).all() as Array<{ name: string }>;
-  const hasLogo = columns.some((c) => c.name === 'logo_url');
-  if (!hasLogo) {
-    sqlite.exec(`ALTER TABLE training_questions ADD COLUMN logo_url TEXT`);
+    const existing = await db
+      .select({ id: trainingQuestions.id })
+      .from(trainingQuestions)
+      .where(eq(trainingQuestions.questionKey, question.question_key))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(trainingQuestions)
+        .set(values)
+        .where(eq(trainingQuestions.questionKey, question.question_key));
+    } else {
+      await db.insert(trainingQuestions).values(values);
+    }
   }
 
-  const stmt = sqlite.prepare(`
-    INSERT INTO training_questions
-    (question_key, title, logo_url, prompt, industry, product_type, difficulty, reference_points, is_active, updated_at)
-    VALUES
-    (@question_key, @title, @logo_url, @prompt, @industry, @product_type, @difficulty, @reference_points, 1, unixepoch())
-    ON CONFLICT(question_key) DO UPDATE SET
-      title=excluded.title,
-      logo_url=excluded.logo_url,
-      prompt=excluded.prompt,
-      industry=excluded.industry,
-      product_type=excluded.product_type,
-      difficulty=excluded.difficulty,
-      reference_points=excluded.reference_points,
-      is_active=excluded.is_active,
-      updated_at=excluded.updated_at
-  `);
-
-  const tx = sqlite.transaction(() => {
-    for (const q of seedQuestions) {
-      stmt.run({ ...q, logo_url: logoUrlFor(q.question_key) });
-    }
-  });
-
-  tx();
-
-  const count = sqlite.prepare(`SELECT COUNT(*) as c FROM training_questions`).get() as { c: number };
-  console.log(`Seeded training_questions. Total: ${count.c}`);
+  const [{ total }] = await db.select({ total: count() }).from(trainingQuestions);
+  console.log(`Seeded training_questions. Total: ${total}`);
 }
 
-seed();
+seed().catch((error) => {
+  console.error('Failed to seed training questions:', error);
+  process.exit(1);
+});

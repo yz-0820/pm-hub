@@ -12,7 +12,7 @@ import {
   getStoredPrototype,
   savePrototypeVersion,
 } from '@/lib/tools/prototype-store';
-import { checkRateLimit, getClientIdentifier } from '@/lib/utils/rate-limiter';
+import { checkRateLimit, getClientIdentifier, RateLimitStorageError } from '@/lib/utils/rate-limiter';
 import { sanitizePromptInputs } from '@/lib/utils/input-sanitizer';
 
 export const runtime = 'nodejs';
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
   try {
     // 限流检查
     const clientId = getClientIdentifier(request);
-    const limit = checkRateLimit(`prototype:${clientId}`, PROTOTYPE_RATE_LIMIT);
+    const limit = await checkRateLimit(`prototype:${clientId}`, PROTOTYPE_RATE_LIMIT);
     if (!limit.allowed) {
       return NextResponse.json(
         {
@@ -188,6 +188,9 @@ export async function POST(request: NextRequest) {
       timestamp: Date.now(),
     });
   } catch (error) {
+    if (error instanceof RateLimitStorageError) {
+      return NextResponse.json({ success: false, error: '服务暂时不可用，请稍后重试' }, { status: 503 });
+    }
     const message = error instanceof Error ? error.message : '原型生成失败';
     console.error('Error generating prototype spec:', message);
     return NextResponse.json(

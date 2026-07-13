@@ -1,21 +1,32 @@
-version: '3.8'
-
 services:
+  migrate:
+    build:
+      context: .
+      target: migrator
+    environment:
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
+      - DATABASE_URL_UNPOOLED=${DATABASE_URL_UNPOOLED:-}
+    restart: "no"
+    networks:
+      - pm-network
+
   app:
     build: .
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=/app/data/sqlite.db
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
+      - DATABASE_DRIVER=postgres-js
       - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY:-masterKey}
-      - API_KEY=${API_KEY:-your-secret-api-key}
+      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY:?MEILISEARCH_API_KEY is required}
+      - API_KEY=${API_KEY:?API_KEY is required}
       - SITE_URL=${SITE_URL:-http://localhost:3000}
-    volumes:
-      - ./data:/app/data
     depends_on:
-      - meilisearch
+      migrate:
+        condition: service_completed_successfully
+      meilisearch:
+        condition: service_started
     restart: unless-stopped
     networks:
       - pm-network
@@ -25,7 +36,7 @@ services:
     ports:
       - "7700:7700"
     environment:
-      - MEILI_MASTER_KEY=${MEILISEARCH_API_KEY:-masterKey}
+      - MEILI_MASTER_KEY=${MEILISEARCH_API_KEY:?MEILISEARCH_API_KEY is required}
       - MEILI_NO_ANALYTICS=true
     volumes:
       - ./data/meilisearch:/meili_data

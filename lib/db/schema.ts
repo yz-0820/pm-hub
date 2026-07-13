@@ -200,6 +200,19 @@ export const contentCache = pgTable(
   })
 );
 
+export const rateLimits = pgTable(
+  'rate_limits',
+  {
+    key: text('key').primaryKey(),
+    count: integer('count').notNull(),
+    resetAt: timestamp('reset_at', { withTimezone: true }).notNull(),
+    updatedAt,
+  },
+  (table) => ({
+    resetAtIdx: index('rate_limits_reset_at_idx').on(table.resetAt),
+  })
+);
+
 export const contentFetchLogs = pgTable(
   'content_fetch_logs',
   {

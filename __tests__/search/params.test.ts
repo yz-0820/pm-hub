@@ -20,4 +20,11 @@ describe('search params', () => {
     expect(result.limit).toBe(10);
     expect(result.offset).toBe(0);
   });
+
+  it('caps deep pages to keep mixed-search windows bounded', () => {
+    const result = parseSearchParams(new URLSearchParams('q=test&page=999999'));
+
+    expect(result.page).toBe(100);
+    expect(result.offset).toBe(990);
+  });
 });

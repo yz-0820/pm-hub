@@ -2,6 +2,7 @@ import { db } from '@/lib/db/client';
 import { contentCache, careerContents } from '@/lib/db/schema';
 import { eq, and, lt, gte, desc, notLike, SQLWrapper, sql } from 'drizzle-orm';
 import { CareerContent } from '@/lib/db/schema';
+import { getUtcYearRange } from './year-range';
 
 // ============================================================
 // Level 1: 内存缓存 (热点内容，访问最快)
@@ -215,9 +216,6 @@ const CACHE_CONFIG = {
   },
 };
 
-const YEAR_2026_START = new Date('2026-01-01T00:00:00.000Z');
-const YEAR_2026_END = new Date('2027-01-01T00:00:00.000Z');
-
 export interface ContentListParams {
   category?: string;
   platform?: string;
@@ -237,7 +235,11 @@ export interface ContentListResult {
 }
 
 export async function getContentList(params: ContentListParams): Promise<ContentListResult> {
-  const cacheKey = generateCacheKey('list', params as Record<string, unknown>);
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
+  const cacheKey = generateCacheKey('list', {
+    ...params,
+    year: yearStart.getUTCFullYear(),
+  } as Record<string, unknown>);
 
   // 尝试从多级缓存获取
   const cached = await getCache<ContentListResult>(cacheKey);
@@ -269,8 +271,8 @@ export async function getContentList(params: ContentListParams): Promise<Content
   conditions.push(notLike(careerContents.originalUrl, '%rsshub.app/%'));
   conditions.push(notLike(careerContents.originalUrl, '%localhost%'));
   conditions.push(notLike(careerContents.originalUrl, '%127.0.0.1%'));
-  conditions.push(gte(careerContents.publishedAt, YEAR_2026_START));
-  conditions.push(lt(careerContents.publishedAt, YEAR_2026_END));
+  conditions.push(gte(careerContents.publishedAt, yearStart));
+  conditions.push(lt(careerContents.publishedAt, yearEnd));
   if (category && category !== 'all') {
     conditions.push(eq(careerContents.category, category));
   }
@@ -353,7 +355,12 @@ export async function getContentFeed(
   lastId?: number,
   limit: number = 10
 ): Promise<CareerContent[]> {
-  const cacheKey = generateCacheKey('feed', { lastId: lastId || 'latest', limit });
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
+  const cacheKey = generateCacheKey('feed', {
+    lastId: lastId || 'latest',
+    limit,
+    year: yearStart.getUTCFullYear(),
+  });
 
   // 尝试从多级缓存获取
   const cached = await getCache<CareerContent[]>(cacheKey);
@@ -377,8 +384,8 @@ export async function getContentFeed(
           notLike(careerContents.originalUrl, '%rsshub.app/%'),
           notLike(careerContents.originalUrl, '%localhost%'),
           notLike(careerContents.originalUrl, '%127.0.0.1%'),
-          gte(careerContents.publishedAt, YEAR_2026_START),
-          lt(careerContents.publishedAt, YEAR_2026_END),
+          gte(careerContents.publishedAt, yearStart),
+          lt(careerContents.publishedAt, yearEnd),
           lt(careerContents.publishedAt, lastContent.publishedAt)
         ),
         orderBy: [desc(careerContents.publishedAt)],
@@ -395,8 +402,8 @@ export async function getContentFeed(
         notLike(careerContents.originalUrl, '%rsshub.app/%'),
         notLike(careerContents.originalUrl, '%localhost%'),
         notLike(careerContents.originalUrl, '%127.0.0.1%'),
-        gte(careerContents.publishedAt, YEAR_2026_START),
-        lt(careerContents.publishedAt, YEAR_2026_END)
+        gte(careerContents.publishedAt, yearStart),
+        lt(careerContents.publishedAt, yearEnd)
       ),
       orderBy: [desc(careerContents.publishedAt)],
       limit,
@@ -419,7 +426,8 @@ export interface ContentStats {
 }
 
 export async function getContentStats(): Promise<ContentStats> {
-  const cacheKey = 'career:stats:global';
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
+  const cacheKey = `career:stats:${yearStart.getUTCFullYear()}`;
 
   // 尝试从多级缓存获取
   const cached = await getCache<ContentStats>(cacheKey);
@@ -435,8 +443,8 @@ export async function getContentStats(): Promise<ContentStats> {
       notLike(careerContents.originalUrl, '%rsshub.app/%'),
       notLike(careerContents.originalUrl, '%localhost%'),
       notLike(careerContents.originalUrl, '%127.0.0.1%'),
-      gte(careerContents.publishedAt, YEAR_2026_START),
-      lt(careerContents.publishedAt, YEAR_2026_END)
+      gte(careerContents.publishedAt, yearStart),
+      lt(careerContents.publishedAt, yearEnd)
     ),
   });
 
@@ -462,8 +470,8 @@ export async function getContentStats(): Promise<ContentStats> {
       notLike(careerContents.originalUrl, '%rsshub.app/%'),
       notLike(careerContents.originalUrl, '%localhost%'),
       notLike(careerContents.originalUrl, '%127.0.0.1%'),
-      gte(careerContents.publishedAt, YEAR_2026_START),
-      lt(careerContents.publishedAt, YEAR_2026_END)
+      gte(careerContents.publishedAt, yearStart),
+      lt(careerContents.publishedAt, yearEnd)
     ),
     orderBy: [desc(careerContents.publishedAt)],
   });

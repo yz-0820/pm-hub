@@ -52,7 +52,7 @@ PM Hub 是面向产品经理与产品从业者的综合学习平台，聚合专�
 - PRD 生成：输入一段需求描述即可生成结构化 Markdown PRD，支持继续编辑、Markdown 下载和 Word 下载。
 - 原型生成：根据页面描述、可选背景信息和参考图生成 `prototypeSpec`，支持版本修改、网页预览和 Figma 导入码。
 - 流程图生成：通过 iframe 接入独立部署的 `next-ai-draw-io` 应用。
-- PRD 和原型接口具有输入校验、提示词注入检测和按 IP 的基础限流。
+- PRD 和原型接口具有输入校验、提示词注入检测和基于 PostgreSQL 的跨实例 IP 限流。
 
 主要入口：
 
@@ -165,23 +165,24 @@ pm-website/
 - Meilisearch 可选；未配置时搜索接口会尝试数据库回退。
 - 如需本地流程图工具，仓库同级目录需要存在 `next-ai-draw-io`。
 
-仓库当前包含 Windows Node 22 运行时，已验证的 Windows 启动方式为：
+确认本机 Node 版本后，通过 npm 脚本启动：
 
 ```powershell
-.\.tools\node-v22.22.2-win-x64\node.exe .\scripts\prod\dev-runner.cjs web
+node --version  # 应为 v22.x
+npm run dev:web
 ```
 
 ### 安装与配置
 
 ```powershell
 # 安装依赖
-.\.tools\node-v22.22.2-win-x64\npm.cmd ci
+npm ci
 
 # 创建本地环境文件
 Copy-Item .env.example .env.local
 
 # 配置 DATABASE_URL 后执行 PostgreSQL 初始化迁移
-.\.tools\node-v22.22.2-win-x64\npm.cmd run db:migrate
+npm run db:migrate
 ```
 
 不要提交 `.env.local`，也不要在客户端代码中读取未带 `NEXT_PUBLIC_` 前缀的变量。
@@ -218,6 +219,7 @@ npm run dev:schedulers
 | `CRON_SECRET` | `/api/cron/fetch-content` 的 Bearer Token | 定时抓取必需 |
 | `REVALIDATE_SECRET` | 手动刷新页面缓存 | 相关接口必需 |
 | `API_ALLOWLIST_IPS` | 管理接口可选 IPv4/CIDR 白名单 | 可选 |
+| `TRUST_X_FORWARDED_FOR` | 非 Cloudflare 可信代理是否允许使用首个 `X-Forwarded-For` 作为限流身份 | 可选，默认关闭 |
 | `RSSHUB_BASE_URL` | 自建或第三方 RSSHub 地址 | 金融/扩展来源可选 |
 | `ENABLE_LOCAL_RSS_SCHEDULER` | 开发环境启用 RSS 调度器 | 可选，默认关闭 |
 | `LOCAL_RSS_INTERVAL_MINUTES` | RSS 本地调度间隔 | 可选 |
@@ -239,6 +241,7 @@ npm run dev:schedulers
 | `DASHSCOPE_COMPATIBLE_BASE_URL` | DashScope OpenAI 兼容接口 | 可选 |
 | `QWEN_IMAGE_MODEL` | 图片模型名 | 可选 |
 | `QWEN_VISION_MODEL` | 视觉模型名 | 可选 |
+| `FIGMA_IMPORT_ALLOWED_ORIGINS` | Figma 导入接口额外允许的浏览器 Origin，逗号分隔 | 可选 |
 | `NEXT_PUBLIC_FLOWCHART_APP_URL` | 独立流程图应用公开地址 | 流程图工具必需 |
 
 没有 AI 密钥时，PRD、原型和产品思维评分会按各自实现返回结构化兜底结果或明确的配置提示，不会把密钥暴露到浏览器。
@@ -266,13 +269,14 @@ npm run db:import:sqlite          # 一次性把旧 SQLite 数据导入 PostgreS
 npm run db:studio                 # 启动 Drizzle Studio
 ```
 
-当前 `training:seed` 和部分旧迁移脚本仍依赖 SQLite，不应直接用于现有 PostgreSQL 生产库；编程题库的 PostgreSQL 种子实现位于 `scripts/prod/seed-programming-questions.ts`。
+`training:seed`、编程题库迁移和日常维护命令均使用 PostgreSQL；`db:import:sqlite` 仅用于一次性导入历史 SQLite 数据。
 
 ## 测试与质量检查
 
 ```powershell
 npm test                          # Vitest 单元测试
 npm run lint                      # ESLint
+npx tsc --noEmit --incremental false # TypeScript 类型检查
 npm run build:next                # Next.js 构建
 npm run build                     # OpenNext Cloudflare 构建
 ```
@@ -282,7 +286,8 @@ npm run build                     # OpenNext Cloudflare 构建
 - RSS 内容清理与科技/金融相关性。
 - 职业内容质量与分类。
 - 首页近期热点规则。
-- 搜索参数解析。
+- 搜索参数、时间戳与文章/职业内容混合分页。
+- 当前自然年边界、共享限流结果、API 鉴权与 Figma CORS 白名单。
 - 默认封面和图片代理安全校验。
 - PRD 输入与原型 spec/兜底生成。
 
@@ -293,8 +298,8 @@ npm run build                     # OpenNext Cloudflare 构建
 - `Authorization: Bearer <API_KEY>`：手动 RSS 抓取、职业内容写入/审核、训练题目管理和清理接口。
 - `Authorization: Bearer <CRON_SECRET>`：统一内容抓取定时接口。
 - `REVALIDATE_SECRET`：页面缓存刷新接口。
-- PRD 与原型生成接口为公开接口，使用输入校验和进程内限流控制请求。
-- Figma 导入接口通过短期导入码读取原型，导入码默认 30 分钟有效。
+- PRD 与原型生成接口为公开接口，使用输入校验和 PostgreSQL 原子计数限流控制请求。
+- Figma 导入接口通过短期导入码读取原型，导入码默认 30 分钟有效，并仅向明确允许的 Origin 返回 CORS 许可。
 
 ## 部署
 
@@ -303,7 +308,7 @@ npm run build                     # OpenNext Cloudflare 构建
 ```powershell
 npm run build
 npm run preview
-npm run deploy
+npm run deploy  # 先执行 PostgreSQL 迁移，成功后再发布 Worker
 ```
 
 `wrangler.jsonc` 使用 OpenNext Worker、静态资源绑定和 `neon-http` 数据库驱动。生产环境需在 Cloudflare 中配置数据库、抓取、搜索和 AI 相关密钥。
@@ -311,13 +316,14 @@ npm run deploy
 ### 其他部署文件
 
 - `vercel.json` 包含每日内容抓取 Cron 配置。
-- `Dockerfile`、`docker-compose.yml`、`start-production.*` 和 `scripts/deploy.sh` 仍保留旧的 Node 20 + SQLite 部署路径，与当前 Node 22 + PostgreSQL 架构不一致；完成统一改造前不要作为生产部署依据。
+- `Dockerfile`、`docker-compose.yml` 和 `start-production.*` 使用 Node 22 与外部 PostgreSQL；启动前必须通过环境变量提供数据库、搜索和管理密钥。
+- `.github/workflows/ci.yml` 在 Node 22 上执行测试、ESLint、类型检查和 OpenNext 构建。
 
 ## 当前工程边界
 
-- PostgreSQL/Neon 是当前数据源，SQLite 仅用于历史数据导入和少量尚未迁移的旧脚本。
-- Meilisearch 只索引专业文章；职业内容搜索依赖数据库回退逻辑。
-- 本地限流与部分缓存是进程内实现，多实例/边缘部署时不提供全局一致性。
+- PostgreSQL/Neon 是当前数据源，SQLite 仅用于历史数据导入和未暴露为日常命令的旧调试脚本。
+- Meilisearch 索引专业文章；搜索接口会把文章结果与 PostgreSQL 中的职业内容统一合并分页，Meilisearch 不可用时全部回退 PostgreSQL。
+- AI 工具限流使用 PostgreSQL 共享计数；部分内容缓存仍为进程内缓存，可随时从数据库重建。
 - 文章和职业内容的质量依赖规则评分，新增来源时必须同步验证误收与漏收样本。
 - 原型导入依赖 Figma manifest 中允许的线上域名；域名变更时需要同步更新插件配置。
 

@@ -1,34 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchArticles } from '@/lib/search/client';
+import { and, desc, eq, ilike, inArray, notIlike, or, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { articles, careerContents } from '@/lib/db/schema';
-import { eq, desc, ilike, or, and, notIlike, sql, inArray } from 'drizzle-orm';
+import { searchArticles } from '@/lib/search/client';
 import { parseSearchParams } from '@/lib/search/params';
+import { mergeSearchHits, normalizeSearchTimestamp, type SearchHit } from '@/lib/search/results';
+import { logger } from '@/lib/utils/logger';
 
-type SearchHit =
-  | {
-      kind: 'article';
-      id: number;
-      title: string;
-      summary: string;
-      category: string;
-      sourceName: string;
-      publishedAt: string;
-      originalUrl: string;
-      imageUrl: string | null;
-    }
-  | {
-      kind: 'career';
-      id: number;
-      title: string;
-      summary: string;
-      category: string;
-      sourceName: string;
-      publishedAt: string;
-      originalUrl: string;
-      imageUrl: string | null;
-      contentType: string;
-    };
+const ARTICLE_CATEGORIES = ['product-management', 'tech', 'ai', 'finance'];
+
+class EmptyMeilisearchResult extends Error {}
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,61 +19,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ hits: [], totalHits: 0, page: 1, totalPages: 0 });
     }
 
-    // 优先使用 MeiliSearch（带缓存和分页）
-    try {
-      const meiliResult = await searchArticles(query, { limit, offset });
-
-      if ((meiliResult.estimatedTotalHits ?? 0) > 0) {
-        const hits: SearchHit[] = meiliResult.hits.map((doc: Record<string, unknown>) => ({
-          kind: 'article' as const,
-          id: doc.id as number,
-          title: doc.title as string,
-          summary: (doc.summary as string) || '',
-          category: (doc.category as string) || 'tech',
-          sourceName: (doc.sourceName as string) || '',
-          publishedAt: new Date((doc.publishedAt as number) * 1000).toISOString(),
-          originalUrl: '',
-          imageUrl: (doc.imageUrl as string) || null,
-        }));
-
-        // 补充 originalUrl
-        if (hits.length > 0) {
-          const ids = hits.map(h => h.id);
-          const rows = await db.query.articles.findMany({
-            where: (articles, { inArray }) => inArray(articles.id, ids),
-          });
-          const articleMap = new Map(rows.map(r => [r.id, r]));
-          for (const hit of hits) {
-            const row = articleMap.get(hit.id);
-            hit.originalUrl = row?.originalUrl || '';
-            hit.title = row?.title || hit.title;
-            hit.summary = row?.summary || hit.summary;
-            hit.imageUrl = row?.imageUrl || null;
-            hit.category = row?.category || hit.category;
-            hit.sourceName = row?.sourceName || hit.sourceName;
-          }
-        }
-
-        const totalHits = meiliResult.estimatedTotalHits ?? 0;
-        return NextResponse.json({
-          hits,
-          totalHits,
-          page,
-          totalPages: Math.ceil(totalHits / limit),
-        });
-      }
-    } catch {
-      // MeiliSearch 不可用，fallback 到数据库搜索
-      console.log('MeiliSearch unavailable, falling back to database search');
-    }
-
-    // Fallback: 数据库搜索（搜索 articles 和 career 内容）
     const pattern = `%${query}%`;
-    const articleCategories = ['product-management', 'tech', 'ai', 'finance'];
-    
-    // Articles 搜索条件
+    const windowSize = offset + limit;
     const articlesWhere = and(
-      inArray(articles.category, articleCategories),
+      inArray(articles.category, ARTICLE_CATEGORIES),
       or(
         ilike(articles.title, pattern),
         ilike(articles.summary, pattern),
@@ -100,8 +30,6 @@ export async function GET(request: NextRequest) {
         ilike(articles.sourceName, pattern)
       )
     );
-
-    // Career 搜索条件
     const careerWhere = and(
       eq(careerContents.status, 'active'),
       or(
@@ -116,69 +44,101 @@ export async function GET(request: NextRequest) {
       notIlike(careerContents.originalUrl, '%127.0.0.1%')
     );
 
-    // 并行搜索 articles 和 career
-    const [articleRows, careerRows] = await Promise.all([
-      db.query.articles.findMany({
-        where: articlesWhere,
-        orderBy: [desc(articles.publishedAt)],
-        limit: limit,
-        offset: offset,
-      }),
+    const [careerRows, careerCountRes] = await Promise.all([
       db.query.careerContents.findMany({
         where: careerWhere,
         orderBy: [desc(careerContents.publishedAt)],
-        limit: limit,
-        offset: offset,
+        limit: windowSize,
       }),
-    ]);
-
-    // 合并结果
-    const articleHits: SearchHit[] = articleRows.map((a) => ({
-      kind: 'article' as const,
-      id: a.id,
-      title: a.title,
-      summary: a.summary || '',
-      category: a.category,
-      sourceName: a.sourceName,
-      publishedAt: a.publishedAt.toISOString(),
-      originalUrl: a.originalUrl,
-      imageUrl: a.imageUrl || null,
-    }));
-
-    const careerHits: SearchHit[] = careerRows.map((c) => ({
-      kind: 'career' as const,
-      id: c.id,
-      title: c.title,
-      summary: c.description || '',
-      category: c.category,
-      sourceName: c.sourceName,
-      publishedAt: c.publishedAt.toISOString(),
-      originalUrl: c.originalUrl,
-      imageUrl: c.coverImage || null,
-      contentType: c.contentType,
-    }));
-
-    // 合并并按时间排序
-    const allHits = [...articleHits, ...careerHits]
-      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-      .slice(0, limit);
-
-    // 计算总数
-    const [articleCountRes, careerCountRes] = await Promise.all([
-      db.select({ count: sql<number>`cast(count(*) as int)` }).from(articles).where(articlesWhere),
       db.select({ count: sql<number>`cast(count(*) as int)` }).from(careerContents).where(careerWhere),
     ]);
+    const careerHits: SearchHit[] = careerRows.map((career) => ({
+      kind: 'career',
+      id: career.id,
+      title: career.title,
+      summary: career.description || '',
+      category: career.category,
+      sourceName: career.sourceName,
+      publishedAt: career.publishedAt.toISOString(),
+      originalUrl: career.originalUrl,
+      imageUrl: career.coverImage || null,
+      contentType: career.contentType,
+    }));
+    const careerTotal = careerCountRes[0]?.count || 0;
 
-    const totalHits = (articleCountRes[0]?.count || 0) + (careerCountRes[0]?.count || 0);
+    try {
+      const meiliResult = await searchArticles(query, { limit: windowSize, offset: 0 });
+      if ((meiliResult.estimatedTotalHits ?? 0) === 0) {
+        throw new EmptyMeilisearchResult();
+      }
+      const documentIds = meiliResult.hits
+        .map((document) => Number(document.id))
+        .filter(Number.isInteger);
+      const rows = documentIds.length
+        ? await db.query.articles.findMany({ where: (table, operators) => operators.inArray(table.id, documentIds) })
+        : [];
+      const articleMap = new Map(rows.map((row) => [row.id, row]));
+      const articleHits: SearchHit[] = meiliResult.hits.flatMap((document) => {
+        const row = articleMap.get(Number(document.id));
+        if (!row) return [];
+
+        return [{
+          kind: 'article' as const,
+          id: row.id,
+          title: row.title,
+          summary: row.summary || '',
+          category: row.category,
+          sourceName: row.sourceName,
+          publishedAt: normalizeSearchTimestamp(document.publishedAt),
+          originalUrl: row.originalUrl,
+          imageUrl: row.imageUrl || null,
+        }];
+      });
+      const totalHits = (meiliResult.estimatedTotalHits ?? 0) + careerTotal;
+
+      return NextResponse.json({
+        hits: mergeSearchHits(articleHits, careerHits, offset, limit),
+        totalHits,
+        page,
+        totalPages: Math.ceil(totalHits / limit),
+      });
+    } catch (error) {
+      if (!(error instanceof EmptyMeilisearchResult)) {
+        logger.warn('search.meilisearch_fallback', { queryLength: query.length });
+      }
+    }
+
+    const [articleRows, articleCountRes] = await Promise.all([
+      db.query.articles.findMany({
+        where: articlesWhere,
+        orderBy: [desc(articles.publishedAt)],
+        limit: windowSize,
+      }),
+      db.select({ count: sql<number>`cast(count(*) as int)` }).from(articles).where(articlesWhere),
+    ]);
+    const articleHits: SearchHit[] = articleRows.map((article) => ({
+      kind: 'article',
+      id: article.id,
+      title: article.title,
+      summary: article.summary || '',
+      category: article.category,
+      sourceName: article.sourceName,
+      publishedAt: article.publishedAt.toISOString(),
+      originalUrl: article.originalUrl,
+      imageUrl: article.imageUrl || null,
+    }));
+    const totalHits = (articleCountRes[0]?.count || 0) + careerTotal;
 
     return NextResponse.json({
-      hits: allHits,
+      hits: mergeSearchHits(articleHits, careerHits, offset, limit),
       totalHits,
       page,
       totalPages: Math.ceil(totalHits / limit),
     });
   } catch (error) {
-    console.error('Search API error:', error);
+    logger.error('search.request_failed', {
+      error: error instanceof Error ? error.name : 'UnknownError',
+    });
     return NextResponse.json({ error: 'Search failed' }, { status: 500 });
   }
 }

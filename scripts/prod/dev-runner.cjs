@@ -1,13 +1,13 @@
 const { existsSync, mkdirSync, appendFileSync } = require('fs');
 const { createConnection } = require('net');
-const { join, resolve } = require('path');
+const { dirname, join, resolve } = require('path');
 const { spawn } = require('child_process');
 
 const projectRoot = resolve(__dirname, '..', '..');
 const flowchartRoot = resolve(projectRoot, '..', 'next-ai-draw-io');
-const nodeDir = join(projectRoot, '.tools', 'node-v22.22.2-win-x64');
-const nodeExe = join(nodeDir, 'node.exe');
-const npmCli = join(nodeDir, 'node_modules', 'npm', 'bin', 'npm-cli.js');
+const nodeExe = process.execPath;
+const nodeDir = dirname(nodeExe);
+const npmCli = process.env.npm_execpath;
 const logDir = join(projectRoot, 'logs');
 
 const mode = process.argv[2] || 'local';
@@ -18,8 +18,9 @@ function fail(message) {
 }
 
 function ensureNode22Runtime() {
-  if (!existsSync(nodeExe)) fail(`Missing bundled Node 22 runtime: ${nodeExe}`);
-  if (!existsSync(npmCli)) fail(`Missing bundled npm cli: ${npmCli}`);
+  const major = Number.parseInt(process.versions.node.split('.')[0], 10);
+  if (major !== 22) fail(`Node.js 22 is required; current runtime is ${process.version}.`);
+  if (!npmCli || !existsSync(npmCli)) fail('Run this launcher through an npm script so npm_execpath is available.');
 }
 
 function logToFile(name, data) {
@@ -46,7 +47,7 @@ function isPortOpen(port) {
   });
 }
 
-function spawnNode22Npm(name, args, cwd, extraEnv = {}) {
+function spawnNpm(name, args, cwd, extraEnv = {}) {
   const env = {
     ...process.env,
     ...extraEnv,
@@ -94,7 +95,7 @@ async function startWeb(children) {
   }
 
   children.push(
-    spawnNode22Npm('pm-hub', ['run', 'dev:web:raw'], projectRoot, {
+    spawnNpm('pm-hub', ['run', 'dev:web:raw'], projectRoot, {
       ENABLE_LOCAL_RSS_SCHEDULER: 'false',
       ENABLE_LOCAL_CAREER_SCHEDULER: 'false',
       LOCAL_SCHEDULER_LOGS: 'false',
@@ -113,12 +114,12 @@ async function startFlowchart(children) {
     return;
   }
 
-  children.push(spawnNode22Npm('flowchart', ['run', 'dev'], flowchartRoot));
+  children.push(spawnNpm('flowchart', ['run', 'dev'], flowchartRoot));
 }
 
 function startSchedulers(children) {
-  children.push(spawnNode22Npm('rss', ['run', 'rss:schedule'], projectRoot));
-  children.push(spawnNode22Npm('career', ['run', 'career:schedule'], projectRoot));
+  children.push(spawnNpm('rss', ['run', 'rss:schedule'], projectRoot));
+  children.push(spawnNpm('career', ['run', 'career:schedule'], projectRoot));
 }
 
 async function main() {

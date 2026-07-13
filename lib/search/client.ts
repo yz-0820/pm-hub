@@ -56,6 +56,7 @@ export async function searchArticles(
   const result = await articlesIndex.search(query, {
     limit,
     offset,
+    sort: ['publishedAt:desc'],
     attributesToRetrieve: ['id', 'title', 'summary', 'category', 'sourceName', 'publishedAt', 'imageUrl'],
   });
 

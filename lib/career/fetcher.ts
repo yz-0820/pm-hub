@@ -20,6 +20,7 @@ import {
   compareCareerDuplicateCandidates,
   normalizeCareerTitle,
 } from './title-fingerprint';
+import { getUtcYearRange } from './year-range';
 
 function isDefaultCoverUrl(url?: string | null): boolean {
   return isDefaultCoverImage(url);
@@ -622,8 +623,7 @@ async function saveContent(
     if (shouldEnrichVideoMeta && meta.publishedAt) content.publishedAt = meta.publishedAt;
   }
 
-  const yearStart = new Date('2026-01-01T00:00:00.000Z');
-  const yearEnd = new Date('2027-01-01T00:00:00.000Z');
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
 
   const isEvergreen =
     content.contentType === 'video' || content.contentType === 'short_video' || content.contentType === 'live' || content.contentType === 'audio';

@@ -1,25 +1,26 @@
 @echo off
-chcp 65001 >nul
-echo ========================================
-echo PM Hub - 生产环境启动脚本
-echo ========================================
+setlocal
 
-REM 设置环境变量
 set NODE_ENV=production
-set DATABASE_URL=./data/sqlite.db
-set MEILISEARCH_HOST=http://localhost:7700
-set MEILISEARCH_API_KEY=masterKey
-set API_KEY=pm-hub-secret-key-2024
-set SITE_URL=http://localhost:3000
-set PORT=3000
+if not defined DATABASE_DRIVER set DATABASE_DRIVER=postgres-js
+if not defined PORT set PORT=3000
 
-echo.
-echo 检查数据库...
-if not exist data\sqlite.db (
-    echo 数据库不存在，运行迁移...
-    npm run db:migrate
+if not defined DATABASE_URL (
+  echo DATABASE_URL is required
+  exit /b 1
+)
+if not defined API_KEY (
+  echo API_KEY is required
+  exit /b 1
+)
+if not defined SITE_URL (
+  echo SITE_URL is required
+  exit /b 1
 )
 
-echo.
-echo 启动生产服务器...
+echo Running PostgreSQL migrations...
+call npm run db:migrate
+if errorlevel 1 exit /b %errorlevel%
+
+echo Starting PM Hub on port %PORT%...
 npm start

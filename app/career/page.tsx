@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { and, desc, eq, gte, inArray, lt, notLike, or, sql, SQLWrapper } from 'drizzle-orm';
 import { normalizeCareerTitle } from '@/lib/career/title-fingerprint';
+import { getUtcYearRange } from '@/lib/career/year-range';
 
 export const revalidate = 0;
 
@@ -49,8 +50,7 @@ async function getCareerData(
   page: number
 ) {
   const offset = (page - 1) * CONTENTS_PER_PAGE;
-  const yearStart = new Date('2026-01-01T00:00:00.000Z');
-  const yearEnd = new Date('2027-01-01T00:00:00.000Z');
+  const { start: yearStart, end: yearEnd } = getUtcYearRange();
 
   const conditions: SQLWrapper[] = [
     eq(careerContents.status, 'active'),

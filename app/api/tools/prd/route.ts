@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generatePrd, prdInputSchema } from '@/lib/tools/prd-generator';
-import { checkRateLimit, getClientIdentifier } from '@/lib/utils/rate-limiter';
+import { checkRateLimit, getClientIdentifier, RateLimitStorageError } from '@/lib/utils/rate-limiter';
 import { sanitizePromptInputs } from '@/lib/utils/input-sanitizer';
 
 export const runtime = 'nodejs';
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     // 限流检查
     const clientId = getClientIdentifier(request);
-    const limit = checkRateLimit(`prd:${clientId}`, PRD_RATE_LIMIT);
+    const limit = await checkRateLimit(`prd:${clientId}`, PRD_RATE_LIMIT);
     if (!limit.allowed) {
       return NextResponse.json(
         {
@@ -70,6 +70,9 @@ export async function POST(request: NextRequest) {
       timestamp: Date.now(),
     });
   } catch (error) {
+    if (error instanceof RateLimitStorageError) {
+      return NextResponse.json({ success: false, error: '服务暂时不可用，请稍后重试' }, { status: 503 });
+    }
     console.error('Error generating PRD:', error);
     return NextResponse.json(
       {

@@ -6,7 +6,7 @@
   "ui": "ui.html",
   "editorType": ["figma"],
   "networkAccess": {
-    "allowedDomains": ["https://pm-hub-hco6.vercel.app"],
+    "allowedDomains": ["https://pmhub.icu"],
     "devAllowedDomains": ["http://localhost:3000"],
     "reasoning": "The plugin fetches prototypeSpec data from PM Hub by import code so it can create editable Figma layers."
   }

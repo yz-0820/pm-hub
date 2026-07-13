@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { careerContents, contentSources as contentSourcesTable } from '@/lib/db/schema';
 import { and, desc, notLike, eq, gte, lt, sql } from 'drizzle-orm';
+import { getUtcYearRange } from '@/lib/career/year-range';
 
 function normalizeTimestamp(value: unknown): number | null {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.getTime();
@@ -19,8 +20,7 @@ export async function GET(req: Request) {
   try {
     const u = new URL(req.url);
     const category = u.searchParams.get('category') || 'all';
-    const yearStart = new Date('2026-01-01T00:00:00.000Z');
-    const yearEnd = new Date('2027-01-01T00:00:00.000Z');
+    const { start: yearStart, end: yearEnd } = getUtcYearRange();
 
     const conditions = and(
       eq(careerContents.status, 'active'),

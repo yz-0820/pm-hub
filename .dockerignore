@@ -1,0 +1,12 @@
+.git
+.github
+.next
+.open-next
+.tools
+.wrangler
+node_modules
+data
+logs
+*.log
+.env*
+_bmad-output
