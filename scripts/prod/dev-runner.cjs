@@ -48,12 +48,16 @@ function isPortOpen(port) {
 }
 
 function spawnNpm(name, args, cwd, extraEnv = {}) {
+  const runtimePath = `${nodeDir};${process.env.Path || process.env.PATH || ''}`;
   const env = {
     ...process.env,
     ...extraEnv,
-    Path: `${nodeDir};${process.env.Path || ''}`,
     npm_config_node_gyp: process.env.npm_config_node_gyp,
   };
+  for (const key of Object.keys(env)) {
+    if (key.toLowerCase() === 'path') delete env[key];
+  }
+  env.Path = runtimePath;
 
   const child = spawn(nodeExe, [npmCli, ...args], {
     cwd,
