@@ -22,24 +22,26 @@ import crypto from 'crypto';
 const CONCURRENT_LIMIT = 3;
 const REQUEST_DELAY_MS = 500; // 源之间的请求间隔
 
-async function withConcurrencyLimit<T>(
+export async function withConcurrencyLimit<T>(
   items: T[],
   limit: number,
   fn: (item: T, index: number) => Promise<void>
 ): Promise<void> {
-  const executing: Promise<void>[] = [];
+  const executing = new Set<Promise<void>>();
+
   for (let i = 0; i < items.length; i++) {
-    const p = fn(items[i], i);
-    executing.push(p);
-    if (executing.length >= limit) {
+    const task = fn(items[i], i);
+    executing.add(task);
+    void task.then(
+      () => executing.delete(task),
+      () => executing.delete(task)
+    );
+
+    if (executing.size >= limit) {
       await Promise.race(executing);
-      executing.splice(
-        0,
-        executing.length,
-        ...executing.filter((x) => x !== p)
-      );
     }
   }
+
   await Promise.all(executing);
 }
 
